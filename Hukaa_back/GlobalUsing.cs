@@ -1,0 +1,10 @@
+﻿global using Hukaa_back.Enums;
+global using Microsoft.AspNetCore.Identity;
+global using Hukaa_back.Models.Identities;
+global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore;
+global using Hukaa_back.Data;
+global using Hukaa_back.Configurations;
+global using Hukaa_back.Extensions;
+global using System.Reflection;
+global  using Hukaa_back.Models.Common;
