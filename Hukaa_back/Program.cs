@@ -12,6 +12,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    using (var scope = app.Services.CreateScope())
+    {
+        await IdentitySeed.SeedAsync(scope.ServiceProvider);
+    }
 }
 
 app.UseHttpsRedirection();
