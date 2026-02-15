@@ -18,3 +18,8 @@ global using Hukaa_back.Consts;
 global using Hukaa_back.Abstractions.Services.Common;
 global using Hukaa_back.Services.Common;
 global using Hukaa_back.Services.Auth;
+global using Hukaa_back.Abstractions.Services.Email;
+global using Hukaa_back.ConfigurationModels;
+global using Microsoft.AspNetCore.Mvc;
+global using System.Net.Mail;
+global using Hukaa_back.Services.Email;

@@ -20,6 +20,7 @@ public static class ServiceRegistration
         services.AddSingleton<IAppConfig, AppConfig>();
         
         services.AddScoped<IRegistrationService, RegistrationService>();
+        services.AddScoped<IEmailSenderService, EmailSenderService>();
     }
     
     
