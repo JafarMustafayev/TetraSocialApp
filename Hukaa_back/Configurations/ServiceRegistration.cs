@@ -7,6 +7,7 @@ public static class ServiceRegistration
         services.ConnectionSqlServer(configuration);
         services.ConfigureIdentity();
         services.AddServices(configuration);
+        services.AddFluentValidator();
     }
 
     private static void ConnectionSqlServer(this IServiceCollection services, IConfiguration configuration)
@@ -22,6 +23,7 @@ public static class ServiceRegistration
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IRegistrationService, RegistrationService>();
         services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IAccountRecoveryService, AccountRecoveryService>();
         services.AddScoped<IEmailSenderService, EmailSenderService>();
     }
 
@@ -50,4 +52,30 @@ public static class ServiceRegistration
             .AddSignInManager<SignInManager<AppUser>>()
             .AddDefaultTokenProviders();
     }
-}
+    
+    private static void AddFluentValidator(this IServiceCollection services)
+    {
+        services.AddFluentValidationAutoValidation();
+        services.AddFluentValidationClientsideAdapters();
+        services.AddValidatorsFromAssembly(typeof(RegisterRequestDtoValidator).Assembly);
+
+        services.Configure<ApiBehaviorOptions>(options =>
+        {
+            options.InvalidModelStateResponseFactory = context =>
+            {
+                var problemDetails = new ValidationProblemDetails(context.ModelState) {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Validation failed" // default title əvəzinə
+                };
+
+                var response = new {
+                    success = false,
+                    statusCode = problemDetails.Status,
+                    message = problemDetails.Title,
+                    errors = problemDetails.Errors
+                };
+
+                return new BadRequestObjectResult(response);
+            };
+        });
+    }}

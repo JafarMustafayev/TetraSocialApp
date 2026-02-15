@@ -41,7 +41,7 @@ public class AuthService(
         };
     }
 
-    private static void HandleFailedSignIn(SignInResult result)
+    private static void HandleFailedSignIn(Microsoft.AspNetCore.Identity.SignInResult result)
     {
         if (result.IsLockedOut)
         {

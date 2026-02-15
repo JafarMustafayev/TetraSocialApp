@@ -68,7 +68,7 @@ public class RegistrationService(
 
         if (!res.Succeeded)
         {
-            throw new ValidationException("Invalid or expired email confirmation token",
+            throw new Exceptions.ValidationException("Invalid or expired email confirmation token",
                 res.Errors.Select(err => err.Description).ToList());
         }
 

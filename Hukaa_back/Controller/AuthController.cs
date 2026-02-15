@@ -4,6 +4,7 @@
 [Route("/api/[controller]/[action]")]
 public class AuthController(
     IAuthService authService,
+    IAccountRecoveryService recoveryService,
     IRegistrationService registrationService) : ControllerBase
 {
     [HttpPost]
@@ -24,6 +25,20 @@ public class AuthController(
     public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailDto request)
     {
         var res = await registrationService.ConfirmEmailAsync(request);
+        return StatusCode(res.StatusCode, res);
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequestDto request)
+    {
+        var res = await recoveryService.ForgotPasswordAsync(request);
+        return StatusCode(res.StatusCode, res);
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDto request)
+    {
+        var res = await recoveryService.ResetPasswordAsync(request);
         return StatusCode(res.StatusCode, res);
     }
 }

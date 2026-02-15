@@ -38,7 +38,7 @@ public class EmailSenderService(
         return SendEmailAsync(email, subject, body);
     }
 
-    public Task SendPasswordResetAsync(string email, string link)
+    public Task SendForgotPasswordAsync(string email, string link)
     {
         var subject = "Password Reset Request";
 
