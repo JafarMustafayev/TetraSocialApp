@@ -1,4 +1,4 @@
-﻿namespace Hukaa_back.Services;
+﻿namespace Hukaa_back.Services.Auth;
 
 public class RegistrationService(
     UserManager<AppUser> userManager,

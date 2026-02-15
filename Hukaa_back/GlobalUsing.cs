@@ -17,3 +17,4 @@ global using System.Net;
 global using Hukaa_back.Consts;
 global using Hukaa_back.Abstractions.Services.Common;
 global using Hukaa_back.Services.Common;
+global using Hukaa_back.Services.Auth;
