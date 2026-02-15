@@ -17,6 +17,8 @@ public static class ServiceRegistration
 
     private static void AddServices(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddSingleton<IAppConfig, AppConfig>();
+        
         services.AddScoped<IRegistrationService, RegistrationService>();
     }
     
