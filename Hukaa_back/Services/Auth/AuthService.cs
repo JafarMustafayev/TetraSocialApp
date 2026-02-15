@@ -1,19 +1,63 @@
 ﻿namespace Hukaa_back.Services.Auth;
 
-public class AuthService:IAuthService
+public class AuthService(
+    UserManager<AppUser> userManager,
+    ITokenService tokenService,
+    SignInManager<AppUser> signInManager):IAuthService
 {
-    public Task<JwtTokenResponse> LoginAsync(LoginRequestDto request)
+    public async Task<ResponseDto> LoginAsync(LoginRequestDto request)
     {
-        throw new NotImplementedException();
-    }
+        var identifier = request.UsernameOrEmail.Trim();
 
-    public Task LogoutAsync()
-    {
-        throw new NotImplementedException();
-    }
+        var user = Regex.IsMatch(identifier, @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")
+            ? await userManager.FindByEmailAsync(identifier)
+            : await userManager.FindByNameAsync(identifier);
+        if (user == null)
+        {
+            throw new UnauthorizedException(errors: ["Username(Email) or  password is incorrect "]);
+        }
+        
+        var signInResult = await signInManager.CheckPasswordSignInAsync(user, request.Password, true);
+        if (!signInResult.Succeeded)
+        {
+            HandleFailedSignIn(signInResult);
+        }
+        else if (user.UserStatus == UserStatus.Banned)
+        {
+            throw new UnauthorizedException(errors: ["Account is banned to sign in"]);
+        }
+        
+        var accessToken = tokenService.GenerateAccessToken(user.Id);
 
-    public Task<JwtTokenResponse> RefreshTokenAsync(string refreshToken)
+        return new()
+        {
+            Success = true,
+            Message = "Successfully logged in",
+            StatusCode = StatusCodes.Status200OK,
+            Data = new
+            {
+                access_token = accessToken
+            }
+        };
+    }
+    
+    private static void HandleFailedSignIn(SignInResult result)
     {
-        throw new NotImplementedException();
+        if (result.IsLockedOut)
+        {
+            throw new UnauthorizedException(errors: ["Account is temporarily locked"]);
+        }
+
+        if (result.IsNotAllowed)
+        {
+            throw new UnauthorizedException(errors: ["Account is not allowed to sign in"]);
+        }
+
+        if (result.RequiresTwoFactor)
+        {
+            throw new UnauthorizedException(errors: ["Two-factor authentication is required"]);
+        }
+
+        throw new UnauthorizedException(errors: ["Username(Email) or password is incorrect"]);
     }
 }

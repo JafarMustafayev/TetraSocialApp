@@ -42,17 +42,8 @@ public class RegistrationService(
         return new()
         {
             Success = true,
-            Message = "Successfully registered",
+            Message = "Successfully registered. Please check your email box",
             StatusCode = StatusCodes.Status200OK,
-            Data = new
-            {
-                Id = user.Id,
-                Username = user.UserName,
-                Email = user.Email,
-                Role = UserRoles.User,
-                encrypted_Id = WebUtility.UrlEncode(user.Id),
-                encrypted_Token = WebUtility.UrlEncode(token)
-            }
         };
     
     }

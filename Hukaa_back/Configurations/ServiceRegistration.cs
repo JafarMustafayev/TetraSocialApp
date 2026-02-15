@@ -19,7 +19,9 @@ public static class ServiceRegistration
     {
         services.AddSingleton<IAppConfig, AppConfig>();
         
+        services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IRegistrationService, RegistrationService>();
+        services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IEmailSenderService, EmailSenderService>();
     }
     
@@ -38,7 +40,7 @@ public static class ServiceRegistration
                 options.User.AllowedUserNameCharacters =
                     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._";
 
-                options.SignIn.RequireConfirmedEmail = false; // email servisi yazilandan sonra ture olacaq 
+                options.SignIn.RequireConfirmedEmail = true; 
                 options.SignIn.RequireConfirmedAccount = false;
 
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
