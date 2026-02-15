@@ -4,19 +4,19 @@ public class RegistrationService(
     UserManager<AppUser> userManager,
     RoleManager<IdentityRole> roleManager,
     IEmailSenderService emailSenderService,
-    IAppConfig config):IRegistrationService
+    IAppConfig config) : IRegistrationService
 {
-    
     private readonly ApplicationUrlParameters _urlParameters = config.GetSection<ApplicationUrlParameters>();
-    
+
     public async Task<ResponseDto> RegisterAsync(RegisterRequestDto request)
     {
-        var user = new AppUser {
+        var user = new AppUser
+        {
             Email = request.Email,
             UserName = request.Username,
             UserStatus = UserStatus.PendingVerification
         };
-        
+
         var result = await userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded)
         {
@@ -32,20 +32,20 @@ public class RegistrationService(
             throw new ConflictException("Registering user failed",
                 result.Errors.Select(error => error.Description).ToList());
         }
-        
+
         var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
-        
-        var url = $"{_urlParameters.FrontEndApplicationUrl}{_urlParameters.EmailConfirmationUrl}?token={WebUtility.UrlEncode(token)}&id={WebUtility.UrlEncode(user.Id)}&email={WebUtility.UrlEncode(request.Email)}";
-        
+
+        var url =
+            $"{_urlParameters.FrontEndApplicationUrl}{_urlParameters.EmailConfirmationUrl}?token={WebUtility.UrlEncode(token)}&id={WebUtility.UrlEncode(user.Id)}&email={WebUtility.UrlEncode(request.Email)}";
+
         await emailSenderService.SendEmailConfirmationAsync(request.Email, url);
 
-        return new()
+        return new ResponseDto
         {
             Success = true,
             Message = "Successfully registered. Please check your email box",
-            StatusCode = StatusCodes.Status200OK,
+            StatusCode = StatusCodes.Status200OK
         };
-    
     }
 
     public async Task<ResponseDto> ConfirmEmailAsync(ConfirmEmailDto request)
@@ -63,7 +63,7 @@ public class RegistrationService(
         {
             throw new ConflictException("Email already confirmed");
         }
-        
+
         var res = await userManager.ConfirmEmailAsync(user, token);
 
         if (!res.Succeeded)
@@ -74,8 +74,9 @@ public class RegistrationService(
 
         user.UserStatus = UserStatus.Active;
         await userManager.UpdateAsync(user);
-        
-        return new ResponseDto {
+
+        return new ResponseDto
+        {
             Success = true,
             Message = "Successfully confirmed email",
             StatusCode = StatusCodes.Status200OK

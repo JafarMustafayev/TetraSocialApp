@@ -70,24 +70,25 @@ public class EmailSenderService(
         return SendEmailAsync(email, subject, body);
     }
 
-    
     private async Task SendEmailAsync(string email, string subject, string body)
     {
-        var message = new MailMessage {
+        var message = new MailMessage
+        {
             Subject = subject,
             Body = body,
             IsBodyHtml = true,
             To = { email },
             From = new MailAddress(_smptParameters.FromAddress, _smptParameters.FromDisplayName)
         };
-    
-        var smtpClient = new SmtpClient {
+
+        var smtpClient = new SmtpClient
+        {
             Host = _smptParameters.Host,
             Port = _smptParameters.Port,
             Credentials = new NetworkCredential(_smptParameters.Username, _smptParameters.Password),
             EnableSsl = _smptParameters.UseSsl
         };
-    
+
         await smtpClient.SendMailAsync(message);
     }
 }

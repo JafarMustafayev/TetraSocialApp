@@ -9,10 +9,7 @@ public static class ModelBuilderExtensions
             var clrType = entityType.ClrType;
 
             var isDeletedProperty = clrType.GetProperty("Is_Deleted");
-            if (isDeletedProperty == null || isDeletedProperty.PropertyType != typeof(bool))
-            {
-                continue;
-            }
+            if (isDeletedProperty == null || isDeletedProperty.PropertyType != typeof(bool)) continue;
 
             var method = typeof(AppDbContext)
                 .GetMethod(nameof(SetSoftDeleteFilter),

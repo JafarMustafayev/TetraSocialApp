@@ -3,7 +3,7 @@
 public class AuthService(
     UserManager<AppUser> userManager,
     ITokenService tokenService,
-    SignInManager<AppUser> signInManager):IAuthService
+    SignInManager<AppUser> signInManager) : IAuthService
 {
     public async Task<ResponseDto> LoginAsync(LoginRequestDto request)
     {
@@ -16,7 +16,7 @@ public class AuthService(
         {
             throw new UnauthorizedException(errors: ["Username(Email) or  password is incorrect "]);
         }
-        
+
         var signInResult = await signInManager.CheckPasswordSignInAsync(user, request.Password, true);
         if (!signInResult.Succeeded)
         {
@@ -26,10 +26,10 @@ public class AuthService(
         {
             throw new UnauthorizedException(errors: ["Account is banned to sign in"]);
         }
-        
+
         var accessToken = tokenService.GenerateAccessToken(user.Id);
 
-        return new()
+        return new ResponseDto
         {
             Success = true,
             Message = "Successfully logged in",
@@ -40,7 +40,7 @@ public class AuthService(
             }
         };
     }
-    
+
     private static void HandleFailedSignIn(SignInResult result)
     {
         if (result.IsLockedOut)

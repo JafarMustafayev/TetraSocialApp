@@ -4,5 +4,4 @@ public interface IEmailSenderService
 {
     public Task SendEmailConfirmationAsync(string email, string link);
     public Task SendPasswordResetAsync(string email, string link);
-    
 }
