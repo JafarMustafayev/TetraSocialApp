@@ -11,26 +11,43 @@ import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import EmailConfirmation from './pages/EmailConfirmation';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import PublicRoute from './components/PublicRoute';
 
 function App() {
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<MainLayout />}>
-                    <Route index element={<Home />} />
-                    <Route path="friends" element={<Friends />} />
-                    <Route path="messages" element={<Messages />} />
-                    <Route path="notifications" element={<Notifications />} />
-                    <Route path="profile" element={<Profile />} />
-                    <Route path="settings" element={<Settings />} />
-                </Route>
-                <Route element={<AuthLayout />}>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/forgot-password" element={<ForgotPassword />} />
-                </Route>
-            </Routes>
-        </BrowserRouter>
+        <AuthProvider>
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={
+                        <ProtectedRoute>
+                            <MainLayout />
+                        </ProtectedRoute>
+                    }>
+                        <Route index element={<Home />} />
+                        <Route path="friends" element={<Friends />} />
+                        <Route path="messages" element={<Messages />} />
+                        <Route path="notifications" element={<Notifications />} />
+                        <Route path="profile" element={<Profile />} />
+                        <Route path="settings" element={<Settings />} />
+                    </Route>
+                    <Route element={<PublicRoute />}>
+                        <Route element={<AuthLayout />}>
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/register" element={<Register />} />
+                            <Route path="/forgot-password" element={<ForgotPassword />} />
+                        </Route>
+                    </Route>
+                    <Route element={<AuthLayout />}>
+                        <Route path="/reset-password" element={<ResetPassword />} />
+                        <Route path="/email-confirmation" element={<EmailConfirmation />} />
+                    </Route>
+                </Routes>
+            </BrowserRouter>
+        </AuthProvider>
     );
 }
 
