@@ -34,13 +34,16 @@ public class ProfileService(
         var userId = currentUser.UserId;
 
         var myProfile = await dbContext.Users
-            .Include(x=>x.WorkExperiences)
+            .Include(x=>x.WorkExperiences.Where(x=>!x.IsDeleted))
             .Include(x=>x.Posts.Where(x=>!x.IsArchived && !x.IsDeleted))
             .FirstOrDefaultAsync(x=>x.Id == userId); // heleki bele user ID token daxilinden alinacaq 
-        
+
+
         var profileDetail = mapper.Map<MyProfileDto>(myProfile);
 
+        profileDetail.MyPosts = mapper.Map<List<SinglePostDto>>(myProfile.Posts)
         profileDetail.AbouteMe = mapper.Map<AbouteMeDto>(myProfile);
+        profileDetail.AbouteMe.Experiences = mapper.Map<List<ExperienceDataDto>>(myProfile.WorkExperiences);
         
         return new()
         {

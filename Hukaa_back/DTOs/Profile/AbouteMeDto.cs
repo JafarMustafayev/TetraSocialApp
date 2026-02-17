@@ -2,6 +2,8 @@
 
 public class AbouteMeDto
 {
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
     public string? Bio {  get; set; }
     public DateTime? BirthDay { get; set; }
     public string? MyNumber { get; set; }

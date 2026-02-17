@@ -4,5 +4,6 @@ public enum RelationshipStatus
 {
     None = 0,
     Single,
-    Married
+    Married,
+    In_Relationship
 }

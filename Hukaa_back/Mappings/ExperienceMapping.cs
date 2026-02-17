@@ -6,11 +6,17 @@ public class Experiencemapping:Profile
     {
         CreateMap<WorkExperience, ExperienceDataDto>()
             .ForMember(des=>des.Position,opt=>opt.MapFrom(src=>src.Title));
-        
-        CreateMap<CreateExperienceDto,WorkExperience>()
-            .ForMember(des=>des.Title, opt => opt.MapFrom(src=>src.Position));
+
+        CreateMap<CreateExperienceDto, WorkExperience>()
+     .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Position))
+     .ForMember(dest => dest.StartAt, opt => opt.MapFrom(src => src.StartDate))
+     .ForMember(dest => dest.EndAt, opt => opt.MapFrom(src => src.EndDate));
+
         CreateMap<UpdateExperienceDto, WorkExperience>()
-            .ForMember(des => des.Title, opt => opt.MapFrom(src => src.Position));
+            .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Position))
+            .ForMember(dest => dest.StartAt, opt => opt.MapFrom(src => src.StartDate))
+            .ForMember(dest => dest.EndAt, opt => opt.MapFrom(src => src.EndDate))
+            .ForMember(dest => dest.IsCurrent, opt => opt.MapFrom(src => src.EndDate == null));
 
     }
 }

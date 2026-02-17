@@ -13,7 +13,8 @@ public class ProfileMapping:Profile
             .ForMember(des => des.MyPosts, opt => opt.MapFrom(src => src.Posts))
             .ForMember(des => des.ProfileName, opt => opt.MapFrom(src => src.UserName))
             .ForMember(des => des.CoverImagePath, opt => opt.MapFrom(src => src.CoverPhotoPath))
-            .ForMember(des => des.ProfileImagePath, opt => opt.MapFrom(src => src.ProfilePhotoPath));
+            .ForMember(des => des.ProfileImagePath, opt => opt.MapFrom(src => src.ProfilePhotoPath))
+            ;
 
 
     }
