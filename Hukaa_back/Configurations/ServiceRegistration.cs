@@ -1,13 +1,19 @@
-﻿namespace Hukaa_back.Configurations;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+
+namespace Hukaa_back.Configurations;
 
 public static class ServiceRegistration
 {
     public static void ConfigurationServiceCollections(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddHttpContextAccessor();
         services.ConnectionSqlServer(configuration);
         services.ConfigureIdentity();
         services.AddServices(configuration);
         services.AddFluentValidator();
+        services.AddAutoMapper(typeof(ProfileMapping).Assembly);
+        services.AddAuthhorization();
+        services.AddJwtAuthentication(configuration);
     }
 
     private static void ConnectionSqlServer(this IServiceCollection services, IConfiguration configuration)
@@ -25,6 +31,11 @@ public static class ServiceRegistration
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAccountRecoveryService, AccountRecoveryService>();
         services.AddScoped<IEmailSenderService, EmailSenderService>();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<IPostService, PostService>();
+        services.AddScoped<IProfileService, ProfileService>();
+        services.AddScoped<IExperienceService, ExperienceService>();
+
     }
 
     private static void ConfigureIdentity(this IServiceCollection services)
@@ -78,4 +89,53 @@ public static class ServiceRegistration
                 return new BadRequestObjectResult(response);
             };
         });
-    }}
+    }
+
+    private static void AddAuthhorization(this IServiceCollection services) 
+    {
+        services.AddAuthorization(opt =>
+        {
+            opt.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+            .RequireAuthenticatedUser()
+            .Build();
+        });
+    }
+
+    private static void AddJwtAuthentication(this IServiceCollection services, IConfiguration config)
+    {
+        var tokenParameters = config.GetSection("TokenParameters").Get<TokenParameters>();
+
+        services.AddAuthentication(opt =>
+        {
+            opt.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+           .AddJwtBearer(opt =>
+           {
+               opt.SaveToken = true;
+               opt.RequireHttpsMetadata = false;
+
+               opt.TokenValidationParameters = new TokenValidationParameters
+               {
+                   ValidateAudience = true,
+                   ValidateIssuer = true,
+                   ValidateLifetime = true,
+                   ValidateIssuerSigningKey = true,
+
+                   IssuerSigningKey =
+                       new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenParameters?.Signing?.Key ?? "SymmetricSecurityKey")),
+                   ValidIssuer = tokenParameters?.Jwt?.Issuer ?? "ValidIssuer",
+                   ValidAudience = tokenParameters?.Jwt?.Audience ?? "ValidAudience",
+
+                   LifetimeValidator = (before, expires, token, param) =>
+                   {
+                       var now = DateTime.UtcNow;
+                       var timeValidationResult = expires > now;
+                       return timeValidationResult;
+                   }
+               };
+           });
+    }
+}
+

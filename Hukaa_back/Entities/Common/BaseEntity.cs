@@ -1,4 +1,4 @@
-﻿namespace Hukaa_back.Models.Common;
+﻿namespace Hukaa_back.Entities.Common;
 
 public abstract class BaseEntity
 {
