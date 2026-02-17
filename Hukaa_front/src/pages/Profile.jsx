@@ -1,15 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { getMyProfile } from '../api/profile';
 
 const Profile = () => {
     const [activeTab, setActiveTab] = useState('timeline');
+    const [profileData, setProfileData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const response = await getMyProfile();
+                if (response && response.success) {
+                    setProfileData(response.data);
+                } else {
+                    setError('Failed to load profile data');
+                }
+            } catch (err) {
+                console.error('Error fetching profile:', err);
+                setError(err.message || 'An error occurred while fetching profile');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProfile();
+    }, []);
+
+    const getGenderText = (gender) => {
+        switch (gender) {
+            case 1: return 'Men';
+            case 2: return 'Women';
+            case 3: return 'Other';
+            default: return 'None';
+        }
+    };
+
+    const getRelationshipStatusText = (status) => {
+        switch (status) {
+            case 1: return 'Single';
+            case 2: return 'Married';
+            case 3: return 'In Relationship';
+            default: return 'N/A';
+        }
+    };
+
+    if (loading) return <div className="p-5 text-center">Loading profile...</div>;
+    if (error) return <div className="p-5 text-center text-danger">{error}</div>;
+    if (!profileData) return <div className="p-5 text-center">No profile data found.</div>;
+
+    const { abouteMe, myPosts } = profileData;
+    console.log(myPosts);
+    console.log(abouteMe);
 
     return (
         <div className="content-page-box-area">
             <div className="my-profile-inner-box">
                 <div className="profile-cover-image">
                     <Link to="#">
-                        <img src="src/assets/images/my-profile-bg.jpg" alt="image" />
+                        <img src={profileData.coverImagePath || "src/assets/images/my-profile-bg.jpg"} alt="cover" />
                     </Link>
                     <Link to="#" className="edit-cover-btn">Edit Cover</Link>
                 </div>
@@ -18,32 +68,32 @@ const Profile = () => {
                     <div className="inner-info-box d-flex justify-content-between align-items-center">
                         <div className="info-image">
                             <Link to="#">
-                                <img src="src/assets/images/my-profile.jpg" alt="image" />
+                                <img src={profileData.profileImagePath || "src/assets/images/my-profile.jpg"} alt="profile" />
                             </Link>
                             <div className="icon">
                                 <Link to="#"><i className="flaticon-photo-camera"></i></Link>
                             </div>
                         </div>
                         <div className="info-text ms-3">
-                            <h3><Link to="#">Matthew Turner</Link></h3>
-                            <span><a href="mailto:matthew@gmail.com">matthew@gmail.com</a></span>
+                            <h3><Link to="#">{profileData.profileName}</Link></h3>
+                            <span><a href={`mailto:${profileData.email}`}>{profileData.email}</a></span>
                         </div>
                         <ul className="statistics">
                             <li>
                                 <Link to="#">
-                                    <span className="item-number">59862</span>
-                                    <span className="item-text">Likes</span>
+                                    <span className="item-number">{profileData.postCount || 0}</span>
+                                    <span className="item-text">Posts</span>
                                 </Link>
                             </li>
                             <li>
                                 <Link to="#">
-                                    <span className="item-number">8591</span>
+                                    <span className="item-number">{profileData.followingCount || 0}</span>
                                     <span className="item-text">Following</span>
                                 </Link>
                             </li>
                             <li>
                                 <Link to="#">
-                                    <span className="item-number">784514</span>
+                                    <span className="item-number">{profileData.followersCount || 0}</span>
                                     <span className="item-text">Followers</span>
                                 </Link>
                             </li>
@@ -87,138 +137,73 @@ const Profile = () => {
                                             <textarea name="message" className="form-control" placeholder="Write something here..."></textarea>
                                         </div>
                                         <ul className="button-group d-flex justify-content-between align-items-center">
-                                            <li className="photo-btn">
-                                                <button type="submit"><i className="flaticon-gallery"></i> Photo</button>
+                                            <li className="photo-btn text-blue-500 font-bold">
+                                                <button type="button" className="flex items-center"><i className="flaticon-gallery mr-1"></i> Photo</button>
                                             </li>
-                                            <li className="video-btn">
-                                                <button type="submit"><i className="flaticon-video"></i> Video</button>
+                                            <li className="video-btn text-red-500 font-bold">
+                                                <button type="button" className="flex items-center"><i className="flaticon-video mr-1"></i> Video</button>
                                             </li>
-                                            <li className="tag-btn">
-                                                <button type="submit"><i className="flaticon-tag"></i> Tag Friends</button>
+                                            <li className="tag-btn text-yellow-500 font-bold">
+                                                <button type="button" className="flex items-center"><i className="flaticon-tag mr-1"></i> Tag Friends</button>
                                             </li>
                                             <li className="post-btn">
-                                                <button type="submit">Post</button>
+                                                <button type="submit" className="bg-[#3644D9] text-white px-4 py-2 rounded-md font-bold">Post</button>
                                             </li>
                                         </ul>
                                     </form>
                                 </div>
 
-                                <div className="news-feed news-feed-post">
-                                    <div className="post-header d-flex justify-content-between align-items-center">
-                                        <div className="image">
-                                            <Link to="/profile"><img src="src/assets/images/user/user-32.jpg" className="rounded-circle" alt="image" /></Link>
-                                        </div>
-                                        <div className="info ms-3">
-                                            <span className="name"><Link to="/profile">Julie R. Morleyv</Link></span>
-                                            <span className="small-text"><Link to="#">10 Mins Ago</Link></span>
-                                        </div>
-                                        <div className="dropdown">
-                                            <button className="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i className="flaticon-menu"></i></button>
-                                            <ul className="dropdown-menu">
-                                                <li><Link className="dropdown-item d-flex align-items-center" to="#"><i className="flaticon-edit"></i> Edit Post</Link></li>
-                                                <li><Link className="dropdown-item d-flex align-items-center" to="#"><i className="flaticon-private"></i> Hide Post</Link></li>
-                                                <li><Link className="dropdown-item d-flex align-items-center" to="#"><i className="flaticon-trash"></i> Delete Post</Link></li>
-                                            </ul>
-                                        </div>
-                                    </div>
+                                {myPosts && myPosts.length > 0 ? (
+                                    myPosts.map(post => (
+                                        <div key={post.id} className="news-feed news-feed-post">
+                                            <div className="post-header d-flex justify-content-between align-items-center">
+                                                <div className="image">
+                                                    <Link to="/profile">
+                                                        <img src={post.userImage || profileData.profileImagePath || "/src/assets/images/user/user-1.jpg"} className="rounded-circle w-[50px] h-[50px]" alt="user" />
+                                                    </Link>
+                                                </div>
+                                                <div className="info ms-3 grow">
+                                                    <span className="name"><Link to="/profile" className="font-bold text-[#515355] hover:text-[#3644D9]">{post.userName || profileData.profileName}</Link></span>
+                                                    <span className="small-text block text-gray-500 text-xs mt-1">
+                                                        <Link to="#">{post.createAt && !post.createAt.startsWith('0001') ? new Date(post.createAt).toLocaleDateString() : 'Recently'}</Link>
+                                                    </span>
+                                                </div>
+                                                <div className="dropdown">
+                                                    <button className="dropdown-toggle" type="button"><i className="flaticon-menu"></i></button>
+                                                </div>
+                                            </div>
 
-                                    <div className="post-body">
-                                        <p>Donec rutrum congue leo eget malesuada. Nulla quis lorem ut libero malesuada feugiat. Donec rutrum congue leo eget malesuada. Donec rutrum congue leo eget malesuada. Praesent sapien massa convallis a pellentesque nec egestas non nisi. Curabitur non nulla sit amet nisl tempus convallis quis.</p>
-                                        <div className="post-image">
-                                            <img src="src/assets/images/news-feed-post/post-1.jpg" alt="image" />
-                                        </div>
-                                        <ul className="post-meta-wrap d-flex justify-content-between align-items-center">
-                                            <li className="post-react">
-                                                <Link to="#"><i className="flaticon-like"></i><span>Like</span> <span className="number">1499 </span></Link>
-
-                                                <ul className="react-list">
-                                                    <li><Link to="#"><img src="src/assets/images/react/react-1.png" alt="Like" /></Link></li>
-                                                    <li><Link to="#"><img src="src/assets/images/react/react-2.png" alt="Like" /></Link></li>
-                                                    <li><Link to="#"><img src="src/assets/images/react/react-3.png" alt="Like" /></Link></li>
-                                                    <li><Link to="#"><img src="src/assets/images/react/react-4.png" alt="Like" /></Link></li>
+                                            <div className="post-body">
+                                                <p className="text-[#515355] mb-3">{post.content}</p>
+                                                {post.imageUrl && (
+                                                    <div className="post-image mb-3">
+                                                        <img src={post.imageUrl} alt="post" className="rounded-lg shadow-sm" />
+                                                    </div>
+                                                )}
+                                                <ul className="post-meta-wrap d-flex justify-content-between align-items-center border-t border-gray-100 pt-3">
+                                                    <li className="post-react flex items-center space-x-2">
+                                                        <Link to="#" className="flex items-center text-gray-500 hover:text-blue-500"><i className="flaticon-like mr-1"></i><span>Like</span> <span className="number ml-1">({post.totalReactionCount})</span></Link>
+                                                    </li>
+                                                    <li className="post-comment flex items-center">
+                                                        <Link to="#" className="flex items-center text-gray-500 hover:text-blue-500"><i className="flaticon-comment mr-1"></i><span>Comment</span> <span className="number ml-1">({post.commentCount})</span></Link>
+                                                    </li>
+                                                    <li className="post-share flex items-center">
+                                                        <Link to="#" className="flex items-center text-gray-500 hover:text-blue-500"><i className="flaticon-share mr-1"></i><span>Share</span> <span className="number ml-1">({post.shareCount})</span></Link>
+                                                    </li>
                                                 </ul>
-                                            </li>
-                                            <li className="post-comment">
-                                                <Link to="#"><i className="flaticon-comment"></i><span>Comment</span> <span className="number">599 </span></Link>
-                                            </li>
-                                            <li className="post-share">
-                                                <Link to="#"><i className="flaticon-share"></i><span>Share</span> <span className="number">24 </span></Link>
-                                            </li>
-                                        </ul>
-                                        <div className="post-comment-list">
-                                            <div className="comment-list">
-                                                <div className="comment-image">
-                                                    <Link to="/profile"><img src="src/assets/images/user/user-14.jpg" className="rounded-circle" alt="image" /></Link>
-                                                </div>
-                                                <div className="comment-info">
-                                                    <h3><Link to="/profile">David Moore</Link></h3>
-                                                    <span>5 Mins Ago</span>
-                                                    <p>Donec rutrum congue leo eget malesuada nulla quis lorem ut libero malesuada feugiat.</p>
-                                                    <ul className="comment-react">
-                                                        <li><Link to="#" className="like">Like(2)</Link></li>
-                                                        <li><Link to="#">Reply</Link></li>
-                                                    </ul>
-                                                </div>
                                             </div>
                                         </div>
-                                        <form className="post-footer">
-                                            <div className="footer-image">
-                                                <Link to="#"><img src="src/assets/images/user/user-1.jpg" className="rounded-circle" alt="image" /></Link>
-                                            </div>
-                                            <div className="form-group">
-                                                <textarea name="message" className="form-control" placeholder="Write a comment..."></textarea>
-                                                <label><Link to="#"><i className="flaticon-photo-camera"></i></Link></label>
-                                            </div>
-                                        </form>
+                                    ))
+                                ) : (
+                                    <div className="p-10 text-center bg-white rounded-lg border border-dashed border-gray-200">
+                                        <p className="text-gray-400">No posts to display yet.</p>
                                     </div>
-                                </div>
-
-                                <div className="load-more-posts-btn">
-                                    <Link to="#"><i className="flaticon-loading"></i> Load More Posts</Link>
-                                </div>
+                                )}
                             </div>
                         </div>
 
                         <div className="col-lg-3 col-md-12">
                             <aside className="widget-area">
-                                <div className="widget widget-birthday">
-                                    <div className="birthday-title d-flex justify-content-between align-items-center">
-                                        <h3>Today Birthdays</h3>
-                                        <span><Link to="#">See All</Link></span>
-                                    </div>
-                                    <article className="item">
-                                        <Link to="#" className="thumb">
-                                            <span className="fullimage bg1" role="img"></span>
-                                        </Link>
-                                        <div className="info">
-                                            <h4 className="title"><Link to="#">Earline Benally</Link></h4>
-                                            <span>Today</span>
-                                        </div>
-                                    </article>
-                                    <article className="item">
-                                        <Link to="#" className="thumb">
-                                            <span className="fullimage bg2" role="img"></span>
-                                        </Link>
-                                        <div className="info">
-                                            <h4 className="title"><Link to="#">Jack Gulley</Link></h4>
-                                            <span>Today</span>
-                                        </div>
-                                    </article>
-
-                                    <div className="birthday-title d-flex justify-content-between align-items-center">
-                                        <h3>Recent Birthdays</h3>
-                                        <span><Link to="#">See All</Link></span>
-                                    </div>
-                                    <article className="item">
-                                        <Link to="#" className="thumb">
-                                            <span className="fullimage bg3" role="img"></span>
-                                        </Link>
-                                        <div className="info">
-                                            <h4 className="title"><Link to="#">Lolita Benally</Link></h4>
-                                            <span>May 18</span>
-                                        </div>
-                                    </article>
-                                </div>
                                 <div className="widget widget-who-following">
                                     <h3 className="widget-title">Who's Following</h3>
                                     <div className="following-item d-flex justify-content-between align-items-center">
@@ -239,58 +224,75 @@ const Profile = () => {
 
                 <div className={`tab-pane fade ${activeTab === 'about' ? 'show active' : ''}`} id="about" role="tabpanel">
                     <div className="row">
-                        <div className="col-lg-3 col-md-12">
-                            <div className="about-personal-information">
-                                <div className="about-header d-flex justify-content-between align-items-center">
-                                    <div className="title">Personal Information</div>
-                                    <div className="dropdown">
-                                        <button className="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i className="flaticon-menu"></i></button>
-                                        <ul className="dropdown-menu">
-                                            <li><Link className="dropdown-item d-flex align-items-center" to="#"><i className="flaticon-edit"></i> Edit Information</Link></li>
-                                            <li><Link className="dropdown-item d-flex align-items-center" to="#"><i className="flaticon-private"></i> Hide Information</Link></li>
-                                            <li><Link className="dropdown-item d-flex align-items-center" to="#"><i className="flaticon-trash"></i> Delete Information</Link></li>
-                                        </ul>
-                                    </div>
+                        <div className="col-lg-4 col-md-12">
+                            <div className="about-personal-information p-4 bg-white rounded-lg shadow-sm">
+                                <div className="about-header d-flex justify-content-between align-items-center border-b pb-3 mb-3">
+                                    <div className="title font-bold text-lg">Personal Information</div>
                                 </div>
 
-                                <ul className="information-list">
-                                    <li><span>Birthday:</span> May 07, 1984</li>
-                                    <li><span>Birthplace:</span> 4988 Woodland Terrace Citrus Heights, CA 95610</li>
-                                    <li><span>Phone:</span> <a href="tel:916-879-7755">916-879-7755</a></li>
-                                    <li><span>Gender:</span> Men</li>
-                                    <li><span>Relationship Status:</span> Single</li>
+                                <ul className="information-list space-y-3">
+                                    <li className="flex justify-between">
+                                        <span className="font-bold text-gray-500">Name:</span>
+                                        <span>{abouteMe?.firstName ? abouteMe.firstName : 'N/A'}</span>
+                                    </li>
+                                    <li className="flex justify-between">
+                                        <span className="font-bold text-gray-500">Surname:</span>
+                                        <span>{abouteMe?.lastName ? abouteMe.lastName : 'N/A'}</span>
+                                    </li>
+                                    <li className="flex justify-between">
+                                        <span className="font-bold text-gray-500">Birthday:</span>
+                                        <span>{abouteMe?.birthDay ? new Date(abouteMe.birthDay).toLocaleDateString() : 'N/A'}</span>
+                                    </li>
+                                    <li className="flex justify-between">
+                                        <span className="font-bold text-gray-500">Phone:</span>
+                                        <span>{abouteMe?.myNumber || 'N/A'}</span>
+                                    </li>
+                                    <li className="flex justify-between">
+                                        <span className="font-bold text-gray-500">Gender:</span>
+                                        <span>{getGenderText(abouteMe?.gender)}</span>
+                                    </li>
+                                    <li className="flex justify-between">
+                                        <span className="font-bold text-gray-500">Relationship:</span>
+                                        <span>{getRelationshipStatusText(abouteMe?.relationshipStatus)}</span>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
 
-                        <div className="col-lg-9 col-md-12">
-                            <div className="about-details-information">
-                                <div className="information-box-content">
-                                    <div className="information-header d-flex justify-content-between align-items-center">
-                                        <div className="title">About Me!</div>
-                                        <div className="dropdown">
-                                            <button className="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i className="flaticon-menu"></i></button>
-                                            <ul className="dropdown-menu">
-                                                <li><Link className="dropdown-item d-flex align-items-center" to="#"><i className="flaticon-edit"></i> Edit Information</Link></li>
-                                            </ul>
-                                        </div>
+                        <div className="col-lg-8 col-md-12">
+                            <div className="about-details-information space-y-4">
+                                <div className="information-box-content p-4 bg-white rounded-lg shadow-sm">
+                                    <div className="information-header d-flex justify-content-between align-items-center border-b pb-3 mb-3">
+                                        <div className="title font-bold text-lg">About Me!</div>
                                     </div>
                                     <div className="content">
-                                        <p>Curabitur aliquet quam id dui posuere blandit. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi.</p>
+                                        <p className="text-gray-600 leading-relaxed">{abouteMe?.bio || "No bio information provided yet."}</p>
                                     </div>
                                 </div>
 
-                                <div className="information-box-content">
-                                    <div className="information-header d-flex justify-content-between align-items-center">
-                                        <div className="title">Education & Work</div>
+                                <div className="information-box-content p-4 bg-white rounded-lg shadow-sm">
+                                    <div className="information-header d-flex justify-content-between align-items-center border-b pb-3 mb-3">
+                                        <div className="title font-bold text-lg">Experience</div>
                                     </div>
-                                    <div className="box-content">
-                                        <p className="designation">Master of Computer Science <span>(2018 - 2020)</span></p>
-                                        <span className="title">University of Stanford</span>
-                                    </div>
-                                    <div className="box-content">
-                                        <p className="designation">Bachelor of Computer Science <span>(2014 - 2018)</span></p>
-                                        <span className="title">Massachusetts Institute of Technology</span>
+
+                                    <div className="space-y-6">
+                                        {abouteMe?.experiences && abouteMe.experiences.length > 0 ? (
+                                            abouteMe.experiences.map((exp) => (
+                                                <div key={exp.id} className="box-content border-l-2 border-blue-100 pl-4 py-1 relative">
+                                                    <div className="absolute w-3 h-3 bg-blue-500 rounded-full -left-[7px] top-2 border-2 border-white shadow-sm"></div>
+                                                    <p className="designation font-bold text-[16px] text-[#3644D9] flex items-center">
+                                                        {exp.position}
+                                                        <span className="ml-2 px-2 py-0.5 bg-blue-50 text-[11px] font-semibold text-blue-600 rounded uppercase">
+                                                            {exp.startAt && !exp.startAt.startsWith('0001') ? new Date(exp.startAt).getFullYear() : 'N/A'} — {exp.isCurrent || !exp.endAt ? 'Present' : new Date(exp.endAt).getFullYear()}
+                                                        </span>
+                                                    </p>
+                                                    <span className="title block font-semibold text-gray-600 mt-1">{exp.company}</span>
+                                                    {exp.description && <p className="text-gray-500 text-sm mt-2 italic">{exp.description}</p>}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p className="text-gray-400 italic">No work experience mentioned.</p>
+                                        )}
                                     </div>
                                 </div>
                             </div>

@@ -1,8 +1,22 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import ProfileInformation from '../components/Settings/ProfileInformation';
+import WorkExperience from '../components/Settings/WorkExperience';
+import ChangeEmail from '../components/Settings/ChangeEmail';
+import ChangeUsername from '../components/Settings/ChangeUsername';
+import PrivacySettings from '../components/Settings/PrivacySettings';
+import ChangePassword from '../components/Settings/ChangePassword';
 
 const Settings = () => {
-    const [activeTab, setActiveTab] = useState('profile-information');
+    // Initial state is null so no section is expanded by default
+    const [activeSection, setActiveSection] = useState(null);
+
+    const toggleSection = (section) => {
+        if (activeSection === section) {
+            setActiveSection(null); // Collapse if already open
+        } else {
+            setActiveSection(section); // Expand clicked section
+        }
+    };
 
     return (
         <div className="content-page-box-area">
@@ -10,218 +24,107 @@ const Settings = () => {
                 <h3>Account Setting</h3>
             </div>
 
-            <div className="account-setting-list-tabs">
-                <ul className="nav nav-tabs" id="myTab" role="tablist">
-                    <li className="nav-item">
-                        <button
-                            className={`nav-link ${activeTab === 'profile-information' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('profile-information')}
-                        >
-                            Profile Information
-                        </button>
-                    </li>
-
-                    <li className="nav-item">
-                        <button
-                            className={`nav-link ${activeTab === 'privacy' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('privacy')}
-                        >
-                            Privacy
-                        </button>
-                    </li>
-
-                    <li className="nav-item">
-                        <button
-                            className={`nav-link ${activeTab === 'close-account' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('close-account')}
-                        >
-                            Close Account
-                        </button>
-                    </li>
-                </ul>
-            </div>
-
-            <div className="tab-content" id="myTabContent">
-                <div className={`tab-pane fade ${activeTab === 'profile-information' ? 'show active' : ''}`} id="profile-information" role="tabpanel">
-                    <form className="account-setting-form">
-                        <h3>Profile Information</h3>
-
-                        <div className="row">
-                            <div className="col-lg-6 col-md-6">
-                                <div className="form-group">
-                                    <label>First Name</label>
-                                    <input type="text" className="form-control" placeholder="First name" />
-                                </div>
-                            </div>
-                            <div className="col-lg-6 col-md-6">
-                                <div className="form-group">
-                                    <label>Last Name</label>
-                                    <input type="text" className="form-control" placeholder="Last name" />
-                                </div>
-                            </div>
-                            <div className="col-lg-6 col-md-6">
-                                <div className="form-group">
-                                    <label>Email</label>
-                                    <input type="email" className="form-control" placeholder="Email" />
-                                </div>
-                            </div>
-                            <div className="col-lg-6 col-md-6">
-                                <div className="form-group">
-                                    <label>Username</label>
-                                    <input type="text" className="form-control" placeholder="Username" />
-                                </div>
-                            </div>
-                            <div className="col-lg-6 col-md-6">
-                                <div className="form-group">
-                                    <label>Date of Birth</label>
-                                    <input type="text" className="form-control" placeholder="Date of birth" id="datepicker" />
-                                </div>
-                            </div>
-                            <div className="col-lg-6 col-md-6">
-                                <div className="form-group">
-                                    <label>Phone No:</label>
-                                    <input type="number" className="form-control" placeholder="Phone no" />
-                                </div>
-                            </div>
-                            <div className="col-lg-6 col-md-6">
-                                <div className="form-group">
-                                    <label>Gender</label>
-                                    <select className="form-select">
-                                        <option defaultValue="1">Gender</option>
-                                        <option value="2">Male</option>
-                                        <option value="3">Female</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="col-lg-6 col-md-6">
-                                <div className="form-group">
-                                    <label>Relation Status</label>
-                                    <select className="form-select">
-                                        <option defaultValue="1">Relation Status</option>
-                                        <option value="2">Married</option>
-                                        <option value="3">Unmarried</option>
-                                        <option value="4">Single</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="col-lg-6 col-md-6">
-                                <div className="form-group">
-                                    <label>City</label>
-                                    <select className="form-select">
-                                        <option defaultValue="1">City</option>
-                                        <option value="2">Canada</option>
-                                        <option value="3">Germany</option>
-                                        <option value="4">Switzerland</option>
-                                        <option value="5">Australia</option>
-                                        <option value="6">United States</option>
-                                        <option value="7">New Zealand</option>
-                                        <option value="8">United Kingdom</option>
-                                        <option value="9">Netherlands</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="col-lg-6 col-md-6">
-                                <div className="form-group">
-                                    <label>Country</label>
-                                    <select className="form-select">
-                                        <option defaultValue="1">Country</option>
-                                        <option value="2">Canada</option>
-                                        <option value="3">Germany</option>
-                                        <option value="4">Switzerland</option>
-                                        <option value="5">Australia</option>
-                                        <option value="6">United States</option>
-                                        <option value="7">New Zealand</option>
-                                        <option value="8">United Kingdom</option>
-                                        <option value="9">Netherlands</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="col-lg-12 col-md-12">
-                                <button type="submit" className="default-btn">Save</button>
-                            </div>
+            <div className="account-setting-list">
+                {/* Profile Information Section */}
+                <div className="setting-section mb-3">
+                    <button
+                        className={`btn btn-block w-100 text-start d-flex justify-content-between align-items-center p-3 border rounded ${activeSection === 'profile-information' ? 'bg-light text-primary' : 'bg-white'}`}
+                        onClick={() => toggleSection('profile-information')}
+                        style={{ cursor: 'pointer', fontWeight: 'bold' }}
+                    >
+                        <span>Profile Information</span>
+                        <i className={`ri-arrow-${activeSection === 'profile-information' ? 'up' : 'down'}-s-line`}></i>
+                    </button>
+                    {activeSection === 'profile-information' && (
+                        <div className="p-3 border border-top-0 rounded-bottom">
+                            <ProfileInformation />
                         </div>
-                    </form>
+                    )}
                 </div>
 
-                <div className={`tab-pane fade ${activeTab === 'privacy' ? 'show active' : ''}`} id="privacy" role="tabpanel">
-                    <form className="account-setting-form">
-                        <h3>Privacy Settings</h3>
-
-                        <div className="row">
-                            <div className="col-lg-6 col-md-6">
-                                <div className="form-group">
-                                    <label>Who Can See Your Profile?</label>
-                                    <select className="form-select">
-                                        <option value="true">All</option>
-                                        <option value="false">My followers</option>
-                                        <option value="">No one</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="col-lg-6 col-md-6">
-                                <div className="form-group">
-                                    <label>Who Can Send You Follow Request?</label>
-                                    <select className="form-select">
-                                        <option value="true">All</option>
-                                        <option value="false">My followers</option>
-                                        <option value="">No one</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="col-lg-6 col-md-6">
-                                <div className="form-group">
-                                    <label>Who Can See Your Phone Number?</label>
-                                    <select className="form-select">
-                                        <option value="true">All</option>
-                                        <option value="false">My followers</option>
-                                        <option value="">No one</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="col-lg-6 col-md-6">
-                                <div className="form-group">
-                                    <label>Who Can See Your Birthday?</label>
-                                    <select className="form-select">
-                                        <option value="true">All</option>
-                                        <option value="false">My followers</option>
-                                        <option value="">No one</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="col-lg-12 col-md-12">
-                                <button type="submit" className="default-btn">Save Change</button>
-                            </div>
+                {/* Work Experience Section */}
+                <div className="setting-section mb-3">
+                    <button
+                        className={`btn btn-block w-100 text-start d-flex justify-content-between align-items-center p-3 border rounded ${activeSection === 'work-experience' ? 'bg-light text-primary' : 'bg-white'}`}
+                        onClick={() => toggleSection('work-experience')}
+                        style={{ cursor: 'pointer', fontWeight: 'bold' }}
+                    >
+                        <span>Work Experience</span>
+                        <i className={`ri-arrow-${activeSection === 'work-experience' ? 'up' : 'down'}-s-line`}></i>
+                    </button>
+                    {activeSection === 'work-experience' && (
+                        <div className="p-3 border border-top-0 rounded-bottom">
+                            <WorkExperience />
                         </div>
-                    </form>
+                    )}
                 </div>
 
-                <div className={`tab-pane fade ${activeTab === 'close-account' ? 'show active' : ''}`} id="close-account" role="tabpanel">
-                    <form className="account-setting-form">
-                        <div className="title">
-                            <h3>Close Account</h3>
-                            <p><span>Warning:</span> If you close your account, all your followers and friends will be unsubscribed and you will lose access forever.(30 days after)</p>
+                {/* Change Email Section */}
+                <div className="setting-section mb-3">
+                    <button
+                        className={`btn btn-block w-100 text-start d-flex justify-content-between align-items-center p-3 border rounded ${activeSection === 'change-email' ? 'bg-light text-primary' : 'bg-white'}`}
+                        onClick={() => toggleSection('change-email')}
+                        style={{ cursor: 'pointer', fontWeight: 'bold' }}
+                    >
+                        <span>Change Email</span>
+                        <i className={`ri-arrow-${activeSection === 'change-email' ? 'up' : 'down'}-s-line`}></i>
+                    </button>
+                    {activeSection === 'change-email' && (
+                        <div className="p-3 border border-top-0 rounded-bottom">
+                            <ChangeEmail />
                         </div>
+                    )}
+                </div>
 
-                        <div className="row">
-                            <div className="col-lg-6 col-md-6">
-                                <div className="form-group">
-                                    <label>Your Email Address</label>
-                                    <input type="email" className="form-control" />
-                                </div>
-                            </div>
-
-                            <div className="col-lg-6 col-md-6">
-                                <div className="form-group">
-                                    <label>Your Password</label>
-                                    <input type="password" className="form-control" />
-                                </div>
-                            </div>
-
-                            <div className="col-lg-12 col-md-12">
-                                <button type="submit" className="default-btn">Delate Account</button>
-                            </div>
+                {/* Change Username Section */}
+                <div className="setting-section mb-3">
+                    <button
+                        className={`btn btn-block w-100 text-start d-flex justify-content-between align-items-center p-3 border rounded ${activeSection === 'change-username' ? 'bg-light text-primary' : 'bg-white'}`}
+                        onClick={() => toggleSection('change-username')}
+                        style={{ cursor: 'pointer', fontWeight: 'bold' }}
+                    >
+                        <span>Change Username</span>
+                        <i className={`ri-arrow-${activeSection === 'change-username' ? 'up' : 'down'}-s-line`}></i>
+                    </button>
+                    {activeSection === 'change-username' && (
+                        <div className="p-3 border border-top-0 rounded-bottom">
+                            <ChangeUsername />
                         </div>
-                    </form>
+                    )}
+                </div>
+
+                {/* Privacy Settings Section */}
+                <div className="setting-section mb-3">
+                    <button
+                        className={`btn btn-block w-100 text-start d-flex justify-content-between align-items-center p-3 border rounded ${activeSection === 'privacy' ? 'bg-light text-primary' : 'bg-white'}`}
+                        onClick={() => toggleSection('privacy')}
+                        style={{ cursor: 'pointer', fontWeight: 'bold' }}
+                    >
+                        <span>Privacy</span>
+                        <i className={`ri-arrow-${activeSection === 'privacy' ? 'up' : 'down'}-s-line`}></i>
+                    </button>
+                    {activeSection === 'privacy' && (
+                        <div className="p-3 border border-top-0 rounded-bottom">
+                            <PrivacySettings />
+                        </div>
+                    )}
+                </div>
+
+                {/* Change Password Section */}
+                <div className="setting-section mb-3">
+                    <button
+                        className={`btn btn-block w-100 text-start d-flex justify-content-between align-items-center p-3 border rounded ${activeSection === 'change-password' ? 'bg-light text-primary' : 'bg-white'}`}
+                        onClick={() => toggleSection('change-password')}
+                        style={{ cursor: 'pointer', fontWeight: 'bold' }}
+                    >
+                        <span>Change Password</span>
+                        <i className={`ri-arrow-${activeSection === 'change-password' ? 'up' : 'down'}-s-line`}></i>
+                    </button>
+                    {activeSection === 'change-password' && (
+                        <div className="p-3 border border-top-0 rounded-bottom">
+                            <ChangePassword />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

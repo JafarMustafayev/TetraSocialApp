@@ -7,7 +7,6 @@ const BASE_URL = 'https://localhost:7124';
  * @returns {Promise<any>} - The parsed JSON response.
  */
 export const fetchClient = async (endpoint, options = {}) => {
-    debugger;
     const url = `${BASE_URL}${endpoint}`;
 
     const token = localStorage.getItem('token');
