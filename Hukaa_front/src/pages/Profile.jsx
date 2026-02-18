@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getMyProfile } from '../api/profile';
+import { IMAGE_BASE_URL } from '../api/client';
 
 const Profile = () => {
     const [activeTab, setActiveTab] = useState('timeline');
@@ -51,39 +52,37 @@ const Profile = () => {
     if (!profileData) return <div className="p-5 text-center">No profile data found.</div>;
 
     const { abouteMe, myPosts } = profileData;
-    console.log(myPosts);
-    console.log(abouteMe);
+
+    console.log(profileData);
 
     return (
         <div className="content-page-box-area">
             <div className="my-profile-inner-box">
-                <div className="profile-cover-image">
-                    <Link to="#">
-                        <img src={profileData.coverImagePath || "src/assets/images/my-profile-bg.jpg"} alt="cover" />
-                    </Link>
-                    <Link to="#" className="edit-cover-btn">Edit Cover</Link>
+                <div className="profile-cover-image w-full h-[300px] overflow-hidden">
+                    <img
+                        src={profileData.coverImagePath ? `${IMAGE_BASE_URL}/${profileData.coverImagePath}` : "/src/assets/images/my-profile-bg.jpg"}
+                        alt="cover"
+                        className="w-full h-full object-cover"
+                    />
                 </div>
 
                 <div className="profile-info-box">
                     <div className="inner-info-box d-flex justify-content-between align-items-center">
-                        <div className="info-image">
-                            <Link to="#">
-                                <img src={profileData.profileImagePath || "src/assets/images/my-profile.jpg"} alt="profile" />
-                            </Link>
-                            <div className="icon">
-                                <Link to="#"><i className="flaticon-photo-camera"></i></Link>
-                            </div>
+                        <div className="info-image w-[300px]  ">
+                            <img
+                                src={profileData.profileImagePath ? `${IMAGE_BASE_URL}/${profileData.profileImagePath}` : "/src/assets/images/my-profile.jpg"}
+                                alt="profile"
+                                className="w-full h-full object-cover  border-2 border-gray-50 shadow-sm"
+                            />
                         </div>
-                        <div className="info-text ms-3">
+                        <div className="info-text mt-2">
                             <h3><Link to="#">{profileData.profileName}</Link></h3>
                             <span><a href={`mailto:${profileData.email}`}>{profileData.email}</a></span>
                         </div>
                         <ul className="statistics">
                             <li>
-                                <Link to="#">
-                                    <span className="item-number">{profileData.postCount || 0}</span>
-                                    <span className="item-text">Posts</span>
-                                </Link>
+                                <span className="item-number">{profileData.postCount || 15}</span>
+                                <span className="item-text">Posts</span>
                             </li>
                             <li>
                                 <Link to="#">
@@ -159,7 +158,11 @@ const Profile = () => {
                                             <div className="post-header d-flex justify-content-between align-items-center">
                                                 <div className="image">
                                                     <Link to="/profile">
-                                                        <img src={post.userImage || profileData.profileImagePath || "/src/assets/images/user/user-1.jpg"} className="rounded-circle w-[50px] h-[50px]" alt="user" />
+                                                        <img
+                                                            src={post.userImage ? `${IMAGE_BASE_URL}/${post.userImage}` : (profileData.profileImagePath ? `${IMAGE_BASE_URL}/${profileData.profileImagePath}` : "/src/assets/images/user/user-1.jpg")}
+                                                            className="rounded-circle w-[50px] h-[50px] object-cover"
+                                                            alt="user"
+                                                        />
                                                     </Link>
                                                 </div>
                                                 <div className="info ms-3 grow">
@@ -177,7 +180,11 @@ const Profile = () => {
                                                 <p className="text-[#515355] mb-3">{post.content}</p>
                                                 {post.imageUrl && (
                                                     <div className="post-image mb-3">
-                                                        <img src={post.imageUrl} alt="post" className="rounded-lg shadow-sm" />
+                                                        <img
+                                                            src={post.imageUrl.startsWith('http') ? post.imageUrl : `${IMAGE_BASE_URL}/${post.imageUrl}`}
+                                                            alt="post"
+                                                            className="rounded-lg shadow-sm w-full object-contain max-h-[500px]"
+                                                        />
                                                     </div>
                                                 )}
                                                 <ul className="post-meta-wrap d-flex justify-content-between align-items-center border-t border-gray-100 pt-3">

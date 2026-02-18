@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { IMAGE_BASE_URL } from '../api/client';
 
 const Navbar = () => {
     const { user, logout } = useAuth();
@@ -190,9 +191,12 @@ const Navbar = () => {
                                     className="flex items-center focus:outline-none"
                                 >
                                     <div className="relative flex items-center group cursor-pointer transition-transform duration-400 hover:-translate-y-px">
-                                        <img src={user?.profilePhoto || "/src/assets/images/user/user-1.jpg"} alt="profile" className="w-[40px] h-[40px] rounded-full border-2 border-white/20 shadow-sm" />
+                                        <img
+                                            src={user?.profilePhoto ? `${IMAGE_BASE_URL}/${user.profilePhoto}` : "/src/assets/images/user/user-1.jpg"}
+                                            alt="profile"
+                                            className="w-10 h-10 object-cover rounded-full border-2 border-white/20 shadow-sm"
+                                        />
                                         <span className="hidden lg:block text-white text-[15px] font-bold ml-3 mr-1">{user?.username || 'Matthew'}</span>
-                                        <span className="absolute bottom-[2px] right-0 lg:right-[-4px] w-[10px] h-[10px] rounded-full bg-[#1CCD16] border-2 border-[#3644D9]"></span>
                                         <i className="ri-arrow-down-s-line text-white/50 ml-1 hidden lg:block"></i>
                                     </div>
                                 </a>
@@ -201,7 +205,11 @@ const Navbar = () => {
                                 <div className={`absolute right-0 mt-[25px] w-[250px] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-gray-100 rounded-md overflow-hidden transition-all duration-300 transform origin-top ${openDropdown === 'profile' ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-[10px]'}`}>
                                     <div className="p-2 border-b border-gray-50 bg-[#F9FBFF]">
                                         <div className="flex items-center space-x-3 mb-3">
-                                            <img src={user?.profilePhoto || "/src/assets/images/user/user-1.jpg"} alt="user" className="w-12 h-12 rounded-full ring-2 ring-white shadow-sm" />
+                                            <img
+                                                src={user?.profilePhoto ? `${IMAGE_BASE_URL}/${user.profilePhoto}` : "/src/assets/images/user/user-1.jpg"}
+                                                alt="user"
+                                                className="w-12 h-12 object-cover rounded-full ring-2 ring-white shadow-sm"
+                                            />
                                             <div className="flex-1 min-w-0">
                                                 <h3 className="text-[17px] font-bold text-[#515355] truncate m-0">{user?.username || 'Matthew Turner'}</h3>
 

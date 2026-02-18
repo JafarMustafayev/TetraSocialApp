@@ -37,3 +37,21 @@ export const deleteExperience = async (id) => {
         method: 'DELETE',
     });
 };
+
+export const updateCoverPhoto = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return fetchClient('/api/Profile/cover-photo', {
+        method: 'PUT',
+        body: formData,
+    });
+};
+
+export const updateProfilePhoto = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return fetchClient('/api/Profile/profile-photo', {
+        method: 'PUT',
+        body: formData,
+    });
+};

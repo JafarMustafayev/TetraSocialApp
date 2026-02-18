@@ -26,8 +26,15 @@ const ProfileInformation = () => {
                 </div>
                 <div className="col-lg-6 col-md-6">
                     <div className="form-group">
-                        <label>Date of Birth</label>
-                        <input type="text" className="form-control" placeholder="Date of birth" id="datepicker" />
+
+                        <label className="block mb-1.5 font-bold text-[#515355] text-sm">Start Date *</label>
+                        <input
+                            type="date"
+                            className="w-full h-[45px] px-4 rounded-lg border outline-none transition-all"
+                            name="startDate"
+
+                            required
+                        />
                     </div>
                 </div>
                 <div className="col-lg-6 col-md-6">

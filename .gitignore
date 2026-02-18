@@ -6,3 +6,4 @@ obj
 bin
 .idea
 /Hukaa_back/Controller/TestController.cs
+wwwroot/

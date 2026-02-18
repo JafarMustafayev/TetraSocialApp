@@ -1,4 +1,5 @@
-const BASE_URL = 'https://localhost:7124';
+export const IMAGE_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7124';
+const BASE_URL = IMAGE_BASE_URL;
 
 /**
  * Custom fetch wrapper to handle common logic like base URL, headers, and error handling.
@@ -11,10 +12,14 @@ export const fetchClient = async (endpoint, options = {}) => {
 
     const token = localStorage.getItem('token');
 
+    const isFormData = options.body instanceof FormData;
     const headers = {
-        'Content-Type': 'application/json',
         ...options.headers,
     };
+
+    if (!isFormData) {
+        headers['Content-Type'] = 'application/json';
+    }
 
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;

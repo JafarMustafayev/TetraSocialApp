@@ -5,6 +5,7 @@ import ChangeEmail from '../components/Settings/ChangeEmail';
 import ChangeUsername from '../components/Settings/ChangeUsername';
 import PrivacySettings from '../components/Settings/PrivacySettings';
 import ChangePassword from '../components/Settings/ChangePassword';
+import ProfilePhotos from '../components/Settings/ProfilePhotos';
 
 const Settings = () => {
     // Initial state is null so no section is expanded by default
@@ -38,6 +39,23 @@ const Settings = () => {
                     {activeSection === 'profile-information' && (
                         <div className="p-3 border border-top-0 rounded-bottom">
                             <ProfileInformation />
+                        </div>
+                    )}
+                </div>
+
+                {/* Profile Photos Section */}
+                <div className="setting-section mb-3">
+                    <button
+                        className={`btn btn-block w-100 text-start d-flex justify-content-between align-items-center p-3 border rounded ${activeSection === 'profile-photos' ? 'bg-light text-primary' : 'bg-white'}`}
+                        onClick={() => toggleSection('profile-photos')}
+                        style={{ cursor: 'pointer', fontWeight: 'bold' }}
+                    >
+                        <span>Profile Photos</span>
+                        <i className={`ri-arrow-${activeSection === 'profile-photos' ? 'up' : 'down'}-s-line`}></i>
+                    </button>
+                    {activeSection === 'profile-photos' && (
+                        <div className="p-3 border border-top-0 rounded-bottom">
+                            <ProfilePhotos />
                         </div>
                     )}
                 </div>
