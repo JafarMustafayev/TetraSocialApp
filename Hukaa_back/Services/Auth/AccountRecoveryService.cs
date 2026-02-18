@@ -12,7 +12,7 @@ public class AccountRecoveryService(
         var user = await userManager.FindByEmailAsync(request.Email);
         if (user == null)
         {
-            throw new UnauthorizedAccessException("User not found");
+            throw new BadRequestException("Unable to load user ");
         }
 
         var token = await userManager.GeneratePasswordResetTokenAsync(user);
@@ -38,7 +38,7 @@ public class AccountRecoveryService(
         
         if (user == null)
         {
-            throw new UnauthorizedAccessException("User not found");
+            throw new BadRequestException("Unable to load user ");
         }
 
         var token = WebUtility.UrlDecode(request.Token);

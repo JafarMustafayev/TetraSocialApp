@@ -36,6 +36,7 @@ public static class ServiceRegistration
         services.AddScoped<IProfileService, ProfileService>();
         services.AddScoped<IExperienceService, ExperienceService>();
         services.AddScoped<IFileService, FileService>();
+        services.AddScoped<IAccountManagementService, AccountManagementService>();
 
     }
 
@@ -139,4 +140,3 @@ public static class ServiceRegistration
            });
     }
 }
-

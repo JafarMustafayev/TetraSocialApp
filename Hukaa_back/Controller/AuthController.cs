@@ -5,7 +5,8 @@
 public class AuthController(
     IAuthService authService,
     IAccountRecoveryService recoveryService,
-    IRegistrationService registrationService) : ControllerBase
+    IRegistrationService registrationService,
+    IAccountManagementService accountManagementService) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
@@ -41,4 +42,20 @@ public class AuthController(
         var res = await recoveryService.ResetPasswordAsync(request);
         return StatusCode(res.StatusCode, res);
     }
+    
+    [HttpPost]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto request)
+    {
+        var res = await accountManagementService.ChangePasswordAsync(request);
+        return StatusCode(res.StatusCode, res);
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> ChangeUsername([FromBody] ChangeUsernameDto request)
+    {
+        var res = await accountManagementService.ChangeUsernameAsync(request);
+        return StatusCode(res.StatusCode, res);
+    }
+    
+    
 }

@@ -52,8 +52,7 @@ public class ProfileService(
         var profileDetail = mapper.Map<MyProfileDto>(myProfile);
 
         profileDetail.MyPosts = mapper.Map<List<SinglePostDto>>(myProfile.Posts);
-        profileDetail.AbouteMe = mapper.Map<AbouteMeDto>(myProfile);
-        profileDetail.AbouteMe.Experiences = mapper.Map<List<ExperienceDataDto>>(myProfile.WorkExperiences);
+        profileDetail.Experiences = mapper.Map<List<ExperienceDataDto>>(myProfile.WorkExperiences);
         
         return new()
         {
@@ -61,6 +60,61 @@ public class ProfileService(
             Message = "Your profile data has been successfully retrieved.",
             Success = true,
             Data = profileDetail
+        };
+    }
+
+    public async Task<ResponseDto> GetSettingsData()
+    {
+        var userId = currentUser.UserId;
+
+        var myProfile = await dbContext.Users
+            .FirstOrDefaultAsync(x => x.Id == userId);
+
+        if (myProfile == null)
+        {
+            throw new NotFoundException("User", userId);
+        }
+
+        return new()
+        {
+            StatusCode = 200,
+            Message = "Your profile settings data has been successfully retrieved.",
+            Success = true,
+            Data = new
+            {   
+                FirstName = myProfile.FirstName,
+                LastName = myProfile.LastName,
+                Bio = myProfile.Bio,
+                BirthDay = myProfile.BirthDay,
+                PhoneNumber = myProfile.PhoneNumber,
+                Gender = myProfile.Gender,
+                RelationshipStatus = myProfile.RelationshipStatus
+            }
+        };
+    }
+
+    public async Task<ResponseDto> UpdateProfileAsync(UpdateProfileInformationDto dto)
+    {
+        var userId = currentUser.UserId;
+
+        var myProfile = await dbContext.Users
+            .FirstOrDefaultAsync(x => x.Id == userId);
+
+        if (myProfile == null)
+        {
+            throw new NotFoundException("User", userId);
+        }
+
+        mapper.Map(dto, myProfile);
+
+        await dbContext.SaveChangesAsync();
+
+        return new()
+        {
+            Success = true,
+            StatusCode = StatusCodes.Status200OK,
+
+            Data = dto
         };
     }
 
@@ -132,8 +186,6 @@ public class ProfileService(
              .FirstOrDefaultAsync(x => x.Id == targetUserId); 
 
         var profileDetail = mapper.Map<MyProfileDto>(myProfile);
-
-        profileDetail.AbouteMe = mapper.Map<AbouteMeDto>(myProfile);
 
         return new()
         {

@@ -5,6 +5,10 @@ public record MyProfileDto
     public string UserId { get; set; }
     public string ProfileName { get; set; }
     public string Email { get; set; }
+    public string? MyNumber { get; set; }
+
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
 
     public int FollowersCount { get; set; }
     public int FollowingCount { get; set; }
@@ -12,8 +16,15 @@ public record MyProfileDto
     public string CoverImagePath { get; set; }
     public string ProfileImagePath { get; set; }
 
+    
+    public string? Bio { get; set; }
+    public DateTime? BirthDay { get; set; }
+    
+    public RelationshipStatus? RelationshipStatus { get; set; }
+    public Gender? Gender { get; set; }
+
     public List<SinglePostDto>? MyPosts { get; set; }
-    public AbouteMeDto AbouteMe { get; set; }
+    public List<ExperienceDataDto>? Experiences { get; set; }
 
 
     public MyProfileDto()
@@ -27,6 +38,11 @@ public record MyProfileDto
         CoverImagePath = string.Empty;
         ProfileImagePath = string.Empty;
         MyPosts = new List<SinglePostDto>();
-        AbouteMe = new AbouteMeDto();
+        Bio = string.Empty;
+        BirthDay = DateTime.MinValue;
+        MyNumber = string.Empty;
+        RelationshipStatus = Enums.RelationshipStatus.None;
+        Gender = Enums.Gender.None;
+
     }
 }

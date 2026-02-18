@@ -19,10 +19,24 @@ public class ProfileController(
         return StatusCode(res.StatusCode, res);
     }
 
+    [HttpGet("settings/profil-information")]
+    public async Task<IActionResult> GetSettingsData()
+    {
+        var res = await profileService.GetSettingsData();
+        return StatusCode(res.StatusCode, res);
+    }
+
     [HttpGet("{userId}")]
     public async Task<IActionResult> GetUserProfile(string userId)
     {
         var res = await profileService.GetUserProfileAsync(userId);
+        return StatusCode(res.StatusCode, res);
+    }
+
+    [HttpPut("profil-information")]
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileInformationDto profile)
+    {
+        var res = await profileService.UpdateProfileAsync(profile);
         return StatusCode(res.StatusCode, res);
     }
 
