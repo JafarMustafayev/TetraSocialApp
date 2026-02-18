@@ -1,0 +1,8 @@
+﻿namespace Hukaa_back.Abstractions.Services.Common;
+
+public interface IFileService
+{
+    public Task<string> UploadProfilImageAsync(IFormFile file);
+    public Task<string> UploadCoverImageAsync(IFormFile file);
+    public Task<string> UploadPostAsync(IFormFile file);
+}

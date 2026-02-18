@@ -35,6 +35,7 @@ public static class ServiceRegistration
         services.AddScoped<IPostService, PostService>();
         services.AddScoped<IProfileService, ProfileService>();
         services.AddScoped<IExperienceService, ExperienceService>();
+        services.AddScoped<IFileService, FileService>();
 
     }
 

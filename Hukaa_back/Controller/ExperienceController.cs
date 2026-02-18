@@ -2,11 +2,11 @@
 
 [Route("api/profil/[controller]")]
 [ApiController]
+[Authorize]
 
 public class ExperienceController(
     IExperienceService experienceService) : ControllerBase
 {
-    [Authorize]
     [HttpGet]
     public async Task<IActionResult> Experiences()
     {

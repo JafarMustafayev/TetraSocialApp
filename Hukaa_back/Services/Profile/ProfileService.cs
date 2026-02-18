@@ -3,7 +3,8 @@
 public class ProfileService(
     ICurrentUserService currentUser,
     AppDbContext dbContext,
-    IMapper mapper) : IProfileService
+    IMapper mapper,
+    IFileService fileService) : IProfileService
 {
 
     public async Task<ResponseDto> GetMyProfileHeaderAsync()
@@ -12,6 +13,11 @@ public class ProfileService(
 
         var myProfile = await dbContext.Users
             .FirstOrDefaultAsync(x => x.Id == userId);
+
+        if (myProfile == null)
+        {
+            throw new NotFoundException("User", userId);
+        }
 
         return new()
         {
@@ -36,12 +42,16 @@ public class ProfileService(
         var myProfile = await dbContext.Users
             .Include(x=>x.WorkExperiences.Where(x=>!x.IsDeleted))
             .Include(x=>x.Posts.Where(x=>!x.IsArchived && !x.IsDeleted))
-            .FirstOrDefaultAsync(x=>x.Id == userId); // heleki bele user ID token daxilinden alinacaq 
+            .FirstOrDefaultAsync(x=>x.Id == userId); 
 
+        if(myProfile == null)
+        {
+            throw new NotFoundException("User", userId);
+        }
 
         var profileDetail = mapper.Map<MyProfileDto>(myProfile);
 
-        profileDetail.MyPosts = mapper.Map<List<SinglePostDto>>(myProfile.Posts)
+        profileDetail.MyPosts = mapper.Map<List<SinglePostDto>>(myProfile.Posts);
         profileDetail.AbouteMe = mapper.Map<AbouteMeDto>(myProfile);
         profileDetail.AbouteMe.Experiences = mapper.Map<List<ExperienceDataDto>>(myProfile.WorkExperiences);
         
@@ -54,14 +64,64 @@ public class ProfileService(
         };
     }
 
-    public Task ChangeCoverPhotoAsync(int userId, IFormFile file)
+    public async Task<ResponseDto> ChangeCoverPhotoAsync(ChangeProfilPhotoCoverDto dto)
     {
-        throw new NotImplementedException();
+
+        var userId = currentUser.UserId;
+
+        var user = await dbContext.Users
+            .FirstOrDefaultAsync(x => x.Id == userId);
+
+        if (user == null) {
+            throw new NotFoundException("User", userId);
+        }
+
+        var filePath = await fileService.UploadCoverImageAsync(dto.File);
+
+        user.CoverPhotoPath = filePath;
+
+        await dbContext.SaveChangesAsync();
+
+        return new()
+        {
+            StatusCode = 200,
+            Success = true,
+            Message = "",
+            Data = new
+            {
+                FilePath = filePath,
+            }
+        };
     }
 
-    public Task ChangeProfilePhotoAsync(int userId, IFormFile file)
+    public async Task<ResponseDto> ChangeProfilePhotoAsync(ChangeProfilPhotoCoverDto dto) 
     {
-        throw new NotImplementedException();
+        var userId = currentUser.UserId;
+
+        var user = await dbContext.Users
+            .FirstOrDefaultAsync(x => x.Id == userId);
+
+        if (user == null)
+        {
+            throw new NotFoundException("User", userId);
+        }
+
+        var filePath = await fileService.UploadProfilImageAsync(dto.File);
+
+        user.ProfilePhotoPath = filePath;
+
+        await dbContext.SaveChangesAsync();
+
+        return new()
+        {
+            StatusCode = 200,
+            Success = true,
+            Message = "",
+            Data = new
+            {
+                FilePath = filePath,
+            }
+        };
     }
 
     public async Task<ResponseDto> GetUserProfileAsync(string targetUserId)
@@ -84,8 +144,9 @@ public class ProfileService(
         };
     }
 
-    public Task TogglePrivacyAsync()
+    public Task<ResponseDto> TogglePrivacyAsync()
     {
+        var userId = currentUser.UserId;
         throw new NotImplementedException();
     }
 

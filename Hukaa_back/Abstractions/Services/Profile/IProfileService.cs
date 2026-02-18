@@ -5,7 +5,7 @@ public interface IProfileService
     Task<ResponseDto> GetMyProfileHeaderAsync();
     Task<ResponseDto> GetMyProfileAsync();
     Task<ResponseDto> GetUserProfileAsync(string targetUserId);
-    Task ChangeProfilePhotoAsync(int userId, IFormFile file);
-    Task ChangeCoverPhotoAsync(int userId, IFormFile file);
-    Task TogglePrivacyAsync();
+    Task<ResponseDto> ChangeProfilePhotoAsync(ChangeProfilPhotoCoverDto dto);
+    Task<ResponseDto> ChangeCoverPhotoAsync(ChangeProfilPhotoCoverDto dto);
+    Task<ResponseDto> TogglePrivacyAsync();
 }

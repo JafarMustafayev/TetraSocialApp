@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-
-namespace Hukaa_back.Controller;
+﻿namespace Hukaa_back.Controller;
 
 [ApiController]
 [Route("/api/[controller]")]
@@ -15,37 +13,37 @@ public class ProfileController(
     }
 
     [HttpGet("MyProfile")]
-    public async Task<IActionResult> MyProfile()
+    public async Task<IActionResult> GetMyProfile()
     {
         var res = await profileService.GetMyProfileAsync();
         return StatusCode(res.StatusCode, res);
     }
 
     [HttpGet("{userId}")]
-    public async Task<IActionResult> Get(string userId)
+    public async Task<IActionResult> GetUserProfile(string userId)
     {
         var res = await profileService.GetUserProfileAsync(userId);
         return StatusCode(res.StatusCode, res);
     }
 
     [HttpPut("profile-photo")]
-    public async Task<IActionResult> ProfilPhoto()
+    public async Task<IActionResult> ProfilPhoto([FromForm] ChangeProfilPhotoCoverDto dto)
     {
-        var res = await profileService.GetMyProfileAsync();
+        var res = await profileService.ChangeProfilePhotoAsync(dto);
         return StatusCode(res.StatusCode, res);
     }
 
     [HttpPut("cover-photo")]
-    public async Task<IActionResult> CoverPhoto()
+    public async Task<IActionResult> CoverPhoto([FromForm] ChangeProfilPhotoCoverDto dto)
     {
-        var res = await profileService.GetMyProfileAsync();
+        var res = await profileService.ChangeCoverPhotoAsync(dto);
         return StatusCode(res.StatusCode, res);
     }
 
     [HttpPut("privacy")]
     public async Task<IActionResult> Privacy()
     {
-        var res = await profileService.GetMyProfileAsync();
+        var res = await profileService.TogglePrivacyAsync();
         return StatusCode(res.StatusCode, res);
     }   
 
