@@ -34,7 +34,7 @@ const Profile = () => {
             case 1: return 'Men';
             case 2: return 'Women';
             case 3: return 'Other';
-            default: return 'None';
+            default: return 'N/A';
         }
     };
 

@@ -4,18 +4,14 @@ public class RegistrationService(
     UserManager<AppUser> userManager,
     RoleManager<IdentityRole> roleManager,
     IEmailSenderService emailSenderService,
-    IAppConfig config) : IRegistrationService
+    IAppConfig config,
+    IMapper mapper) : IRegistrationService
 {
     private readonly ApplicationUrlParameters _urlParameters = config.GetSection<ApplicationUrlParameters>();
 
     public async Task<ResponseDto> RegisterAsync(RegisterRequestDto request)
     {
-        var user = new AppUser
-        {
-            Email = request.Email,
-            UserName = request.Username,
-            UserStatus = UserStatus.PendingVerification
-        };
+        var user = mapper.Map<AppUser>(request);
 
         var result = await userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded)
