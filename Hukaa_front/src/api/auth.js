@@ -35,3 +35,17 @@ export const resetPassword = async (data) => {
         body: JSON.stringify(data),
     });
 };
+
+export const changePassword = async (data) => {
+    return fetchClient('/api/Auth/changepassword', {
+        method: 'POST',
+        body: JSON.stringify(data),
+    });
+};
+
+export const changeUsername = async (data) => {
+    return fetchClient('/api/Auth/ChangeUsername', {
+        method: 'POST',
+        body: JSON.stringify(data),
+    });
+};

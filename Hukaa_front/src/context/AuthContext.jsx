@@ -78,7 +78,8 @@ export const AuthProvider = ({ children }) => {
         login,
         register,
         logout,
-        loading
+        loading,
+        updateProfile: () => fetchUserProfile(localStorage.getItem('token'))
     };
 
     return (

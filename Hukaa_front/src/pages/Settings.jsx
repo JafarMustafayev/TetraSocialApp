@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import ProfileInformation from '../components/Settings/ProfileInformation';
 import WorkExperience from '../components/Settings/WorkExperience';
-import ChangeEmail from '../components/Settings/ChangeEmail';
 import ChangeUsername from '../components/Settings/ChangeUsername';
 import PrivacySettings from '../components/Settings/PrivacySettings';
 import ChangePassword from '../components/Settings/ChangePassword';
 import ProfilePhotos from '../components/Settings/ProfilePhotos';
+import { Link } from 'react-router-dom';
 
 const Settings = () => {
     // Initial state is null so no section is expanded by default
@@ -21,8 +21,16 @@ const Settings = () => {
 
     return (
         <div className="content-page-box-area">
-            <div className="page-banner-box">
-                <h3>Account Setting</h3>
+
+            <div className="d-flex align-items-center">
+                <div className="page-banner-box mb-3 mr-3">
+                    <Link to="/profile">
+                        <i className="ri-arrow-left-s-line fs-2"></i>
+                    </Link>
+                </div>
+                <div className="page-banner-box mb-3">
+                    <h3>Account Setting</h3>
+                </div>
             </div>
 
             <div className="account-setting-list">
@@ -73,23 +81,6 @@ const Settings = () => {
                     {activeSection === 'work-experience' && (
                         <div className="p-3 border border-top-0 rounded-bottom">
                             <WorkExperience />
-                        </div>
-                    )}
-                </div>
-
-                {/* Change Email Section */}
-                <div className="setting-section mb-3">
-                    <button
-                        className={`btn btn-block w-100 text-start d-flex justify-content-between align-items-center p-3 border rounded ${activeSection === 'change-email' ? 'bg-light text-primary' : 'bg-white'}`}
-                        onClick={() => toggleSection('change-email')}
-                        style={{ cursor: 'pointer', fontWeight: 'bold' }}
-                    >
-                        <span>Change Email</span>
-                        <i className={`ri-arrow-${activeSection === 'change-email' ? 'up' : 'down'}-s-line`}></i>
-                    </button>
-                    {activeSection === 'change-email' && (
-                        <div className="p-3 border border-top-0 rounded-bottom">
-                            <ChangeEmail />
                         </div>
                     )}
                 </div>

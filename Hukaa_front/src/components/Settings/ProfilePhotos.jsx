@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { updateProfilePhoto, updateCoverPhoto } from '../../api/profile';
 import ImageCropper from './ImageCropper';
+import { useAuth } from '../../context/AuthContext';
 
 const ProfilePhotos = () => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [cropConfig, setCropConfig] = useState(null);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
+    const { updateProfile } = useAuth();
 
     const handleFileChange = (e, type) => {
         const file = e.target.files[0];
@@ -37,6 +39,7 @@ const ProfilePhotos = () => {
 
             if (response.success) {
                 setMessage({ type: 'success', text: `${cropConfig.type === 'profile' ? 'Profile' : 'Cover'} photo updated successfully!` });
+                updateProfile(); // Trigger Navbar update
             } else {
                 setMessage({ type: 'error', text: response.message || 'Failed to update photo.' });
             }

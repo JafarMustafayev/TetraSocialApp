@@ -55,3 +55,16 @@ export const updateProfilePhoto = async (file) => {
         body: formData,
     });
 };
+
+export const getProfileSettings = async () => {
+    return fetchClient('/api/Profile/settings/profil-information', {
+        method: 'GET',
+    });
+};
+
+export const updateProfileInformation = async (data) => {
+    return fetchClient('/api/Profile/profil-information', {
+        method: 'PUT',
+        body: JSON.stringify(data),
+    });
+};

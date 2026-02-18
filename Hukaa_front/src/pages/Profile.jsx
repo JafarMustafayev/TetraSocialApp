@@ -51,9 +51,7 @@ const Profile = () => {
     if (error) return <div className="p-5 text-center text-danger">{error}</div>;
     if (!profileData) return <div className="p-5 text-center">No profile data found.</div>;
 
-    const { abouteMe, myPosts } = profileData;
 
-    console.log(profileData);
 
     return (
         <div className="content-page-box-area">
@@ -68,16 +66,16 @@ const Profile = () => {
 
                 <div className="profile-info-box">
                     <div className="inner-info-box d-flex justify-content-between align-items-center">
-                        <div className="info-image w-[300px]  ">
+                        <div className="info-image w-[300px]">
                             <img
                                 src={profileData.profileImagePath ? `${IMAGE_BASE_URL}/${profileData.profileImagePath}` : "/src/assets/images/my-profile.jpg"}
                                 alt="profile"
-                                className="w-full h-full object-cover  border-2 border-gray-50 shadow-sm"
+                                className="w-full h-full object-cover  border-2 border-gray-50 shadow-sm rounded-3xl"
                             />
                         </div>
                         <div className="info-text mt-2">
-                            <h3><Link to="#">{profileData.profileName}</Link></h3>
-                            <span><a href={`mailto:${profileData.email}`}>{profileData.email}</a></span>
+                            <h2>{profileData.profileName}</h2>
+                            <h5>{profileData.firstName + " " + profileData.lastName}</h5>
                         </div>
                         <ul className="statistics">
                             <li>
@@ -152,8 +150,8 @@ const Profile = () => {
                                     </form>
                                 </div>
 
-                                {myPosts && myPosts.length > 0 ? (
-                                    myPosts.map(post => (
+                                {profileData.myPosts && profileData.myPosts.length > 0 ? (
+                                    profileData.myPosts.map(post => (
                                         <div key={post.id} className="news-feed news-feed-post">
                                             <div className="post-header d-flex justify-content-between align-items-center">
                                                 <div className="image">
@@ -240,27 +238,31 @@ const Profile = () => {
                                 <ul className="information-list space-y-3">
                                     <li className="flex justify-between">
                                         <span className="font-bold text-gray-500">Name:</span>
-                                        <span>{abouteMe?.firstName ? abouteMe.firstName : 'N/A'}</span>
+                                        <span>{profileData?.firstName ? profileData.firstName : 'N/A'}</span>
                                     </li>
                                     <li className="flex justify-between">
                                         <span className="font-bold text-gray-500">Surname:</span>
-                                        <span>{abouteMe?.lastName ? abouteMe.lastName : 'N/A'}</span>
+                                        <span>{profileData?.lastName ? profileData.lastName : 'N/A'}</span>
                                     </li>
                                     <li className="flex justify-between">
                                         <span className="font-bold text-gray-500">Birthday:</span>
-                                        <span>{abouteMe?.birthDay ? new Date(abouteMe.birthDay).toLocaleDateString() : 'N/A'}</span>
+                                        <span>{profileData?.birthDay ? new Date(profileData.birthDay).toLocaleDateString() : 'N/A'}</span>
                                     </li>
                                     <li className="flex justify-between">
                                         <span className="font-bold text-gray-500">Phone:</span>
-                                        <span>{abouteMe?.myNumber || 'N/A'}</span>
+                                        <span>{profileData?.myNumber || 'N/A'}</span>
+                                    </li>
+                                    <li className="flex justify-between">
+                                        <span className="font-bold text-gray-500">Email:</span>
+                                        <span>{profileData?.email ? profileData.email : 'N/A'}</span>
                                     </li>
                                     <li className="flex justify-between">
                                         <span className="font-bold text-gray-500">Gender:</span>
-                                        <span>{getGenderText(abouteMe?.gender)}</span>
+                                        <span>{getGenderText(profileData?.gender)}</span>
                                     </li>
                                     <li className="flex justify-between">
                                         <span className="font-bold text-gray-500">Relationship:</span>
-                                        <span>{getRelationshipStatusText(abouteMe?.relationshipStatus)}</span>
+                                        <span>{getRelationshipStatusText(profileData?.relationshipStatus)}</span>
                                     </li>
                                 </ul>
                             </div>
@@ -273,7 +275,7 @@ const Profile = () => {
                                         <div className="title font-bold text-lg">About Me!</div>
                                     </div>
                                     <div className="content">
-                                        <p className="text-gray-600 leading-relaxed">{abouteMe?.bio || "No bio information provided yet."}</p>
+                                        <p className="text-gray-600 leading-relaxed">{profileData?.bio || "No bio information provided yet."}</p>
                                     </div>
                                 </div>
 
@@ -283,8 +285,8 @@ const Profile = () => {
                                     </div>
 
                                     <div className="space-y-6">
-                                        {abouteMe?.experiences && abouteMe.experiences.length > 0 ? (
-                                            abouteMe.experiences.map((exp) => (
+                                        {profileData?.experiences && profileData.experiences.length > 0 ? (
+                                            profileData.experiences.map((exp) => (
                                                 <div key={exp.id} className="box-content border-l-2 border-blue-100 pl-4 py-1 relative">
                                                     <div className="absolute w-3 h-3 bg-blue-500 rounded-full -left-[7px] top-2 border-2 border-white shadow-sm"></div>
                                                     <p className="designation font-bold text-[16px] text-[#3644D9] flex items-center">

@@ -215,9 +215,8 @@ const Navbar = () => {
 
                                             </div>
                                         </div>
-                                        <p className="text-[13px] text-[#6B7C8F] bg-white border border-gray-100 p-2 rounded truncate transition-all group-hover:bg-[#3644D9]/5">
-                                            {user?.email || 'matthew507@gmail.com'}
-                                        </p>
+
+
                                     </div>
                                     <ul className="py-2 list-none m-0">
                                         <li>
@@ -233,8 +232,8 @@ const Navbar = () => {
                                             </Link>
                                         </li>
 
-                                        <li className="mt-2 pt-2 border-t border-gray-100">
-                                            <Link to="/logout" className="flex items-center  py-3 text-red-500 text-[14px] font-bold  transition-all duration-300" onClick={handleLogout}>
+                                        <li className=" border-gray-100">
+                                            <Link to="/logout" className="flex items-center  py-3   hover:text-red-500 text-[14px] font-bold  transition-all duration-300" onClick={handleLogout}>
                                                 <i className="flaticon-logout mr-4 text-lg"></i>
                                                 Logout
                                             </Link>
