@@ -3,13 +3,14 @@
 public class ExperienceService(
     ICurrentUserService currentUser,
     IMapper mapper,
-    AppDbContext _context) : IExperienceService
+    AppDbContext context,
+    UserManager<AppUser> userManager) : IExperienceService
 {
     public async Task<ResponseDto> GetMyExperiencesAsync()
     {
         var userId = currentUser.UserId;
 
-        var experiences = await _context.WorkExperiences
+        var experiences = await context.WorkExperiences
             .Where(x => x.AppUserId == userId && !x.IsDeleted)
             .OrderByDescending(x => x.StartAt)
             .ToListAsync();
@@ -27,7 +28,7 @@ public class ExperienceService(
 
     public async Task<ResponseDto> GetUserExperiencesAsync(string userId)
     {
-        var experiences = await _context.WorkExperiences
+        var experiences = await context.WorkExperiences
                     .Where(x => x.AppUserId == userId && !x.IsDeleted)
                     .OrderByDescending(x => x.StartAt)
                     .ToListAsync();
@@ -45,12 +46,17 @@ public class ExperienceService(
 
     public async Task<ResponseDto> AddExperienceAsync(CreateExperienceDto dto)
     {
+        var user =  await userManager.FindByIdAsync(currentUser.UserId);
+
+        if (user == null)
+        {
+            throw new NotFoundException("User", currentUser.UserId);
+        }
+        
         var experience = mapper.Map<WorkExperience>(dto);
-
-        experience.AppUserId = currentUser.UserId;
-
-        await _context.WorkExperiences.AddAsync(experience);
-        await _context.SaveChangesAsync();
+        experience.AppUser = user;
+        await context.WorkExperiences.AddAsync(experience);
+        await context.SaveChangesAsync();
 
         var map = mapper.Map<ExperienceDataDto>(experience);
 
@@ -67,7 +73,7 @@ public class ExperienceService(
     {
         var userId = currentUser.UserId;
 
-        var experience = await _context.WorkExperiences
+        var experience = await context.WorkExperiences
            .FirstOrDefaultAsync(x => x.Id == expId && x.AppUserId == userId && !x.IsDeleted);
 
         if (experience == null)
@@ -75,7 +81,7 @@ public class ExperienceService(
 
         mapper.Map(dto, experience);
 
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
 
         return new()
         {
@@ -89,7 +95,7 @@ public class ExperienceService(
     {
         var userId = currentUser.UserId;
 
-        var experience = await _context.WorkExperiences
+        var experience = await context.WorkExperiences
            .FirstOrDefaultAsync(x => x.Id == expId && x.AppUserId == userId && !x.IsDeleted);
 
         if (experience == null)
@@ -98,7 +104,7 @@ public class ExperienceService(
         experience.IsDeleted = true;
         experience.DeleteAt = DateTime.UtcNow;
 
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
 
         return new()
         {

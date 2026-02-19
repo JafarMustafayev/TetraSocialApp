@@ -68,7 +68,7 @@ public class FileService
 
         if (_allowedImageExtensions.Contains(extension))
         {
-            folderName = "posts/images";
+             folderName = "posts/images";
 
         }
         else if (_allowedVideoExtensions.Contains(extension))

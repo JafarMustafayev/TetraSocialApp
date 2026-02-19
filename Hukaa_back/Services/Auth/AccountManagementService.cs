@@ -12,7 +12,7 @@ public class AccountManagementService(
         var user = await userManager.FindByIdAsync(userId);
         if (user == null)
         {
-            throw new BadRequestException("Unable to load user with ID '" + userId + "'.");
+            throw new NotFoundException("User", userId);
         }
         
          var res = await signInManager.CheckPasswordSignInAsync(user,request.Password,false);
@@ -43,7 +43,7 @@ public class AccountManagementService(
 
         if (user == null)
         {
-            throw new BadRequestException("Unable to load user with ID '" + userId + "'.");
+            throw new NotFoundException("User", userId);
         }
         
         var res = await userManager.ChangePasswordAsync(user,request.CurrentPassword, request.NewPassword);
@@ -77,7 +77,7 @@ public class AccountManagementService(
 
         if (user == null)
         {
-            throw new BadRequestException("Unable to load user with ID '" + userId + "'.");
+            throw new NotFoundException("User", userId);
         }
         
         user.UserName = request.UserName; 
