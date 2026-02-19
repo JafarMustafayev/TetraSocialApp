@@ -40,11 +40,11 @@ public class ProfileService(
         var userId = currentUser.UserId;
 
         var myProfile = await dbContext.Users
-            .Include(x=>x.WorkExperiences.Where(x=>!x.IsDeleted))
-            .Include(x=>x.Posts.Where(x=>!x.IsArchived && !x.IsDeleted))
-            .FirstOrDefaultAsync(x=>x.Id == userId); 
+            .Include(x => x.WorkExperiences.Where(x => !x.IsDeleted))
+            .Include(x => x.Posts.Where(x => !x.IsArchived && !x.IsDeleted))
+            .FirstOrDefaultAsync(x => x.Id == userId);
 
-        if(myProfile == null)
+        if (myProfile == null)
         {
             throw new NotFoundException("User", userId);
         }
@@ -53,7 +53,7 @@ public class ProfileService(
 
         profileDetail.MyPosts = mapper.Map<List<SinglePostDto>>(myProfile.Posts);
         profileDetail.Experiences = mapper.Map<List<ExperienceDataDto>>(myProfile.WorkExperiences);
-        
+
         return new()
         {
             StatusCode = 200,
@@ -81,7 +81,7 @@ public class ProfileService(
             Message = "Your profile settings data has been successfully retrieved.",
             Success = true,
             Data = new
-            {   
+            {
                 FirstName = myProfile.FirstName,
                 LastName = myProfile.LastName,
                 Bio = myProfile.Bio,
@@ -126,14 +126,20 @@ public class ProfileService(
         var user = await dbContext.Users
             .FirstOrDefaultAsync(x => x.Id == userId);
 
-        if (user == null) {
+        if (user == null)
+        {
             throw new NotFoundException("User", userId);
         }
 
+        if (user.CoverPhotoPath != null
+            && user.CoverPhotoPath != "profile/cover/default-my-profile-bg.jpg"
+            && fileService.IsExist(user.CoverPhotoPath))
+        {
+            await fileService.DeleteFileAsync(user.CoverPhotoPath);
+        }
+
         var filePath = await fileService.UploadCoverImageAsync(dto.File);
-
         user.CoverPhotoPath = filePath;
-
         await dbContext.SaveChangesAsync();
 
         return new()
@@ -148,22 +154,29 @@ public class ProfileService(
         };
     }
 
-    public async Task<ResponseDto> ChangeProfilePhotoAsync(ChangeProfilePhotoCoverDto dto) 
+    public async Task<ResponseDto> ChangeProfilePhotoAsync(ChangeProfilePhotoCoverDto dto)
     {
         var userId = currentUser.UserId;
 
         var user = await dbContext.Users
             .FirstOrDefaultAsync(x => x.Id == userId);
-        
+
         if (user == null)
         {
             throw new NotFoundException("User", userId);
         }
 
+
+        if (user.ProfilePhotoPath != null
+            && user.ProfilePhotoPath != "profile/photo/default-my-profile.png"
+            && fileService.IsExist(user.ProfilePhotoPath)
+            )
+        {
+            await fileService.DeleteFileAsync(user.ProfilePhotoPath);
+        }
+
         var filePath = await fileService.UploadProfilImageAsync(dto.File);
-
         user.ProfilePhotoPath = filePath;
-
         await dbContext.SaveChangesAsync();
 
         return new()
@@ -206,5 +219,5 @@ public class ProfileService(
         throw new NotImplementedException();
     }
 
-    
+
 }

@@ -3,12 +3,12 @@
 public class FileService
     (IWebHostEnvironment env) : IFileService
 {
-    private readonly string[] allowedVideoExtensions =
+    private readonly string[] _allowedVideoExtensions =
         {
             ".mp4", ".mov", ".avi", ".mkv" ,   // video
         };
 
-    private readonly string[] allowedImageExtensions =
+    private readonly string[] _allowedImageExtensions =
         {
             ".jpg", ".jpeg", ".png", ".webp",   // images
         };
@@ -22,9 +22,9 @@ public class FileService
         var folderName = string.Empty;
         string extension = Path.GetExtension(file.FileName).ToLower();
 
-        if (allowedImageExtensions.Contains(extension))
+        if (_allowedImageExtensions.Contains(extension))
         {
-            folderName = "profil/photo";
+            folderName = "profile/photo";
         }
         else
         {
@@ -44,9 +44,9 @@ public class FileService
         var folderName = string.Empty;
         string extension = Path.GetExtension(file.FileName).ToLower();
 
-        if (allowedImageExtensions.Contains(extension))
+        if (_allowedImageExtensions.Contains(extension))
         {
-            folderName = "profil/cover";
+            folderName = "profile/cover";
         }
         else
         {
@@ -66,12 +66,12 @@ public class FileService
         var folderName = string.Empty;
         string extension = Path.GetExtension(file.FileName).ToLower();
 
-        if (allowedImageExtensions.Contains(extension))
+        if (_allowedImageExtensions.Contains(extension))
         {
             folderName = "posts/images";
 
         }
-        else if (allowedVideoExtensions.Contains(extension))
+        else if (_allowedVideoExtensions.Contains(extension))
         {
             folderName = "posts/videos";
         }
@@ -84,6 +84,29 @@ public class FileService
 
         return filePath;
     }
+
+    public async Task DeleteFileAsync(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            throw new ArgumentException("Path boş ola bilməz.", nameof(path));
+
+        path = Path.Combine(env.WebRootPath, path);
+        try
+        {
+            await Task.Run(() => File.Delete(path));
+        }
+        catch (Exception)
+        {
+            throw new BadRequestException("Unexcepted exception ");
+        }
+    }
+
+    public bool IsExist(string path)
+    {
+        string filePath = Path.Combine(env.WebRootPath, path);
+        return File.Exists(filePath);
+    } 
+
 
     private async Task<string> UploadAsync(IFormFile file, string folderName, string extension)
     {
