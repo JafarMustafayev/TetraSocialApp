@@ -41,7 +41,7 @@ public class ProfileService(
 
         var myProfile = await dbContext.Users
             .Include(x => x.WorkExperiences.Where(x => !x.IsDeleted))
-            .Include(x => x.Posts.Where(x => !x.IsArchived && !x.IsDeleted))
+            .Include(x => x.Posts.Where(x => !x.IsArchived))
             .FirstOrDefaultAsync(x => x.Id == userId);
 
         if (myProfile == null)
@@ -51,7 +51,6 @@ public class ProfileService(
 
         var profileDetail = mapper.Map<MyProfileDto>(myProfile);
 
-        profileDetail.MyPosts = mapper.Map<List<SinglePostDto>>(myProfile.Posts);
         profileDetail.Experiences = mapper.Map<List<ExperienceDataDto>>(myProfile.WorkExperiences);
 
         return new()

@@ -22,8 +22,6 @@ public record MyProfileDto
     
     public RelationshipStatus? RelationshipStatus { get; set; }
     public Gender? Gender { get; set; }
-
-    public List<SinglePostDto>? MyPosts { get; set; }
     public List<ExperienceDataDto>? Experiences { get; set; }
 
 
@@ -37,7 +35,6 @@ public record MyProfileDto
         PostCount = 0;
         CoverImagePath = string.Empty;
         ProfileImagePath = string.Empty;
-        MyPosts = new List<SinglePostDto>();
         Bio = string.Empty;
         BirthDay = DateTime.MinValue;
         MyNumber = string.Empty;

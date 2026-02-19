@@ -2,6 +2,8 @@
 
 public interface IPostService
 {
+    Task<ResponseDto> GetMyPosts(int page, int take);
+    Task<ResponseDto> GetMyArchivedPosts(int page, int take);
     Task<ResponseDto> CreateAsync( PostCreateRequestDto request);
 
     Task<ResponseDto> UpdateContentAsync( string postId, PostUpdateRequestDto request);

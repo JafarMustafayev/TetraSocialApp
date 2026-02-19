@@ -7,13 +7,62 @@ public class PostService(IFileService fileService,
     IMapper mapper) : IPostService
 {
 
-    private readonly AppDbContext _context = context;
+    
 
     private readonly string[] _allowedVideoExtensions = { ".mp4", ".mov", ".avi", ".mkv" };
     private readonly string[] _allowedImageExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
-    
 
-    // CREATE
+
+    public async Task<ResponseDto> GetMyPosts(int page, int take)
+    {
+
+        var userId = currentUserService.UserId;
+
+        var posts = await context.Posts
+            .Where(x => x.AppUserId == userId && !x.IsArchived)
+            .Include(x=>x.PostFiles)
+            .OrderByDescending(x=>x.CreatedAt)
+            .Skip((page-1)*take).Take(take)
+            .ToListAsync();
+
+        var map = mapper.Map<List<SinglePostDto>>(posts);
+
+        SetPostPermissions(map, userId);
+
+        return new()
+        {
+            Success = true,
+            Message = "",
+            StatusCode = StatusCodes.Status200OK,
+            Data = map
+        };
+    }
+
+    public async Task<ResponseDto> GetMyArchivedPosts(int page, int take)
+    {
+
+        var userId = currentUserService.UserId;
+
+        var posts = await context.Posts
+            .Where(x => x.AppUserId == userId && x.IsArchived)
+            .Include(x => x.PostFiles)
+            .OrderByDescending(x => x.CreatedAt)
+            .Skip((page - 1) * take).Take(take)
+            .ToListAsync();
+
+        var map = mapper.Map<List<SinglePostDto>>(posts);
+
+        SetPostPermissions(map, userId);
+
+        return new()
+        {
+            Success = true,
+            Message = "",
+            StatusCode = StatusCodes.Status200OK,
+            Data = map
+        };
+    }
+
     public async Task<ResponseDto> CreateAsync(PostCreateRequestDto request)
     {
         var userId = currentUserService.UserId;
@@ -30,7 +79,7 @@ public class PostService(IFileService fileService,
             CreatedAt = DateTime.UtcNow
         };
 
-        await _context.Posts.AddAsync(post);
+        await context.Posts.AddAsync(post);
 
         if (request.Files.Count > 0)
         {
@@ -46,10 +95,10 @@ public class PostService(IFileService fileService,
                     FileType = GetFileType(file.FileName),
                 });
             }
-            await _context.PostFiles.AddRangeAsync(postFiles);
+            await context.PostFiles.AddRangeAsync(postFiles);
         }
 
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
 
         var dto = mapper.Map<SinglePostDto>(post);
         dto.PostFiles = mapper.Map<List<PostFileDto>>(post.PostFiles);
@@ -64,11 +113,10 @@ public class PostService(IFileService fileService,
         };
     }
 
-    // UPDATE CONTENT
     public async Task<ResponseDto> UpdateContentAsync(string postId, PostUpdateRequestDto request)
     {
         var userId = currentUserService.UserId;
-        var post = await _context.Posts
+        var post = await context.Posts
             .Include(p => p.PostFiles)
             .Include(p => p.AppUser)
             .FirstOrDefaultAsync(x => x.Id == postId);
@@ -82,7 +130,7 @@ public class PostService(IFileService fileService,
         if (post.Content != request.Content)
         {
             post.Content = request.Content;
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
 
         var dto = mapper.Map<SinglePostDto>(post);
@@ -98,11 +146,10 @@ public class PostService(IFileService fileService,
         };
     }
 
-    // DELETE
     public async Task<ResponseDto> DeleteAsync(string postId)
     {
         var userId = currentUserService.UserId;
-        var post = await _context.Posts
+        var post = await context.Posts
             .Include(p => p.PostFiles)
             .FirstOrDefaultAsync(x => x.Id == postId);
 
@@ -115,9 +162,9 @@ public class PostService(IFileService fileService,
             await fileService.DeleteFileAsync(file.FilePath);
         }
 
-        _context.PostFiles.RemoveRange(post.PostFiles);
-        _context.Posts.Remove(post);
-        await _context.SaveChangesAsync();
+        context.PostFiles.RemoveRange(post.PostFiles);
+        context.Posts.Remove(post);
+        await context.SaveChangesAsync();
 
         return new ResponseDto
         {
@@ -127,17 +174,16 @@ public class PostService(IFileService fileService,
         };
     }
 
-    // TOGGLE ARCHIVE
     public async Task<ResponseDto> ToggleArchiveAsync(string postId, TogglePostArchiveStatusDto request)
     {
         var userId = currentUserService.UserId;
-        var post = await _context.Posts.FirstOrDefaultAsync(x => x.Id == postId);
+        var post = await context.Posts.FirstOrDefaultAsync(x => x.Id == postId);
 
         if (post == null) throw new NotFoundException("Post", postId);
         if (post.AppUserId != userId) throw new UnauthorizedAccessException("You cannot archive/unarchive this post.");
 
         post.IsArchived = request.IsArchive;
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
 
         return new ResponseDto
         {
@@ -151,7 +197,7 @@ public class PostService(IFileService fileService,
     public async Task<ResponseDto> GetByIdAsync(string postId)
     {
         var userId = currentUserService.UserId;
-        var post = await _context.Posts
+        var post = await context.Posts
             .Include(p => p.PostFiles)
             .Include(p => p.AppUser)
             .FirstOrDefaultAsync(x => x.Id == postId);
@@ -171,17 +217,22 @@ public class PostService(IFileService fileService,
         };
     }
 
-    // HELPER TO DETERMINE FILE TYPE
     private FileType GetFileType(string fileName)
     {
         var ext = Path.GetExtension(fileName).ToLower();
         return _allowedImageExtensions.Contains(ext) ? FileType.Image : FileType.Video;
     }
 
-    // HELPER TO SET CANEDIT / CANDELETE
     private void SetPostPermissions(SinglePostDto dto, string currentUserId)
     {
         dto.CanYouEdit = dto.UserId == currentUserId;
-        dto.CanYouDelete = dto.UserId == currentUserId;
+    }
+
+    private void SetPostPermissions(List<SinglePostDto> list, string currentUserId)
+    {
+        foreach (var dto in list) 
+        {
+            dto.CanYouEdit = dto.UserId == currentUserId;
+        }
     }
 }

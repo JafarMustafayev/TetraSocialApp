@@ -1,4 +1,6 @@
-﻿namespace Hukaa_back.Controller;
+﻿using Hukaa_back.Entities;
+
+namespace Hukaa_back.Controller;
 
 [ApiController]
 [Authorize]
@@ -6,6 +8,20 @@
 public class PostController(
     IPostService postService) : ControllerBase
 {
+    [HttpGet("me/{page}")]
+    public async Task<IActionResult> GetMyPosts(int page = 1)
+    {
+        var res = await postService.GetMyPosts(page,take:20);
+        return Ok(res);
+    }
+
+    [HttpGet("archived/{page}")]
+    public async Task<IActionResult> GetMyArchivedPosts(int page = 1)
+    {
+        var res = await postService.GetMyArchivedPosts(page, take: 20);
+        return Ok(res);
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreatePost([FromForm] PostCreateRequestDto post)
     {

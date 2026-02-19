@@ -9,6 +9,7 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Content)
+               .IsRequired(false)
                .HasMaxLength(1000);
 
         builder.Property(x => x.IsArchived)

@@ -6,7 +6,6 @@ public class ProfileMapping:Profile
     {
         CreateMap<AppUser, MyProfileDto>()
             .ForMember(des => des.UserId, opt => opt.MapFrom(src => src.Id))
-            .ForMember(des => des.MyPosts, opt => opt.MapFrom(src => src.Posts))
             .ForMember(des => des.MyNumber, opt => opt.MapFrom(src => src.PhoneNumber))
             .ForMember(des => des.ProfileName, opt => opt.MapFrom(src => src.UserName))
             .ForMember(des => des.PostCount, opt => opt.MapFrom(src => src.Posts.Count))

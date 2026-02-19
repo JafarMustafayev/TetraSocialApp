@@ -14,7 +14,6 @@ public class SinglePostDto
     public int ShareCount { get; set; }
     public int CommentCount { get; set; }
     public bool CanYouEdit { get; set; }
-    public bool CanYouDelete { get; set; }
 
     public ICollection<PostFileDto>? PostFiles { get; set; }
 
@@ -28,7 +27,6 @@ public class SinglePostDto
         ShareCount = 0;
         CommentCount = 0;
         CanYouEdit = false;
-        CanYouDelete = false;
         Content = string.Empty;
     }
 }
