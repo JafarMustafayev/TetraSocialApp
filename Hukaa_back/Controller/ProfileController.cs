@@ -2,6 +2,7 @@
 
 [ApiController]
 [Route("/api/[controller]")]
+[Authorize]
 public class ProfileController(
     IProfileService profileService):ControllerBase
 {
