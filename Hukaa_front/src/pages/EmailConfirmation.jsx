@@ -10,7 +10,6 @@ const EmailConfirmation = () => {
     const [isValidUrl, setIsValidUrl] = useState(true);
 
     useEffect(() => {
-        debugger;
         const verifyEmail = async () => {
             const id = searchParams.get('id');
             // Manually extract token to prevent decoding of special characters like '+' (which searchParams converts to space or decoded char)
@@ -20,10 +19,6 @@ const EmailConfirmation = () => {
 
             const email = searchParams.get('email');
 
-            console.log(id);
-            console.log(token);
-            console.log(email);
-
             if (!id || !token) {
                 setIsValidUrl(false);
                 setStatus('error');
@@ -32,12 +27,7 @@ const EmailConfirmation = () => {
             }
 
             try {
-                // Constructing the payload
-                debugger;
-
-                // Pass the token exactly as it was in the URL
                 const response = await confirmEmail({ id, email, token });
-                console.log(response);
                 if (response.success) {
                     setStatus('success');
                     setMessage('Email confirmed successfully! Redirecting to login...');

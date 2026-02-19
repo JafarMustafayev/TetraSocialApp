@@ -1,4 +1,6 @@
 export const IMAGE_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7124';
+export const POST_SHARE_URL = import.meta.env.VITE_POST_SHARE_URL || '/posts/';
+export const FRONT_URL = import.meta.env.VITE_FRONT_URL || 'https://localhost:5173';
 const BASE_URL = IMAGE_BASE_URL;
 
 /**

@@ -15,7 +15,6 @@ export const register = async (userData) => {
 };
 
 export const confirmEmail = async (data) => {
-    debugger;
     return fetchClient('/api/Auth/ConfirmEmail', {
         method: 'POST',
         body: JSON.stringify(data),

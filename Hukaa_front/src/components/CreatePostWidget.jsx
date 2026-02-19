@@ -1,10 +1,12 @@
 import React, { useState, useRef } from 'react';
 import { IMAGE_BASE_URL } from '../api/client';
+import { createPost } from '../api/post';
 
-const CreatePostWidget = ({ profileData }) => {
+const CreatePostWidget = ({ profileData, onPostCreated }) => {
     const [content, setContent] = useState('');
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [previews, setPreviews] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const fileInputRef = useRef(null);
     const maxChars = 1000;
 
@@ -43,6 +45,49 @@ const CreatePostWidget = ({ profileData }) => {
         URL.revokeObjectURL(newPreviews[index].url);
         newPreviews.splice(index, 1);
         setPreviews(newPreviews);
+    };
+
+    const handlePost = async () => {
+        const trimmedContent = content.trim();
+        if (!trimmedContent && selectedFiles.length === 0) return;
+
+        setIsLoading(true);
+        const formData = new FormData();
+        formData.append('content', trimmedContent);
+
+        selectedFiles.forEach((file) => {
+            formData.append('files', file);
+        });
+
+        try {
+            const response = await createPost(formData);
+
+            if (response.success) {
+                // Clear form
+                setContent('');
+                setSelectedFiles([]);
+                setPreviews([]);
+
+                // Notify parent
+                if (onPostCreated) {
+                    onPostCreated(response.data.post);
+                }
+            } else {
+                alert('Failed to create post: ' + (response.message || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Error creating post:', error);
+            // detailed error handling based on the fail response structure in user request
+            if (error.response && error.response.data && error.response.data.errors) {
+                const errors = error.response.data.errors;
+                const errorMsg = Object.values(errors).flat().join('\n');
+                alert(errorMsg);
+            } else {
+                alert('Error creating post. Please try again.');
+            }
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -115,10 +160,11 @@ const CreatePostWidget = ({ profileData }) => {
                     </div>
 
                     <button
-                        disabled={!content.trim() && selectedFiles.length === 0}
-                        className={`px-8 py-3 rounded-xl font-bold transition-all shadow-lg ${(!content.trim() && selectedFiles.length === 0) ? 'bg-gray-100 text-gray-400 shadow-none' : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200 hover:-translate-y-0.5'}`}
+                        onClick={handlePost}
+                        disabled={isLoading || (!content.trim() && selectedFiles.length === 0)}
+                        className={`px-8 py-3 rounded-xl font-bold transition-all shadow-lg ${(isLoading || (!content.trim() && selectedFiles.length === 0)) ? 'bg-gray-100 text-gray-400 shadow-none' : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200 hover:-translate-y-0.5'}`}
                     >
-                        Post Now
+                        {isLoading ? 'Posting...' : 'Post Now'}
                     </button>
                 </div>
             </div>

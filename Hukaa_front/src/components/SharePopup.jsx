@@ -25,7 +25,7 @@ const SharePopup = ({ isOpen, onClose, friends = [], postLink }) => {
 
                 <div className="p-4 bg-blue-50/50 flex items-center space-x-3">
                     <div className="bg-white p-2 rounded-xl border border-blue-100 grow flex items-center justify-between">
-                        <span className="text-sm text-gray-500 truncate mr-4">{postLink}</span>
+                        <span className="text-sm text-gray-500 max-w-[240px] truncate mr-4">{postLink}</span>
                         <button className="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-700 transition-all flex items-center"
                             onClick={() => {
                                 navigator.clipboard.writeText(postLink);

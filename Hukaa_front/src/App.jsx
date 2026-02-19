@@ -8,6 +8,7 @@ import Messages from './pages/Messages';
 import Notifications from './pages/Notifications';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
+import Archived from './pages/Archived';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
@@ -33,6 +34,7 @@ function App() {
                         <Route path="notifications" element={<Notifications />} />
                         <Route path="profile" element={<Profile />} />
                         <Route path="settings" element={<Settings />} />
+                        <Route path="archived" element={<Archived />} />
                     </Route>
                     <Route element={<PublicRoute />}>
                         <Route element={<AuthLayout />}>

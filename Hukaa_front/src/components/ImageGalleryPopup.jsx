@@ -70,16 +70,14 @@ const ImageGalleryPopup = ({ isOpen, onClose, media = [], initialIndex = 0 }) =>
                 <div className="max-w-7xl h-full flex items-center justify-center animate-zoom-in">
                     {currentItem.type === 'video' ? (
                         <video
-                            //src={currentItem.url} 
-                            src={`"C:/Users/quliy/Pictures/WhatsApp Video 2026-02-19 at 9.50.08 PM.mp4"`}
+                            src={currentItem.url}
                             className="max-w-full max-h-full shadow-2xl rounded-2xl border border-white/10"
                             controls
                             autoPlay
                         />
                     ) : (
                         <img
-                            //src={currentItem.url} 
-                            src={`https://localhost:7124/posts/images/0efe2d7e-9b1b-4a5f-826d-1e229c2f58fe.jpg`}
+                            src={currentItem.url}
                             alt={`Gallery item ${currentIndex}`}
                             className="max-w-full max-h-full object-contain shadow-2xl rounded-2xl border border-white/10"
                         />

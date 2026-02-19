@@ -233,6 +233,13 @@ const Navbar = () => {
                                         </li>
 
                                         <li className=" border-gray-100">
+                                            <Link to="/archived" className="flex items-center  py-3   hover:text-red-500 text-[14px] font-bold  transition-all duration-300">
+                                                <i className="flaticon-private mr-4 text-lg"></i>
+                                                Archived posts
+                                            </Link>
+                                        </li>
+
+                                        <li className=" border-gray-100">
                                             <Link to="/logout" className="flex items-center  py-3   hover:text-red-500 text-[14px] font-bold  transition-all duration-300" onClick={handleLogout}>
                                                 <i className="flaticon-logout mr-4 text-lg"></i>
                                                 Logout

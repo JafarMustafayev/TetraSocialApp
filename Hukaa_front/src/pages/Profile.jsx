@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getMyProfile } from '../api/profile';
+import { getMyPosts } from '../api/post';
 import { IMAGE_BASE_URL } from '../api/client';
 import PostWidget from '../components/PostWidget';
 import CreatePostWidget from '../components/CreatePostWidget';
@@ -10,6 +11,12 @@ const Profile = () => {
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    // Posts state for infinite scroll
+    const [posts, setPosts] = useState([]);
+    const [postsPage, setPostsPage] = useState(1);
+    const [hasMorePosts, setHasMorePosts] = useState(true);
+    const [isPostsLoading, setIsPostsLoading] = useState(false);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -30,6 +37,56 @@ const Profile = () => {
 
         fetchProfile();
     }, []);
+
+    const fetchPosts = async (page) => {
+        if (isPostsLoading || !hasMorePosts) return;
+
+        setIsPostsLoading(true);
+        try {
+            const response = await getMyPosts(page);
+            if (response && response.success) {
+                const newPosts = response.data;
+                if (newPosts.length === 0) {
+                    setHasMorePosts(false);
+                } else {
+                    setPosts(prev => {
+                        const combined = [...prev, ...newPosts];
+                        const uniqueMap = new Map();
+                        combined.forEach(p => uniqueMap.set(p.id, p));
+                        return Array.from(uniqueMap.values()).sort((a, b) =>
+                            new Date(b.createdAt || b.createAt) - new Date(a.createdAt || a.createAt)
+                        );
+                    });
+                    setPostsPage(prev => prev + 1);
+                }
+            }
+        } catch (err) {
+            console.error('Error fetching posts:', err);
+        } finally {
+            setIsPostsLoading(false);
+        }
+    };
+
+    // Load initial posts
+    useEffect(() => {
+        if (profileData) {
+            fetchPosts(1);
+        }
+    }, [profileData]);
+
+    // Infinite scroll handler
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.innerHeight + document.documentElement.scrollTop + 100 >= document.documentElement.offsetHeight) {
+                if (activeTab === 'timeline') {
+                    fetchPosts(postsPage);
+                }
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [postsPage, isPostsLoading, hasMorePosts, activeTab]);
 
     const getGenderText = (gender) => {
         switch (gender) {
@@ -53,11 +110,35 @@ const Profile = () => {
     if (error) return <div className="p-5 text-center text-danger">{error}</div>;
     if (!profileData) return <div className="p-5 text-center">No profile data found.</div>;
 
+    const handlePostCreated = (newPost) => {
+        setPosts(prev => [newPost, ...prev]);
+        setProfileData(prev => ({
+            ...prev,
+            postCount: (prev.postCount || 0) + 1
+        }));
+    };
 
+    const handlePostDeleted = (postId) => {
+        setPosts(prev => prev.filter(p => p.id !== postId));
+        setProfileData(prev => ({
+            ...prev,
+            postCount: Math.max(0, (prev.postCount || 0) - 1)
+        }));
+    };
+
+    const handlePostUpdated = (updatedPost) => {
+        setPosts(prev => prev.map(p => p.id === updatedPost.id ? updatedPost : p));
+    };
+
+    const handlePostArchived = (postId) => {
+        // For timeline, we hide archived posts
+        setPosts(prev => prev.filter(p => p.id !== postId));
+    };
 
     return (
         <div className="content-page-box-area">
             <div className="my-profile-inner-box">
+                {/* ... existing profile header code ... */}
                 <div className="profile-cover-image w-full h-[300px] overflow-hidden">
                     <img
                         src={profileData.coverImagePath ? `${IMAGE_BASE_URL}/${profileData.coverImagePath}` : "/src/assets/images/my-profile-bg.jpg"}
@@ -81,7 +162,7 @@ const Profile = () => {
                         </div>
                         <ul className="statistics">
                             <li>
-                                <span className="item-number">{profileData.postCount || 15}</span>
+                                <span className="item-number">{profileData.postCount || 0}</span>
                                 <span className="item-text">Posts</span>
                             </li>
                             <li>
@@ -128,15 +209,43 @@ const Profile = () => {
                     <div className="row">
                         <div className="col-lg-9 col-md-12">
                             <div className="news-feed-area">
-                                <CreatePostWidget profileData={profileData} />
+                                <CreatePostWidget profileData={profileData} onPostCreated={handlePostCreated} />
 
-                                {profileData.myPosts && profileData.myPosts.length > 0 ? (
-                                    profileData.myPosts.map(post => (
-                                        <PostWidget key={post.id} post={post} profileData={profileData} />
+                                {posts && posts.length > 0 ? (
+                                    posts.map(post => (
+                                        <PostWidget
+                                            key={post.id}
+                                            post={post}
+                                            profileData={profileData}
+                                            onDelete={handlePostDeleted}
+                                            onUpdate={handlePostUpdated}
+                                            onArchive={handlePostArchived}
+                                        />
                                     ))
-                                ) : (
+                                ) : !isPostsLoading && (
                                     <div className="p-10 text-center bg-white rounded-lg border border-dashed border-gray-200">
                                         <p className="text-gray-400">No posts to display yet.</p>
+                                    </div>
+                                )}
+
+                                {isPostsLoading && (
+                                    <div className="space-y-6">
+                                        {[1, 2].map(i => (
+                                            <div key={i} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 animate-pulse">
+                                                <div className="flex items-center space-x-3 mb-4">
+                                                    <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                                                    <div className="space-y-2">
+                                                        <div className="h-4 w-32 bg-gray-200 rounded"></div>
+                                                        <div className="h-3 w-20 bg-gray-100 rounded"></div>
+                                                    </div>
+                                                </div>
+                                                <div className="h-20 bg-gray-50 rounded-lg mb-4"></div>
+                                                <div className="flex space-x-4">
+                                                    <div className="h-8 w-24 bg-gray-100 rounded"></div>
+                                                    <div className="h-8 w-24 bg-gray-100 rounded"></div>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 )}
                             </div>

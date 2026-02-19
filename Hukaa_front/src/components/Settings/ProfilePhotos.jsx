@@ -33,7 +33,6 @@ const ProfilePhotos = () => {
             if (cropConfig.type === 'profile') {
                 response = await updateProfilePhoto(croppedFile);
             } else {
-                debugger;
                 response = await updateCoverPhoto(croppedFile);
             }
 
