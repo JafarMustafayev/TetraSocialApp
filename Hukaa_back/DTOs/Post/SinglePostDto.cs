@@ -8,7 +8,7 @@ public class SinglePostDto
     public string UserName { get; set; }
     public string UserImage {  get; set; }
     public string Content { get; set; }
-    public DateTime CreateAt { get; set; }
+    public DateTime CreatedAt { get; set; }
     public int TotalReactionCount { get; set; }
     public ReactionType? MyReaction { get; set; }
     public int ShareCount { get; set; }
@@ -16,16 +16,14 @@ public class SinglePostDto
     public bool CanYouEdit { get; set; }
     public bool CanYouDelete { get; set; }
 
-    public ICollection<string>? ImageUrl { get; set; }
-
-
+    public ICollection<PostFileDto>? PostFiles { get; set; }
 
     public SinglePostDto()
     {
         UserId = string.Empty;
         UserName = string.Empty;
         UserImage = string.Empty;
-        CreateAt = DateTime.MinValue;
+        CreatedAt = DateTime.MinValue;
         TotalReactionCount = 0;
         ShareCount = 0;
         CommentCount = 0;

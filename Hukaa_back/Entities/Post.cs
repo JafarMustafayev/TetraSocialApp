@@ -7,12 +7,11 @@ public class Post:BaseEntity
     public bool IsArchived { get; set; }
     public int ShareCounter { get; set; }
     public bool IsDeleted { get; set; }
-    public DateTime DeleteAt { get; set; }
-
-
-
+    public DateTime? DeleteAt { get; set; }
+    
+    public ICollection<PostFile>?  PostFiles { get; set; } 
     public AppUser AppUser { get; set; }
-    public ICollection<Reaction> Reactions { get; set; }
+    public ICollection<Reaction>? Reactions { get; set; }
 
     public Post()
     {
@@ -21,6 +20,6 @@ public class Post:BaseEntity
         IsArchived = false;
         IsDeleted = false;
         ShareCounter = 0;
-
+        CreatedAt = DateTime.UtcNow;
     }
 }

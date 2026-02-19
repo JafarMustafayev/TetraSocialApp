@@ -9,6 +9,8 @@ public class PostMapping:Profile
             .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.AppUser.UserName))
             .ForMember(dest => dest.UserImage, opt => opt.MapFrom(src => src.AppUser.ProfilePhotoPath))
             .ForMember(dest => dest.ShareCount, opt => opt.MapFrom(src => src.ShareCounter));
-            
+
+
+        CreateMap<PostFile, PostFileDto>();
     }
 }
