@@ -44,3 +44,4 @@ global using AutoMapper;
 global using Hukaa_back.Mappings;
 global using Hukaa_back.DTOs.Profile;
 global using Microsoft.AspNetCore.Authorization;
+global using System.Text.Json;

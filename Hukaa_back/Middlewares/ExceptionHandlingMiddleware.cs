@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-namespace Hukaa_back.Middlewares;
+﻿namespace Hukaa_back.Middlewares;
 
 public sealed class ExceptionHandlingMiddleware
 {
@@ -46,7 +44,7 @@ public sealed class ExceptionHandlingMiddleware
                 Success = false,
                 StatusCode = 500,
                 Message = "Internal Server Error",
-                Errors = ["Unexpected error occurred"]
+                Errors = [exception.Message]
             };
 
             context.Response.StatusCode = 500;
