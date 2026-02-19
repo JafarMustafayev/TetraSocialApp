@@ -118,7 +118,7 @@ public class ProfileService(
         };
     }
 
-    public async Task<ResponseDto> ChangeCoverPhotoAsync(ChangeProfilPhotoCoverDto dto)
+    public async Task<ResponseDto> ChangeCoverPhotoAsync(ChangeProfilePhotoCoverDto dto)
     {
 
         var userId = currentUser.UserId;
@@ -148,13 +148,13 @@ public class ProfileService(
         };
     }
 
-    public async Task<ResponseDto> ChangeProfilePhotoAsync(ChangeProfilPhotoCoverDto dto) 
+    public async Task<ResponseDto> ChangeProfilePhotoAsync(ChangeProfilePhotoCoverDto dto) 
     {
         var userId = currentUser.UserId;
 
         var user = await dbContext.Users
             .FirstOrDefaultAsync(x => x.Id == userId);
-
+        
         if (user == null)
         {
             throw new NotFoundException("User", userId);
@@ -181,10 +181,14 @@ public class ProfileService(
     public async Task<ResponseDto> GetUserProfileAsync(string targetUserId)
     {
         var myProfile = await dbContext.Users
-             .Include(x => x.WorkExperiences)
-             .Include(x => x.Posts.Where(x => !x.IsArchived && !x.IsDeleted))
-             .FirstOrDefaultAsync(x => x.Id == targetUserId); 
+            .Include(x => x.WorkExperiences)
+            .Include(x => x.Posts.Where(x => !x.IsArchived && !x.IsDeleted))
+            .FirstOrDefaultAsync(x => x.Id == targetUserId);
 
+        if (myProfile == null)
+        {
+            throw new NotFoundException("User", targetUserId);
+        }
         var profileDetail = mapper.Map<MyProfileDto>(myProfile);
 
         return new()

@@ -1,6 +1,6 @@
 ﻿namespace Hukaa_back.DTOs.Profile;
 
-public class ChangeProfilPhotoCoverDto
+public class ChangeProfilePhotoCoverDto
 {
     public IFormFile File { get; set; } 
 }

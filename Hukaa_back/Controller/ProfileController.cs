@@ -19,7 +19,7 @@ public class ProfileController(
         return StatusCode(res.StatusCode, res);
     }
 
-    [HttpGet("settings/profil-information")]
+    [HttpGet("settings/profile-information")]
     public async Task<IActionResult> GetSettingsData()
     {
         var res = await profileService.GetSettingsData();
@@ -33,7 +33,7 @@ public class ProfileController(
         return StatusCode(res.StatusCode, res);
     }
 
-    [HttpPut("profil-information")]
+    [HttpPut("profile-information")]
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileInformationDto profile)
     {
         var res = await profileService.UpdateProfileAsync(profile);
@@ -41,14 +41,14 @@ public class ProfileController(
     }
 
     [HttpPut("profile-photo")]
-    public async Task<IActionResult> ProfilPhoto([FromForm] ChangeProfilPhotoCoverDto dto)
+    public async Task<IActionResult> ProfilePhoto([FromForm] ChangeProfilePhotoCoverDto dto)
     {
         var res = await profileService.ChangeProfilePhotoAsync(dto);
         return StatusCode(res.StatusCode, res);
     }
 
     [HttpPut("cover-photo")]
-    public async Task<IActionResult> CoverPhoto([FromForm] ChangeProfilPhotoCoverDto dto)
+    public async Task<IActionResult> CoverPhoto([FromForm] ChangeProfilePhotoCoverDto dto)
     {
         var res = await profileService.ChangeCoverPhotoAsync(dto);
         return StatusCode(res.StatusCode, res);

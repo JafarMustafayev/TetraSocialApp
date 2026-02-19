@@ -9,7 +9,7 @@ public class AuthMapping:Profile
             .ForMember(des => des.IsPublicAccount, opt => opt.MapFrom(src => false))
             .ForMember(des => des.RelationshipStatus, opt => opt.MapFrom(src => RelationshipStatus.None))
             .ForMember(des => des.UserStatus, opt => opt.MapFrom(src => UserStatus.PendingVerification))
-            .ForMember(des => des.CoverPhotoPath, opt => opt.MapFrom(src => "profil/cover/default-my-profile-bg.jpg"))
-            .ForMember(des => des.ProfilePhotoPath, opt => opt.MapFrom(src => "profil/photo/default-my-profile.png"));
+            .ForMember(des => des.CoverPhotoPath, opt => opt.MapFrom(src => "profile/cover/default-my-profile-bg.jpg"))
+            .ForMember(des => des.ProfilePhotoPath, opt => opt.MapFrom(src => "profile/photo/default-my-profile.png"));
     }
 }

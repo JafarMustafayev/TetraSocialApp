@@ -25,7 +25,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="wwwroot\profil\cover\" />
+      <Folder Include="wwwroot\profile\cover\" />
     </ItemGroup>
 
 </Project>
