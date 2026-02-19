@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getMyProfile } from '../api/profile';
 import { IMAGE_BASE_URL } from '../api/client';
+import PostWidget from '../components/PostWidget';
+import CreatePostWidget from '../components/CreatePostWidget';
 
 const Profile = () => {
     const [activeTab, setActiveTab] = useState('timeline');
@@ -126,78 +128,11 @@ const Profile = () => {
                     <div className="row">
                         <div className="col-lg-9 col-md-12">
                             <div className="news-feed-area">
-                                <div className="news-feed news-feed-form">
-                                    <h3 className="news-feed-title">Create New Post</h3>
-
-                                    <form>
-                                        <div className="form-group">
-                                            <textarea name="message" className="form-control" placeholder="Write something here..."></textarea>
-                                        </div>
-                                        <ul className="button-group d-flex justify-content-between align-items-center">
-                                            <li className="photo-btn text-blue-500 font-bold">
-                                                <button type="button" className="flex items-center"><i className="flaticon-gallery mr-1"></i> Photo</button>
-                                            </li>
-                                            <li className="video-btn text-red-500 font-bold">
-                                                <button type="button" className="flex items-center"><i className="flaticon-video mr-1"></i> Video</button>
-                                            </li>
-                                            <li className="tag-btn text-yellow-500 font-bold">
-                                                <button type="button" className="flex items-center"><i className="flaticon-tag mr-1"></i> Tag Friends</button>
-                                            </li>
-                                            <li className="post-btn">
-                                                <button type="submit" className="bg-[#3644D9] text-white px-4 py-2 rounded-md font-bold">Post</button>
-                                            </li>
-                                        </ul>
-                                    </form>
-                                </div>
+                                <CreatePostWidget profileData={profileData} />
 
                                 {profileData.myPosts && profileData.myPosts.length > 0 ? (
                                     profileData.myPosts.map(post => (
-                                        <div key={post.id} className="news-feed news-feed-post">
-                                            <div className="post-header d-flex justify-content-between align-items-center">
-                                                <div className="image">
-                                                    <Link to="/profile">
-                                                        <img
-                                                            src={post.userImage ? `${IMAGE_BASE_URL}/${post.userImage}` : (profileData.profileImagePath ? `${IMAGE_BASE_URL}/${profileData.profileImagePath}` : "/src/assets/images/user/user-1.jpg")}
-                                                            className="rounded-circle w-[50px] h-[50px] object-cover"
-                                                            alt="user"
-                                                        />
-                                                    </Link>
-                                                </div>
-                                                <div className="info ms-3 grow">
-                                                    <span className="name"><Link to="/profile" className="font-bold text-[#515355] hover:text-[#3644D9]">{post.userName || profileData.profileName}</Link></span>
-                                                    <span className="small-text block text-gray-500 text-xs mt-1">
-                                                        <Link to="#">{post.createAt && !post.createAt.startsWith('0001') ? new Date(post.createAt).toLocaleDateString() : 'Recently'}</Link>
-                                                    </span>
-                                                </div>
-                                                <div className="dropdown">
-                                                    <button className="dropdown-toggle" type="button"><i className="flaticon-menu"></i></button>
-                                                </div>
-                                            </div>
-
-                                            <div className="post-body">
-                                                <p className="text-[#515355] mb-3">{post.content}</p>
-                                                {post.imageUrl && (
-                                                    <div className="post-image mb-3">
-                                                        <img
-                                                            src={post.imageUrl.startsWith('http') ? post.imageUrl : `${IMAGE_BASE_URL}/${post.imageUrl}`}
-                                                            alt="post"
-                                                            className="rounded-lg shadow-sm w-full object-contain max-h-[500px]"
-                                                        />
-                                                    </div>
-                                                )}
-                                                <ul className="post-meta-wrap d-flex justify-content-between align-items-center border-t border-gray-100 pt-3">
-                                                    <li className="post-react flex items-center space-x-2">
-                                                        <Link to="#" className="flex items-center text-gray-500 hover:text-blue-500"><i className="flaticon-like mr-1"></i><span>Like</span> <span className="number ml-1">({post.totalReactionCount})</span></Link>
-                                                    </li>
-                                                    <li className="post-comment flex items-center">
-                                                        <Link to="#" className="flex items-center text-gray-500 hover:text-blue-500"><i className="flaticon-comment mr-1"></i><span>Comment</span> <span className="number ml-1">({post.commentCount})</span></Link>
-                                                    </li>
-                                                    <li className="post-share flex items-center">
-                                                        <Link to="#" className="flex items-center text-gray-500 hover:text-blue-500"><i className="flaticon-share mr-1"></i><span>Share</span> <span className="number ml-1">({post.shareCount})</span></Link>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
+                                        <PostWidget key={post.id} post={post} profileData={profileData} />
                                     ))
                                 ) : (
                                     <div className="p-10 text-center bg-white rounded-lg border border-dashed border-gray-200">
