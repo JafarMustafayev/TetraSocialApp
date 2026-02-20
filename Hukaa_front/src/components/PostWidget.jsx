@@ -1,13 +1,14 @@
 import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { IMAGE_BASE_URL, POST_SHARE_URL, FRONT_URL } from '../api/client';
-import { updatePost, deletePost, toggleArchivePost } from '../api/post';
+import { updatePost, deletePost, toggleArchivePost, reactToPost } from '../api/post';
 import CommentPopup from './CommentPopup';
 import SharePopup from './SharePopup';
 import ImageGalleryPopup from './ImageGalleryPopup';
 
 const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
-    const [selectedReaction, setSelectedReaction] = useState(null);
+    const [myReaction, setMyReaction] = useState(post.myReaction);
+    const [reactionCount, setReactionCount] = useState(post.totalReactionCount || 0);
     const [showReactions, setShowReactions] = useState(false);
     const [showComments, setShowComments] = useState(false);
     const [showShare, setShowShare] = useState(false);
@@ -47,9 +48,30 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
         }, 300);
     };
 
-    const selectReaction = (reaction) => {
-        setSelectedReaction(reaction);
-        setShowReactions(false);
+    const selectReaction = async (reactionType) => {
+        try {
+            const response = await reactToPost(post.id, reactionType);
+            if (response.success) {
+                setMyReaction(response.data.myReaction);
+                setReactionCount(response.data.reactionCount);
+            }
+        } catch (error) {
+            console.error('Failed to update reaction:', error);
+        } finally {
+            setShowReactions(false);
+        }
+    };
+
+    const handleLikeClick = () => {
+        if (myReaction !== null) {
+            // If already reacted, delete reaction by sending same or null? 
+            // The prompt says "delete my reaction" with the same endpoint.
+            // Usually sending same reaction toggles it off or sending null.
+            // Given the response examples: null means deleted.
+            selectReaction(myReaction); // Backend likely toggles if same
+        } else {
+            selectReaction(1); // Default Like
+        }
     };
 
     const tempComments = [];
@@ -339,17 +361,17 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
                         onMouseLeave={handleReactionMouseLeave}
                     >
                         <button
-                            onClick={() => selectedReaction ? setSelectedReaction(null) : selectReaction(reactions[0])}
-                            className={`flex items-center space-x-2 font-bold transition-all py-1 px-2 rounded-lg hover:bg-white hover:shadow-sm ${selectedReaction ? selectedReaction.color : 'text-gray-500 hover:text-blue-600'}`}
+                            onClick={handleLikeClick}
+                            className={`flex items-center space-x-2 font-bold transition-all py-1 px-2 rounded-lg hover:bg-white hover:shadow-sm ${myReaction !== null ? reactions.find(r => (reactions.indexOf(r) + 1) === myReaction)?.color || 'text-blue-600' : 'text-gray-500 hover:text-blue-600'}`}
                         >
                             <span className="text-xl">
-                                {selectedReaction ? selectedReaction.icon : <i className="flaticon-like"></i>}
+                                {myReaction !== null ? (reactions.find(r => (reactions.indexOf(r) + 1) === myReaction)?.icon || reactions[0].icon) : <i className="flaticon-like"></i>}
                             </span>
                             <span className="text-sm uppercase tracking-wide">
-                                {selectedReaction ? selectedReaction.type : 'Like'}
+                                {myReaction !== null ? (reactions.find(r => (reactions.indexOf(r) + 1) === myReaction)?.type || 'Like') : 'Like'}
                             </span>
                             <span className="text-xs font-medium text-gray-400">
-                                ({post.totalReactionCount || 0})
+                                ({reactionCount})
                             </span>
                         </button>
 
@@ -359,10 +381,10 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
                                 onMouseEnter={handleReactionMouseEnter}
                                 onMouseLeave={handleReactionMouseLeave}
                             >
-                                {reactions.map((r) => (
+                                {reactions.map((r, index) => (
                                     <button
                                         key={r.type}
-                                        onClick={() => selectReaction(r)}
+                                        onClick={() => selectReaction(index + 1)}
                                         className="w-10 h-10 flex items-center justify-center text-3xl hover:scale-150 transition-all duration-300 hover:-translate-y-2 origin-bottom"
                                         title={r.type}
                                     >

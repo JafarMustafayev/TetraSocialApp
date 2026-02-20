@@ -38,3 +38,10 @@ export const getArchivedPosts = async (page) => {
         method: 'GET',
     });
 };
+
+export const reactToPost = async (postId, reactionType) => {
+    return fetchClient(`/api/posts/${postId}/reactions`, {
+        method: 'POST',
+        body: JSON.stringify({ reactionType }),
+    });
+};
