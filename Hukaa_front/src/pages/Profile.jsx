@@ -137,69 +137,76 @@ const Profile = () => {
 
     return (
         <div className="content-page-box-area">
-            <div className="my-profile-inner-box">
-                {/* ... existing profile header code ... */}
-                <div className="profile-cover-image w-full h-[300px] overflow-hidden">
-                    <img
-                        src={profileData.coverImagePath ? `${IMAGE_BASE_URL}/${profileData.coverImagePath}` : "/src/assets/images/my-profile-bg.jpg"}
-                        alt="cover"
-                        className="w-full h-full object-cover"
-                    />
-                </div>
-
-                <div className="profile-info-box">
-                    <div className="inner-info-box d-flex justify-content-between align-items-center">
-                        <div className="info-image w-[300px]">
-                            <img
-                                src={profileData.profileImagePath ? `${IMAGE_BASE_URL}/${profileData.profileImagePath}` : "/src/assets/images/my-profile.jpg"}
-                                alt="profile"
-                                className="w-full h-full object-cover  border-2 border-gray-50 shadow-sm rounded-3xl"
-                            />
-                        </div>
-                        <div className="info-text mt-2">
-                            <h2>{profileData.profileName}</h2>
-                            <h5>{profileData.firstName + " " + profileData.lastName}</h5>
-                        </div>
-                        <ul className="statistics">
-                            <li>
-                                <span className="item-number">{profileData.postCount || 0}</span>
-                                <span className="item-text">Posts</span>
-                            </li>
-                            <li>
-                                <Link to="#">
-                                    <span className="item-number">{profileData.followingCount || 0}</span>
-                                    <span className="item-text">Following</span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="#">
-                                    <span className="item-number">{profileData.followersCount || 0}</span>
-                                    <span className="item-text">Followers</span>
-                                </Link>
-                            </li>
-                        </ul>
+            <div className="mb-6">
+                <div className="bg-white rounded-b-xl shadow-sm overflow-hidden">
+                    <div className="relative w-full h-[300px] overflow-hidden">
+                        <img
+                            src={profileData.coverImagePath ? `${IMAGE_BASE_URL}/${profileData.coverImagePath}` : "/src/assets/images/my-profile-bg.jpg"}
+                            alt="cover"
+                            className="w-full h-full object-cover"
+                        />
                     </div>
 
-                    <div className="profile-list-tabs">
-                        <ul className="nav nav-tabs" id="myTab" role="tablist">
-                            <li className="nav-item">
-                                <button
-                                    className={`nav-link ${activeTab === 'timeline' ? 'active' : ''}`}
-                                    onClick={() => setActiveTab('timeline')}
-                                >
-                                    Timeline
-                                </button>
-                            </li>
+                    <div className="px-6 md:px-12 pb-6 md:pb-0 relative">
+                        <div className="flex flex-col md:flex-row justify-between items-center">
+                            <div className="mt-[-80px] md:mt-[-100px] relative w-[200px] md:w-[250px] lg:w-[300px] shrink-0">
+                                <img
+                                    src={profileData.profileImagePath ? `${IMAGE_BASE_URL}/${profileData.profileImagePath}` : "/src/assets/images/my-profile.jpg"}
+                                    alt="profile"
+                                    className="w-full h-full object-cover border-4 border-white shadow-md rounded-4xl"
+                                />
+                            </div>
+                            <div className="mt-4 md:mt-2 text-center md:text-left grow md:ml-8">
+                                <h2 className="text-2xl font-bold text-gray-800">{profileData.profileName}</h2>
+                                <h5 className="text-gray-500 font-medium">{profileData.firstName + " " + profileData.lastName}</h5>
+                            </div>
+                            <ul className="flex items-center space-x-6 lg:space-x-12 mt-6 md:mt-0">
+                                <li className="text-center relative after:content-[''] after:absolute after:right-[-12px] lg:after:right-[-24px] after:top-1/4 after:h-1/2 after:w-px after:bg-gray-200 last:after:hidden">
+                                    <span className="block text-lg font-bold text-gray-800 leading-none">{profileData.postCount || 0}</span>
+                                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1 block">Posts</span>
+                                </li>
+                                <li className="text-center relative after:content-[''] after:absolute after:right-[-12px] lg:after:right-[-24px] after:top-1/4 after:h-1/2 after:w-px after:bg-gray-200 last:after:hidden">
+                                    <Link to="#" className="block group">
+                                        <span className="block text-lg font-bold text-gray-800 leading-none group-hover:text-blue-600 transition-colors">{profileData.followingCount || 0}</span>
+                                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1 block group-hover:text-gray-500 transition-colors">Following</span>
+                                    </Link>
+                                </li>
+                                <li className="text-center">
+                                    <Link to="#" className="block group">
+                                        <span className="block text-lg font-bold text-gray-800 leading-none group-hover:text-blue-600 transition-colors">{profileData.followersCount || 0}</span>
+                                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1 block group-hover:text-gray-500 transition-colors">Followers</span>
+                                    </Link>
+                                </li>
+                            </ul>
+                        </div>
 
-                            <li className="nav-item">
-                                <button
-                                    className={`nav-link ${activeTab === 'about' ? 'active' : ''}`}
-                                    onClick={() => setActiveTab('about')}
-                                >
-                                    About
-                                </button>
-                            </li>
-                        </ul>
+                        <div className="mt-8 md:mt-12 border-t border-gray-50">
+                            <ul className="flex space-x-8" role="tablist">
+                                <li className="relative">
+                                    <button
+                                        className={`py-4 font-bold text-[15px] transition-all relative ${activeTab === 'timeline'
+                                                ? 'text-blue-600 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[3px] after:bg-blue-600 after:rounded-t-full'
+                                                : 'text-gray-500 hover:text-blue-500'
+                                            }`}
+                                        onClick={() => setActiveTab('timeline')}
+                                    >
+                                        Timeline
+                                    </button>
+                                </li>
+
+                                <li className="relative">
+                                    <button
+                                        className={`py-4 font-bold text-[15px] transition-all relative ${activeTab === 'about'
+                                                ? 'text-blue-600 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[3px] after:bg-blue-600 after:rounded-t-full'
+                                                : 'text-gray-500 hover:text-blue-500'
+                                            }`}
+                                        onClick={() => setActiveTab('about')}
+                                    >
+                                        About
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -253,17 +260,33 @@ const Profile = () => {
 
                         <div className="col-lg-3 col-md-12">
                             <aside className="widget-area">
-                                <div className="widget widget-who-following">
-                                    <h3 className="widget-title">Who's Following</h3>
-                                    <div className="following-item d-flex justify-content-between align-items-center">
-                                        <Link to="#"><img src="src/assets/images/user/user-42.jpg" className="rounded-circle" alt="image" /></Link>
-                                        <span className="name"><Link to="#">Shawn Lynch</Link></span>
-                                        <span className="add-friend"><Link to="#">Add</Link></span>
-                                    </div>
-                                    <div className="following-item d-flex justify-content-between align-items-center">
-                                        <Link to="#"><img src="src/assets/images/user/user-43.jpg" className="rounded-circle" alt="image" /></Link>
-                                        <span className="name"><Link to="#">Kenneth Perry</Link></span>
-                                        <span className="add-friend"><Link to="#">Add</Link></span>
+                                <div className="bg-white p-5 rounded-xl shadow-sm mb-6 border border-gray-100">
+                                    <h3 className="text-lg font-bold text-gray-800 mb-6 pb-4 border-b border-gray-50">Who's Following</h3>
+                                    <div className="space-y-5">
+                                        <div className="flex items-center justify-between group">
+                                            <div className="flex items-center">
+                                                <Link to="#" className="relative shrink-0">
+                                                    <img src="src/assets/images/user/user-42.jpg" className="w-11 h-11 rounded-full object-cover ring-2 ring-gray-50 group-hover:ring-blue-100 transition-all" alt="image" />
+                                                </Link>
+                                                <div className="ml-3">
+                                                    <Link to="#" className="block text-[15px] font-bold text-gray-700 hover:text-blue-600 transition-colors leading-tight">Shawn Lynch</Link>
+                                                    <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-tighter">New York, USA</span>
+                                                </div>
+                                            </div>
+                                            <Link to="#" className="px-3 py-1 text-xs font-bold text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-600 hover:text-white transition-all">Add</Link>
+                                        </div>
+                                        <div className="flex items-center justify-between group">
+                                            <div className="flex items-center">
+                                                <Link to="#" className="relative shrink-0">
+                                                    <img src="src/assets/images/user/user-43.jpg" className="w-11 h-11 rounded-full object-cover ring-2 ring-gray-50 group-hover:ring-blue-100 transition-all" alt="image" />
+                                                </Link>
+                                                <div className="ml-3">
+                                                    <Link to="#" className="block text-[15px] font-bold text-gray-700 hover:text-blue-600 transition-colors leading-tight">Kenneth Perry</Link>
+                                                    <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-tighter">London, UK</span>
+                                                </div>
+                                            </div>
+                                            <Link to="#" className="px-3 py-1 text-xs font-bold text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-600 hover:text-white transition-all">Add</Link>
+                                        </div>
                                     </div>
                                 </div>
                             </aside>
@@ -353,7 +376,7 @@ const Profile = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

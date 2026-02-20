@@ -1,6 +1,4 @@
-﻿using Hukaa_back.Entities;
-
-namespace Hukaa_back.Controller;
+﻿namespace Hukaa_back.Controller;
 
 [ApiController]
 [Authorize]

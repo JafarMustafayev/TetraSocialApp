@@ -1,6 +1,6 @@
 ﻿namespace Hukaa_back.Controller;
 
-[Route("api/profil/[controller]")]
+[Route("api/profile/[controller]")]
 [ApiController]
 [Authorize]
 

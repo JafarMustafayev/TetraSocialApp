@@ -1,7 +1,7 @@
 import { fetchClient } from './client';
 
 export const getExperiences = async () => {
-    return fetchClient('/api/profil/experience', {
+    return fetchClient('/api/profile/experience', {
         method: 'GET',
     });
 };
@@ -19,14 +19,14 @@ export const getMyProfile = async () => {
 };
 
 export const addExperience = async (experienceData) => {
-    return fetchClient('/api/profil/experience', {
+    return fetchClient('/api/profile/experience', {
         method: 'POST',
         body: JSON.stringify(experienceData),
     });
 };
 
 export const updateExperience = async (id, experienceData) => {
-    return fetchClient(`/api/profil/Experience/${id}`, {
+    return fetchClient(`/api/profile/Experience/${id}`, {
         method: 'PUT',
         body: JSON.stringify(experienceData),
     });
@@ -57,13 +57,13 @@ export const updateProfilePhoto = async (file) => {
 };
 
 export const getProfileSettings = async () => {
-    return fetchClient('/api/Profile/settings/profil-information', {
+    return fetchClient('/api/Profile/settings/profile-information', {
         method: 'GET',
     });
 };
 
 export const updateProfileInformation = async (data) => {
-    return fetchClient('/api/Profile/profil-information', {
+    return fetchClient('/api/Profile/profile-information', {
         method: 'PUT',
         body: JSON.stringify(data),
     });

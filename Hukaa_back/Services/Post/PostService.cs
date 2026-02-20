@@ -93,6 +93,7 @@ public class PostService(IFileService fileService,
                     FilePath = await fileService.UploadPostAsync(file),
                     FileExtension = Path.GetExtension(file.FileName),
                     FileType = GetFileType(file.FileName),
+                    DeletedAt = null
                 });
             }
             await context.PostFiles.AddRangeAsync(postFiles);
@@ -156,14 +157,21 @@ public class PostService(IFileService fileService,
         if (post == null) throw new NotFoundException("Post", postId);
         if (post.AppUserId != userId) throw new UnauthorizedAccessException("You cannot delete this post.");
 
-        // Delete files from storage
-        foreach (var file in post.PostFiles)
-        {
-            await fileService.DeleteFileAsync(file.FilePath);
+        post.DeleteAt = DateTime.UtcNow;
+        post.IsDeleted = true;
+
+
+        if (post.PostFiles.Count > 0) {
+
+            foreach (var file in post.PostFiles)
+            {
+                await fileService.DeleteFileAsync(file.FilePath);
+                file.IsDeleted = true;
+                file.DeletedAt = DateTime.UtcNow;
+            }
         }
 
-        context.PostFiles.RemoveRange(post.PostFiles);
-        context.Posts.Remove(post);
+
         await context.SaveChangesAsync();
 
         return new ResponseDto

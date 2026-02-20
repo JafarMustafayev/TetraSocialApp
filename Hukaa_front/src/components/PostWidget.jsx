@@ -175,11 +175,11 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
         : post.content;
 
     return (
-        <div className="bg-white rounded-2xl shadow-sm mb-6 border border-gray-100 overflow-visible relative group/widget">
+        <div className={`bg-white rounded-2xl shadow-sm mb-6 border border-gray-100 overflow-visible relative group/widget  ${showDeleteConfirm ? "h-[300px]" : ""}`}  >
             {showDeleteConfirm && (
                 <div className="absolute inset-0 z-50 bg-white/95 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center p-6 text-center animate-fade-in">
                     <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-4">
-                        <i className="flaticon-garbage text-3xl"></i>
+                        <i className="flaticon-trash text-3xl"></i>
                     </div>
                     <h3 className="text-xl font-bold text-gray-800 mb-2">Delete Post?</h3>
                     <p className="text-gray-500 mb-6 max-w-[250px]">This action cannot be undone. Are you sure you want to delete this post?</p>
