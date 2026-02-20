@@ -13,7 +13,7 @@ public class SinglePostDto
     public ReactionType? MyReaction { get; set; }
     public int ShareCount { get; set; }
     public int CommentCount { get; set; }
-    public bool CanYouEdit { get; set; }
+    public bool IsOwner { get; set; }
 
     public ICollection<PostFileDto>? PostFiles { get; set; }
 
@@ -26,7 +26,7 @@ public class SinglePostDto
         TotalReactionCount = 0;
         ShareCount = 0;
         CommentCount = 0;
-        CanYouEdit = false;
+        IsOwner = false;
         Content = string.Empty;
     }
 }

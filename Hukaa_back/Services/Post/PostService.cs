@@ -246,14 +246,14 @@ public class PostService(IFileService fileService,
 
     private void SetPostPermissions(SinglePostDto dto, string currentUserId)
     {
-        dto.CanYouEdit = dto.UserId == currentUserId;
+        dto.IsOwner = dto.UserId == currentUserId;
     }
 
     private void SetPostPermissions(List<SinglePostDto> list, string currentUserId)
     {
         foreach (var dto in list) 
         {
-            dto.CanYouEdit = dto.UserId == currentUserId;
+            dto.IsOwner = dto.UserId == currentUserId;
         }
     }
 }

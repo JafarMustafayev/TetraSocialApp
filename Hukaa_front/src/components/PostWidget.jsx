@@ -252,7 +252,7 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
                 </div>
 
                 <div className="relative">
-                    {post.canYouEdit && (
+                    {post.isOwner && (
                         <button
                             onClick={() => setShowOptions(!showOptions)}
                             className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full transition-all text-gray-400 hover:text-gray-600"
@@ -262,7 +262,7 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
                         </button>
                     )}
 
-                    {showOptions && post.canYouEdit && (
+                    {showOptions && post.isOwner && (
                         <>
                             <div className="fixed inset-0 z-40" onClick={() => setShowOptions(false)}></div>
                             <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-fade-in-up">
