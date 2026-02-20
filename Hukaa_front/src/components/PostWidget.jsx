@@ -9,6 +9,7 @@ import ImageGalleryPopup from './ImageGalleryPopup';
 const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
     const [myReaction, setMyReaction] = useState(post.myReaction);
     const [reactionCount, setReactionCount] = useState(post.totalReactionCount || 0);
+    const [commentCount, setCommentCount] = useState(post.commentCount || 0);
     const [showReactions, setShowReactions] = useState(false);
     const [showComments, setShowComments] = useState(false);
     const [showShare, setShowShare] = useState(false);
@@ -401,7 +402,7 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
                     >
                         <i className="flaticon-comment text-xl"></i>
                         <span className="text-sm uppercase tracking-wide">Comment</span>
-                        <span className="text-xs font-medium text-gray-400">({post.commentCount || 0})</span>
+                        <span className="text-xs font-medium text-gray-400">({commentCount})</span>
                     </button>
 
                     <button
@@ -418,7 +419,8 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
             <CommentPopup
                 isOpen={showComments}
                 onClose={() => setShowComments(false)}
-                comments={tempComments}
+                postId={post.id}
+                onCommentCountChange={setCommentCount}
             />
             <SharePopup
                 isOpen={showShare}
