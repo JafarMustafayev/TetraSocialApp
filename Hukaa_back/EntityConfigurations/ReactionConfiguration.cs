@@ -11,9 +11,6 @@ public class ReactionConfiguration : IEntityTypeConfiguration<Reaction>
         builder.Property(x => x.ReactionType)
                .IsRequired();
 
-        builder.Property(x => x.IsDeleted)
-               .HasDefaultValue(false);
-
         // AppUser → Reaction
         builder.HasOne(x => x.AppUser)
                .WithMany(x => x.Reactions)

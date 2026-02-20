@@ -8,7 +8,5 @@ public class Reaction:BaseEntity
 
     public AppUser AppUser { get; set; }
     public Post Post { get; set; }
-
-    public bool IsDeleted { get; set; }
-    public DateTime DeleteAt { get; set; }
 }
+    

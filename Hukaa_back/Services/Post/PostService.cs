@@ -4,28 +4,41 @@ public class PostService(IFileService fileService,
     ICurrentUserService currentUserService,
     AppDbContext context,
     UserManager<AppUser> userManager,
-    IMapper mapper) : IPostService
+    IMapper mapper,
+    IReactionService reactionService) : IPostService
 {
-
-    
-
     private readonly string[] _allowedVideoExtensions = { ".mp4", ".mov", ".avi", ".mkv" };
     private readonly string[] _allowedImageExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
 
-
     public async Task<ResponseDto> GetMyPosts(int page, int take)
     {
-
         var userId = currentUserService.UserId;
 
         var posts = await context.Posts
             .Where(x => x.AppUserId == userId && !x.IsArchived)
-            .Include(x=>x.PostFiles)
-            .OrderByDescending(x=>x.CreatedAt)
-            .Skip((page-1)*take).Take(take)
+            .Include(x => x.PostFiles)
+            .OrderByDescending(x => x.CreatedAt)
+            .Skip((page - 1) * take)
+            .Take(take)
             .ToListAsync();
 
         var map = mapper.Map<List<SinglePostDto>>(posts);
+
+        var postIds = map.Select(x => x.Id).ToList();
+
+        var reactionCounts = await reactionService.GetReactionCountsAsync(postIds);
+        var myReactions = await reactionService.GetMyReactionsAsync(postIds);
+
+        foreach (var post in map)
+        {
+            post.TotalReactionCount = reactionCounts.ContainsKey(post.Id)
+                ? reactionCounts[post.Id]
+                : 0;
+
+            post.MyReaction = myReactions.ContainsKey(post.Id)
+                ? myReactions[post.Id]
+                : null;
+        }
 
         SetPostPermissions(map, userId);
 
