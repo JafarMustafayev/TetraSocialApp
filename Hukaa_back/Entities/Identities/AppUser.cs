@@ -15,7 +15,8 @@ public class AppUser : IdentityUser<string>
 
     public ICollection<Post> Posts { get; set; }
     public ICollection<WorkExperience> WorkExperiences { get; set; }
-    public ICollection<Reaction> Reactions { get; set; }
+    public ICollection<Reaction>? Reactions { get; set; }
+    public ICollection<Comment>? Comments { get; set; }
 
     public AppUser()
     {

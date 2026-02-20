@@ -8,7 +8,8 @@ public class PostMapping:Profile
             .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.AppUserId))
             .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.AppUser.UserName))
             .ForMember(dest => dest.UserImage, opt => opt.MapFrom(src => src.AppUser.ProfilePhotoPath))
-            .ForMember(dest => dest.ShareCount, opt => opt.MapFrom(src => src.ShareCounter));
+            .ForMember(dest => dest.ShareCount, opt => opt.MapFrom(src => src.ShareCounter))
+            .ForMember(dest => dest.CommentCount, opt => opt.MapFrom(src => src.Comments !=  null ? src.Comments.Count :0));
 
 
         CreateMap<PostFile, PostFileDto>();

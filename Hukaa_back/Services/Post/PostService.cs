@@ -17,6 +17,7 @@ public class PostService(IFileService fileService,
         var posts = await context.Posts
             .Where(x => x.AppUserId == userId && !x.IsArchived)
             .Include(x => x.PostFiles)
+            .Include(x=>x.Comments)
             .OrderByDescending(x => x.CreatedAt)
             .Skip((page - 1) * take)
             .Take(take)

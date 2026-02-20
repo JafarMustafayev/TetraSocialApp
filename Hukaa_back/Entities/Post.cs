@@ -12,6 +12,7 @@ public class Post:BaseEntity
     public ICollection<PostFile>?  PostFiles { get; set; } 
     public AppUser AppUser { get; set; }
     public ICollection<Reaction>? Reactions { get; set; }
+    public ICollection<Comment>? Comments { get; set; }
 
     public Post()
     {
