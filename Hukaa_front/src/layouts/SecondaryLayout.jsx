@@ -10,7 +10,7 @@ const SecondaryLayout = () => {
             <Navbar />
             <Sidebar />
             <ActivitiesSidebar />
-            <div className="w-full h-full">
+            <div className="w-full h-full ml-4">
                 <Outlet />
             </div>
         </div>

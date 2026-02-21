@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { register as registerApi } from '../api/auth';
+import { LOGO } from '../api/client';
 
 const Register = () => {
     const navigate = useNavigate();
@@ -71,13 +72,13 @@ const Register = () => {
     };
 
     return (
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 profile-authentication-area">
             <div className="flex flex-wrap justify-center items-center min-h-screen ">
                 <div className="w-full lg:w-1/2 md:w-full">
                     <div className="bg-transparent p-10 md:p-[45px_45px]">
                         <div className="text-center ">
                             <img
-                                src="/src/assets/images/huka_logo.png"
+                                src={LOGO}
                                 alt="Huka Logo"
                                 className=" max-w-[240px]"
                             />

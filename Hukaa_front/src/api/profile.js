@@ -33,7 +33,7 @@ export const updateExperience = async (id, experienceData) => {
 };
 
 export const deleteExperience = async (id) => {
-    return fetchClient(`/api/profil/Experience/${id}`, {
+    return fetchClient(`/api/profile/Experience/${id}`, {
         method: 'DELETE',
     });
 };

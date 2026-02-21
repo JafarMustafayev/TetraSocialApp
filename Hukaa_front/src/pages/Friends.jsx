@@ -1,28 +1,29 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { USER_AVATAR, COVER_IMAGE } from '../api/client';
 
 const Friends = () => {
     const [activeTab, setActiveTab] = useState('friend-requests');
 
     return (
-        <>
-            <div className="page-banner-box bg-4">
-                <h3>Friends</h3>
+        <div className="animate-fade-in-up">
+            <div className="bg-[#3644D9] p-10 rounded-3xl mb-6 flex items-center justify-center text-white shadow-xl shadow-blue-100">
+                <h3 className="text-3xl font-bold m-0 uppercase tracking-tight">Friends</h3>
             </div>
 
-            <div className="friends-inner-box-style d-flex justify-content-between align-items-center margin-top-25">
-                <ul className="nav nav-tabs" id="myTab" role="tablist">
-                    <li className="nav-item">
+            <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                <ul className="flex border-b border-gray-200 w-full md:w-auto">
+                    <li className="mr-6">
                         <button
-                            className={`nav-link ${activeTab === 'friend-requests' ? 'active' : ''}`}
+                            className={`py-4 font-bold text-[15px] border-b-2 transition-all ${activeTab === 'friend-requests' ? 'border-[#3644D9] text-[#3644D9]' : 'border-transparent text-gray-500 hover:text-[#3644D9]'}`}
                             onClick={() => setActiveTab('friend-requests')}
                         >
                             Friend Requests
                         </button>
                     </li>
-                    <li className="nav-item">
+                    <li>
                         <button
-                            className={`nav-link ${activeTab === 'people-you-know' ? 'active' : ''}`}
+                            className={`py-4 font-bold text-[15px] border-b-2 transition-all ${activeTab === 'people-you-know' ? 'border-[#3644D9] text-[#3644D9]' : 'border-transparent text-gray-500 hover:text-[#3644D9]'}`}
                             onClick={() => setActiveTab('people-you-know')}
                         >
                             People You Know
@@ -30,133 +31,119 @@ const Friends = () => {
                     </li>
                 </ul>
 
-                <div className="friends-search-box">
-                    <form>
-                        <input type="text" className="input-search" placeholder="Search friends..." />
-                        <button type="submit"><i className="ri-search-line"></i></button>
+                <div className="relative w-full md:w-64">
+                    <form className="relative">
+                        <input type="text" className="w-full h-12 bg-white border border-gray-200 rounded-full pl-5 pr-12 text-sm focus:border-[#3644D9] outline-none transition-all" placeholder="Search friends..." />
+                        <button type="submit" className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#3644D9]"><i className="ri-search-line text-lg"></i></button>
                     </form>
                 </div>
             </div>
 
-            <div className="tab-content" id="myTabContent">
-                <div className={`tab-pane fade ${activeTab === 'friend-requests' ? 'show active' : ''}`} id="friend-requests" role="tabpanel">
-                    <div className="row justify-content-start">
-                        <div className="col-lg-3 col-sm-6">
-                            <div className="single-friends-card">
-                                <div className="friends-image">
+            <div className="tab-content">
+                <div className={`${activeTab === 'friend-requests' ? 'block' : 'hidden'} animate-fade-in`}>
+                    <div className="flex flex-wrap -mx-3">
+                        <div className="w-full sm:w-1/2 lg:w-1/4 px-3 mb-6">
+                            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-xl hover:shadow-gray-100/50 transition-all">
+                                <div className="relative h-32 overflow-hidden">
                                     <Link to="#">
-                                        <img src="src/assets/images/friends/friends-bg-1.jpg" alt="image" />
+                                        <img src={COVER_IMAGE} alt="image" className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
                                     </Link>
-                                    <div className="icon">
-                                        <Link to="#"><i className="flaticon-user"></i></Link>
-                                    </div>
                                 </div>
-                                <div className="friends-content">
-                                    <div className="friends-info d-flex justify-content-between align-items-center">
-                                        <Link to="#">
-                                            <img src="src/assets/images/friends/friends-1.jpg" alt="image" />
+                                <div className="p-5">
+                                    <div className="flex items-center mb-6">
+                                        <Link to="#" className="shrink-0 -mt-12 relative z-10">
+                                            <img src={USER_AVATAR} alt="image" className="w-16 h-16 rounded-full border-4 border-white shadow-md object-cover" />
                                         </Link>
-                                        <div className="text ms-3">
-                                            <h3><Link to="#">Jose Marroquin</Link></h3>
-                                            <span>10 Mutual Friends</span>
+                                        <div className="ml-3 pt-2">
+                                            <h3 className="text-[17px] font-bold text-gray-800 hover:text-[#3644D9] transition-colors leading-tight"><Link to="#">Jose Marroquin</Link></h3>
+                                            <span className="text-xs text-gray-400 font-semibold uppercase tracking-wider">10 Mutual Friends</span>
                                         </div>
                                     </div>
-                                    <ul className="statistics">
-                                        <li>
-                                            <Link to="#">
-                                                <span className="item-number">862</span>
-                                                <span className="item-text">Likes</span>
+                                    <ul className="flex justify-between border-y border-gray-50 py-4 mb-6">
+                                        <li className="text-center">
+                                            <Link to="#" className="block">
+                                                <span className="block text-base font-bold text-gray-800 leading-none">862</span>
+                                                <span className="text-[11px] font-bold text-gray-400 uppercase mt-1 block">Likes</span>
                                             </Link>
                                         </li>
-                                        <li>
-                                            <Link to="#">
-                                                <span className="item-number">91</span>
-                                                <span className="item-text">Following</span>
+                                        <li className="text-center">
+                                            <Link to="#" className="block">
+                                                <span className="block text-base font-bold text-gray-800 leading-none">91</span>
+                                                <span className="text-[11px] font-bold text-gray-400 uppercase mt-1 block">Following</span>
                                             </Link>
                                         </li>
-                                        <li>
-                                            <Link to="#">
-                                                <span className="item-number">514</span>
-                                                <span className="item-text">Followers</span>
+                                        <li className="text-center">
+                                            <Link to="#" className="block">
+                                                <span className="block text-base font-bold text-gray-800 leading-none">514</span>
+                                                <span className="text-[11px] font-bold text-gray-400 uppercase mt-1 block">Followers</span>
                                             </Link>
                                         </li>
                                     </ul>
-                                    <div className="button-group d-flex justify-content-between align-items-center">
-                                        <div className="add-friend-btn">
-                                            <button type="submit">Add Friend</button>
-                                        </div>
-                                        <div className="send-message-btn">
-                                            <button type="submit">Delete</button>
-                                        </div>
+                                    <div className="flex gap-3">
+                                        <button className="flex-1 py-2.5 bg-[#3644D9] text-white text-[13px] font-bold rounded-xl hover:bg-[#2E3AB8] transition-all shadow-lg shadow-blue-100">Add Friend</button>
+                                        <button className="flex-1 py-2.5 bg-gray-50 text-gray-600 text-[13px] font-bold rounded-xl hover:bg-red-50 hover:text-red-500 transition-all">Delete</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="load-more-posts-btn">
-                        <Link to="#"><i className="flaticon-loading"></i> Load More</Link>
+                    <div className="text-center py-6">
+                        <Link to="#" className="inline-flex items-center text-[#3644D9] font-bold hover:underline font-heading tracking-wide uppercase text-xs"><i className="ri-loader-4-line mr-2 animate-spin"></i> Load More</Link>
                     </div>
                 </div>
 
-                <div className={`tab-pane fade ${activeTab === 'people-you-know' ? 'show active' : ''}`} id="people-you-know" role="tabpanel">
-                    <div className="row justify-content-start">
-                        <div className="col-lg-3 col-sm-6">
-                            <div className="single-friends-card">
-                                <div className="friends-image">
+                <div className={`${activeTab === 'people-you-know' ? 'block' : 'hidden'} animate-fade-in`}>
+                    <div className="flex flex-wrap -mx-3">
+                        <div className="w-full sm:w-1/2 lg:w-1/4 px-3 mb-6">
+                            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-xl hover:shadow-gray-100/50 transition-all">
+                                <div className="relative h-32 overflow-hidden">
                                     <Link to="#">
-                                        <img src="src/assets/images/friends/friends-bg-1.jpg" alt="image" />
+                                        <img src={COVER_IMAGE} alt="image" className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
                                     </Link>
-                                    <div className="icon">
-                                        <Link to="#"><i className="flaticon-user"></i></Link>
-                                    </div>
                                 </div>
-                                <div className="friends-content">
-                                    <div className="friends-info d-flex justify-content-between align-items-center">
-                                        <Link to="#">
-                                            <img src="src/assets/images/user/user-10.jpg" alt="image" />
+                                <div className="p-5">
+                                    <div className="flex items-center mb-6">
+                                        <Link to="#" className="shrink-0 -mt-12 relative z-10">
+                                            <img src={USER_AVATAR} alt="image" className="w-16 h-16 rounded-full border-4 border-white shadow-md object-cover" />
                                         </Link>
-                                        <div className="text ms-3">
-                                            <h3><Link to="#">Jose Marroquin</Link></h3>
-                                            <span>10 Mutual Friends</span>
+                                        <div className="ml-3 pt-2">
+                                            <h3 className="text-[17px] font-bold text-gray-800 hover:text-[#3644D9] transition-colors leading-tight"><Link to="#">Jose Marroquin</Link></h3>
+                                            <span className="text-xs text-gray-400 font-semibold uppercase tracking-wider">10 Mutual Friends</span>
                                         </div>
                                     </div>
-                                    <ul className="statistics">
-                                        <li>
-                                            <Link to="#">
-                                                <span className="item-number">862</span>
-                                                <span className="item-text">Likes</span>
+                                    <ul className="flex justify-between border-y border-gray-50 py-4 mb-6">
+                                        <li className="text-center">
+                                            <Link to="#" className="block">
+                                                <span className="block text-base font-bold text-gray-800 leading-none">862</span>
+                                                <span className="text-[11px] font-bold text-gray-400 uppercase mt-1 block">Likes</span>
                                             </Link>
                                         </li>
-                                        <li>
-                                            <Link to="#">
-                                                <span className="item-number">91</span>
-                                                <span className="item-text">Following</span>
+                                        <li className="text-center">
+                                            <Link to="#" className="block">
+                                                <span className="block text-base font-bold text-gray-800 leading-none">91</span>
+                                                <span className="text-[11px] font-bold text-gray-400 uppercase mt-1 block">Following</span>
                                             </Link>
                                         </li>
-                                        <li>
-                                            <Link to="#">
-                                                <span className="item-number">514</span>
-                                                <span className="item-text">Followers</span>
+                                        <li className="text-center">
+                                            <Link to="#" className="block">
+                                                <span className="block text-base font-bold text-gray-800 leading-none">514</span>
+                                                <span className="text-[11px] font-bold text-gray-400 uppercase mt-1 block">Followers</span>
                                             </Link>
                                         </li>
                                     </ul>
-                                    <div className="button-group d-flex justify-content-between align-items-center">
-                                        <div className="add-friend-btn">
-                                            <button type="submit">Add Friend</button>
-                                        </div>
-                                    </div>
+                                    <button className="w-full py-2.5 bg-[#3644D9] text-white text-[13px] font-bold rounded-xl hover:bg-[#2E3AB8] transition-all shadow-lg shadow-blue-100">Add Friend</button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="load-more-posts-btn">
-                        <Link to="#"><i className="flaticon-loading"></i> Load More</Link>
+                    <div className="text-center py-6">
+                        <Link to="#" className="inline-flex items-center text-[#3644D9] font-bold hover:underline font-heading tracking-wide uppercase text-xs"><i className="ri-loader-4-line mr-2 animate-spin"></i> Load More</Link>
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 };
 

@@ -85,50 +85,50 @@ const Archived = () => {
         setPosts(prev => prev.filter(p => p.id !== postId));
     };
 
-    if (loading) return <div className="p-5 text-center">Loading archived posts...</div>;
-    if (error) return <div className="p-5 text-center text-danger">{error}</div>;
+    if (loading) return <div className="p-10 text-center text-gray-400 font-bold animate-pulse">Loading archived posts...</div>;
+    if (error) return <div className="p-10 text-center text-red-500 font-bold bg-red-50 rounded-3xl border border-red-100 m-6">{error}</div>;
 
     return (
-        <div className="content-page-box-area">
-            <div className="container-fluid">
-                <div className="row justify-content-center">
-                    <div className="col-lg-8">
-                        <div className="section-title flex justify-between items-center mb-6">
-                            <h2 className="text-2xl font-bold text-gray-800">Archived Posts</h2>
-                            <p className="text-sm text-gray-500">{posts.length} Posts Archived</p>
+        <div className="animate-fade-in-up">
+            <div className="max-w-4xl mx-auto">
+                <div className="flex justify-between items-center mb-8 px-2">
+                    <h2 className="text-2xl font-bold text-gray-800 font-heading tracking-tight">Archived Posts</h2>
+                    <div className="bg-orange-50 text-orange-600 px-4 py-1.5 rounded-full text-xs font-bold border border-orange-100 shadow-sm transition-all hover:scale-105">
+                        {posts.length} Posts Archived
+                    </div>
+                </div>
+
+                {posts.length === 0 ? (
+                    <div className="bg-white rounded-3xl p-20 text-center shadow-sm border border-gray-100">
+                        <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i className="ri-archive-line text-4xl text-gray-300"></i>
                         </div>
+                        <h3 className="text-2xl font-bold text-gray-800 mb-2 font-heading tracking-tight">No Archived Posts</h3>
+                        <p className="text-gray-500 max-w-sm mx-auto leading-relaxed">
+                            Posts you archive will appear here. You can hide them from your timeline without deleting them forever.
+                        </p>
+                    </div>
+                ) : (
+                    <div className="space-y-6">
+                        {posts.map(post => (
+                            <PostWidget
+                                key={post.id}
+                                post={{ ...post, isArchived: true }}
+                                profileData={profileData}
+                                onDelete={handlePostDeleted}
+                                onUpdate={handlePostUpdated}
+                                onArchive={handlePostUnarchived}
+                            />
+                        ))}
 
-                        {posts.length === 0 ? (
-                            <div className="bg-white rounded-2xl p-12 text-center shadow-sm border border-gray-100">
-                                <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <i className="flaticon-star text-3xl text-gray-300"></i>
-                                </div>
-                                <h3 className="text-xl font-bold text-gray-800 mb-2">No Archived Posts</h3>
-                                <p className="text-gray-500">Posts you archive will appear here. You can hide them from your timeline without deleting them.</p>
-                            </div>
-                        ) : (
-                            <div className="archived-posts-list">
-                                {posts.map(post => (
-                                    <PostWidget
-                                        key={post.id}
-                                        post={{ ...post, isArchived: true }}
-                                        profileData={profileData}
-                                        onDelete={handlePostDeleted}
-                                        onUpdate={handlePostUpdated}
-                                        onArchive={handlePostUnarchived}
-                                    />
-                                ))}
-
-                                {isPostsLoading && (
-                                    <div className="p-4 text-center text-gray-400 font-medium">
-                                        <div className="animate-spin inline-block w-6 h-6 border-2 border-current border-t-transparent text-blue-600 rounded-full mr-2" role="status"></div>
-                                        Loading more posts...
-                                    </div>
-                                )}
+                        {isPostsLoading && (
+                            <div className="p-8 text-center text-gray-400 font-medium">
+                                <div className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-[#3644D9] rounded-full mr-3" role="status"></div>
+                                <span>Loading more posts...</span>
                             </div>
                         )}
                     </div>
-                </div>
+                )}
             </div>
         </div>
     );

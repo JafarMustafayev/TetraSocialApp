@@ -1,149 +1,54 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { USER_AVATAR } from '../api/client';
 
 const Notifications = () => {
     return (
-        <div className="all-notifications-body">
-            <div className="all-notifications-header d-flex justify-content-between align-items-center">
-                <h3>Notifications</h3>
+        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in-up">
+            <div className="p-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
+                <h3 className="text-xl font-bold text-gray-800 m-0">Notifications</h3>
 
-                <div className="dropdown">
-                    <button className="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i className="flaticon-menu"></i></button>
-                    <ul className="dropdown-menu">
-                        <li><Link className="dropdown-item d-flex align-items-center" to="#"><i className="flaticon-trash"></i> Clean Notification</Link></li>
-                    </ul>
+                <div className="relative group">
+                    <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-gray-100 text-gray-500 hover:text-[#3644D9] hover:border-[#3644D9] transition-all" type="button">
+                        <i className="ri-more-2-line text-lg"></i>
+                    </button>
+                    <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                        <Link className="flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-red-500 transition-colors" to="#">
+                            <i className="ri-delete-bin-line mr-3"></i> Clean Notification
+                        </Link>
+                    </div>
                 </div>
             </div>
 
-            <div className="item d-flex justify-content-between align-items-center">
-                <div className="figure">
-                    <Link to="/profile"><img src="src/assets/images/user/user-55.jpg" className="rounded-circle" alt="image" /></Link>
-                </div>
-                <div className="text">
-                    <h4><Link to="/profile">James Vanwin</Link></h4>
-                    <span>Posted A Comment On Your Status</span>
-                    <span className="main-color">20 Minites Ago</span>
-                </div>
-                <div className="icon">
-                    <Link to="#"><i className="flaticon-x-mark"></i></Link>
-                </div>
-            </div>
-            <div className="item d-flex justify-content-between align-items-center">
-                <div className="figure">
-                    <Link to="/profile"><img src="src/assets/images/user/user-45.jpg" className="rounded-circle" alt="image" /></Link>
-                </div>
-                <div className="text">
-                    <h4><Link to="/profile">Dwight Schoolcraft</Link></h4>
-                    <span>Sent You a Friend Request</span>
-                    <span className="main-color">35 Minites Ago</span>
-                </div>
-                <div className="icon">
-                    <Link to="#"><i className="flaticon-x-mark"></i></Link>
-                </div>
-            </div>
-            <div className="item d-flex justify-content-between align-items-center">
-                <div className="figure">
-                    <Link to="/profile"><img src="src/assets/images/user/user-48.jpg" className="rounded-circle" alt="image" /></Link>
-                </div>
-                <div className="text">
-                    <h4><Link to="/profile">Susan Hadden</Link></h4>
-                    <span>Add a Photo in Design Group</span>
-                    <span className="main-color">50 Minites Ago</span>
-                </div>
-                <div className="icon">
-                    <Link to="#"><i className="flaticon-x-mark"></i></Link>
-                </div>
-            </div>
-            <div className="item d-flex justify-content-between align-items-center">
-                <div className="figure">
-                    <Link to="/profile"><img src="src/assets/images/user/user-49.jpg" className="rounded-circle" alt="image" /></Link>
-                </div>
-                <div className="text">
-                    <h4><Link to="/profile">Herta Smith</Link></h4>
-                    <span>Posted in Graphic Design Learn</span>
-                    <span className="main-color">1 Hours Ago</span>
-                </div>
-                <div className="icon">
-                    <Link to="#"><i className="flaticon-x-mark"></i></Link>
-                </div>
-            </div>
-            <div className="item d-flex justify-content-between align-items-center">
-                <div className="figure">
-                    <Link to="/profile"><img src="src/assets/images/user/user-50.jpg" className="rounded-circle" alt="image" /></Link>
-                </div>
-                <div className="text">
-                    <h4><Link to="/profile">Francis L. Tay</Link></h4>
-                    <span>Like Your Comment</span>
-                    <span className="main-color">5 Hours Ago</span>
-                </div>
-                <div className="icon">
-                    <Link to="#"><i className="flaticon-x-mark"></i></Link>
-                </div>
-            </div>
-            <div className="item d-flex justify-content-between align-items-center">
-                <div className="figure">
-                    <Link to="/profile"><img src="src/assets/images/user/user-51.jpg" className="rounded-circle" alt="image" /></Link>
-                </div>
-                <div className="text">
-                    <h4><Link to="/profile">Laura Hildebrandt</Link></h4>
-                    <span>Comment On Your Status</span>
-                    <span className="main-color">1 Days Ago</span>
-                </div>
-                <div className="icon">
-                    <Link to="#"><i className="flaticon-x-mark"></i></Link>
-                </div>
-            </div>
-            <div className="item d-flex justify-content-between align-items-center">
-                <div className="figure">
-                    <Link to="/profile"><img src="src/assets/images/user/user-52.jpg" className="rounded-circle" alt="image" /></Link>
-                </div>
-                <div className="text">
-                    <h4><Link to="/profile">Martha Wilkes</Link></h4>
-                    <span>Reacted To Your Comment "Happy Birthday"</span>
-                    <span className="main-color">3 Days Ago</span>
-                </div>
-                <div className="icon">
-                    <Link to="#"><i className="flaticon-x-mark"></i></Link>
-                </div>
-            </div>
-            <div className="item d-flex justify-content-between align-items-center">
-                <div className="figure">
-                    <Link to="/profile"><img src="src/assets/images/user/user-53.jpg" className="rounded-circle" alt="image" /></Link>
-                </div>
-                <div className="text">
-                    <h4><Link to="/profile">Howard Harris</Link></h4>
-                    <span>Added a Photo in Graphic Design Group</span>
-                    <span className="main-color">7 Days Ago</span>
-                </div>
-                <div className="icon">
-                    <Link to="#"><i className="flaticon-x-mark"></i></Link>
-                </div>
-            </div>
-            <div className="item d-flex justify-content-between align-items-center">
-                <div className="figure">
-                    <Link to="/profile"><img src="src/assets/images/user/user-54.jpg" className="rounded-circle" alt="image" /></Link>
-                </div>
-                <div className="text">
-                    <h4><Link to="/profile">Martha Wilkes</Link></h4>
-                    <span>Added a Photo in Graphic Design Group</span>
-                    <span className="main-color">7 Days Ago</span>
-                </div>
-                <div className="icon">
-                    <Link to="#"><i className="flaticon-x-mark"></i></Link>
-                </div>
-            </div>
-            <div className="item d-flex justify-content-between align-items-center">
-                <div className="figure">
-                    <Link to="/profile"><img src="src/assets/images/user/user-30.jpg" className="rounded-circle" alt="image" /></Link>
-                </div>
-                <div className="text">
-                    <h4><Link to="/profile">David Gibson</Link></h4>
-                    <span>Commented on Your Newstatus</span>
-                    <span className="main-color">1 Month Ago</span>
-                </div>
-                <div className="icon">
-                    <Link to="#"><i className="flaticon-x-mark"></i></Link>
-                </div>
+            <div className="divide-y divide-gray-50">
+                {[
+                    { name: 'James Vanwin', img: 'user-55.jpg', text: 'Posted A Comment On Your Status', time: '20 Minutes Ago' },
+                    { name: 'Dwight Schoolcraft', img: 'user-45.jpg', text: 'Sent You a Friend Request', time: '35 Minutes Ago' },
+                    { name: 'Susan Hadden', img: 'user-48.jpg', text: 'Add a Photo in Design Group', time: '50 Minutes Ago' },
+                    { name: 'Herta Smith', img: 'user-49.jpg', text: 'Posted in Graphic Design Learn', time: '1 Hour Ago' },
+                    { name: 'Francis L. Tay', img: 'user-50.jpg', text: 'Like Your Comment', time: '5 Hours Ago' },
+                    { name: 'Laura Hildebrandt', img: 'user-51.jpg', text: 'Comment On Your Status', time: '1 Day Ago' },
+                    { name: 'Martha Wilkes', img: 'user-52.jpg', text: 'Reacted To Your Comment "Happy Birthday"', time: '3 Days Ago' },
+                    { name: 'Howard Harris', img: 'user-53.jpg', text: 'Added a Photo in Graphic Design Group', time: '7 Days Ago' },
+                    { name: 'Martha Wilkes', img: 'user-54.jpg', text: 'Added a Photo in Graphic Design Group', time: '7 Days Ago' },
+                    { name: 'David Gibson', img: 'user-30.jpg', text: 'Commented on Your Newstatus', time: '1 Month Ago' }
+                ].map((notif, idx) => (
+                    <div key={idx} className="p-5 flex items-center hover:bg-gray-50/50 transition-colors group">
+                        <div className="shrink-0">
+                            <Link to="/profile">
+                                <img src={USER_AVATAR} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" alt="image" />
+                            </Link>
+                        </div>
+                        <div className="ml-4 flex-1">
+                            <h4 className="text-[15px] font-bold text-gray-800 hover:text-[#3644D9] transition-colors"><Link to="/profile">{notif.name}</Link></h4>
+                            <p className="text-[13px] text-gray-500 mt-0.5">{notif.text}</p>
+                            <span className="text-[11px] font-bold text-[#3644D9] uppercase mt-1 block">{notif.time}</span>
+                        </div>
+                        <button className="w-8 h-8 flex items-center justify-center rounded-full text-gray-300 hover:bg-red-50 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100">
+                            <i className="ri-close-line text-xs font-bold"></i>
+                        </button>
+                    </div>
+                ))}
             </div>
         </div>
     );

@@ -12,18 +12,18 @@ const ActivitiesSidebar = () => {
     const currentSection = searchParams.get('section');
 
     const activityItems = [
-        { id: 'liked', label: 'Liked posts', icon: 'flaticon-heart-shape-outline' },
-        { id: 'saved', label: 'Saved posts', icon: 'flaticon-star' },
-        { id: 'archived', label: 'Archived posts', icon: 'flaticon-private' },
+        { id: 'liked', label: 'Liked posts', icon: 'ri-heart-line' },
+        { id: 'saved', label: 'Saved posts', icon: 'ri-star-line' },
+        { id: 'archived', label: 'Archived posts', icon: 'ri-archive-line' },
     ];
 
     const settingItems = [
-        { id: 'profile-information', label: 'Profile Information', icon: 'flaticon-user' },
-        { id: 'profile-photos', label: 'Profile Photos', icon: 'flaticon-image' },
-        { id: 'work-experience', label: 'Work Experience', icon: 'flaticon-calendar' },
-        { id: 'change-username', label: 'Change Username', icon: 'flaticon-edit' },
-        { id: 'privacy', label: 'Privacy Settings', icon: 'flaticon-privacy' },
-        { id: 'change-password', label: 'Change Password', icon: 'flaticon-settings' },
+        { id: 'profile-information', label: 'Profile Information', icon: 'ri-user-line' },
+        { id: 'profile-photos', label: 'Profile Photos', icon: 'ri-image-line' },
+        { id: 'work-experience', label: 'Work Experience', icon: 'ri-briefcase-line' },
+        { id: 'change-username', label: 'Change Username', icon: 'ri-id-card-line' },
+        { id: 'privacy', label: 'Privacy Settings', icon: 'ri-shield-user-line' },
+        { id: 'change-password', label: 'Change Password', icon: 'ri-lock-password-line' },
     ];
 
     const menuItems = isActivities ? activityItems : (isSettings ? settingItems : []);
@@ -33,31 +33,39 @@ const ActivitiesSidebar = () => {
     if (!isSettings && !isActivities) return null;
 
     return (
-        <div className="fixed left-[165px] top-[5.30rem] h-full w-[250px] z-1 transition-all duration-400 hidden lg:block border-l border-gray-100">
-            <div className="h-full relative bg-white overflow-hidden shadow-[0_8px_10px_0_rgba(183,192,206,0.1)] max-h-[calc(100%-80px)] transition-all duration-400 pt-2">
-                <div className="px-6 py-4 border-b border-gray-50 mb-4 flex justify-between items-center">
-                    <h3 className="text-lg font-bold text-gray-800">
+        <div className="fixed left-[165px] top-[85px] h-[calc(100vh-85px)] w-[240px] z-50 transition-all duration-300 hidden lg:block border-l border-gray-100 bg-white shadow-sm overflow-hidden">
+            <div className="h-full flex flex-col">
+                <div className="px-6 py-5 border-b border-gray-50 bg-gray-50/30">
+                    <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">
                         {isSettings ? 'Settings' : 'Activities'}
                     </h3>
                 </div>
-                <ul className="list-none h-full overflow-y-auto custom-scrollbar ">
-                    {menuItems.map((item) => (
-                        <li key={item.id} className="mb-1 last:mb-0 relative group w-full">
-                            <Link
-                                to={`${location.pathname}?${paramKey}=${item.id}`}
-                                className={`flex items-center px-6 py-3 text-[14px] w-full font-bold transition-all duration-400 ${activeId === item.id ? 'text-[#3644D9] bg-[#F4F7FC]' : 'text-[#515355] hover:text-[#3644D9] hover:bg-[#F9FBFF]'
-                                    }`}
-                            >
-                                <i className={`${item.icon} mr-4 text-lg ${activeId === item.id ? 'text-[#3644D9]' : 'text-gray-400'}`}></i>
-                                <span>{item.label}</span>
-                                {activeId === item.id && (
-                                    <span className="absolute right-0 top-0 h-full w-[3px] bg-[#3644D9]"></span>
-                                )}
-                            </Link>
-                        </li>
-                    ))}
-
-                </ul>
+                <nav className="flex-1 overflow-y-auto custom-scrollbar p-3">
+                    <ul className="space-y-1">
+                        {menuItems.map((item) => (
+                            <li key={item.id}>
+                                <Link
+                                    to={`${location.pathname}?${paramKey}=${item.id}`}
+                                    className={`flex items-center px-4 py-3 rounded-xl text-sm font-bold transition-all group relative ${activeId === item.id
+                                        ? 'text-[#3644D9] bg-blue-50'
+                                        : 'text-gray-500 hover:text-[#3644D9] hover:bg-gray-50'
+                                        }`}
+                                >
+                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 transition-all ${activeId === item.id
+                                        ? 'bg-[#3644D9] text-white shadow-lg shadow-blue-100'
+                                        : 'bg-gray-100 text-gray-400 group-hover:bg-blue-100 group-hover:text-[#3644D9]'
+                                        }`}>
+                                        <i className={`${item.icon} text-base`}></i>
+                                    </div>
+                                    <span>{item.label}</span>
+                                    {activeId === item.id && (
+                                        <div className="absolute right-2 w-1.5 h-1.5 rounded-full bg-[#3644D9] shadow-[0_0_10px_rgba(54,68,217,0.5)]"></div>
+                                    )}
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                </nav>
             </div>
         </div>
     );

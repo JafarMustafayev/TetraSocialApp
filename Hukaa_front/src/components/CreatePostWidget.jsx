@@ -77,7 +77,6 @@ const CreatePostWidget = ({ profileData, onPostCreated }) => {
             }
         } catch (error) {
             console.error('Error creating post:', error);
-            // detailed error handling based on the fail response structure in user request
             if (error.response && error.response.data && error.response.data.errors) {
                 const errors = error.response.data.errors;
                 const errorMsg = Object.values(errors).flat().join('\n');
@@ -91,62 +90,59 @@ const CreatePostWidget = ({ profileData, onPostCreated }) => {
     };
 
     return (
-        <div className="bg-white rounded-2xl shadow-sm mb-6 border border-gray-100 overflow-hidden">
-            <div className="p-5">
+        <div className="bg-white rounded-3xl shadow-sm mb-6 border border-gray-100 overflow-hidden transition-all hover:shadow-xl hover:shadow-gray-100/50">
+            <div className="p-6">
                 <div className="flex items-start space-x-4">
 
-                    <div className="flex-1  ">
+                    <div className="flex-1">
                         <textarea
                             value={content}
                             onChange={handleTextChange}
                             placeholder="What's on your mind?..."
-                            className="w-full bg-gray-50/50 border-none ring-2 ring-gray-400  text-gray-600 resize-none rounded-xl p-3 min-h-[150px] transition-all"
+                            className="w-full bg-gray-50/50 border-none ring-1 ring-gray-100 focus:ring-4 focus:ring-blue-100 focus:bg-white text-gray-700 resize-none rounded-2xl p-4 min-h-[120px] transition-all placeholder:text-gray-400 font-medium text-[15px] outline-none"
                         ></textarea>
 
-                        {/* Progress/Counter */}
-                        <div className="flex justify-end mt-1 px-1">
-                            <span className={`text-[10px] font-bold tracking-tight ${content.length >= maxChars ? 'text-red-500' : 'text-gray-400'}`}>
+                        <div className="flex justify-end mt-2">
+                            <span className={`text-[10px] font-bold tracking-widest uppercase ${content.length >= maxChars ? 'text-red-500' : 'text-gray-400'}`}>
                                 {content.length} / {maxChars}
                             </span>
                         </div>
                     </div>
                 </div>
 
-                {/* Previews */}
+                {previews.length > 0 && (
+                    <div className="mt-4 flex flex-wrap gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 border-dashed">
+                        {previews.map((preview, index) => (
+                            <div key={index} className="relative w-24 h-24 group">
+                                {preview.type === 'video' ? (
+                                    <div className="w-full h-full bg-slate-100 rounded-xl border border-gray-200 flex items-center justify-center overflow-hidden">
+                                        <i className="ri-vidicon-fill text-slate-400 text-2xl"></i>
+                                    </div>
+                                ) : (
+                                    <img src={preview.url} className="w-full h-full object-cover rounded-xl border border-gray-200 shadow-sm" alt="preview" />
+                                )}
+                                <button
+                                    onClick={() => removeFile(index)}
+                                    className="absolute -top-2 -right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 z-10 scale-0 group-hover:scale-100 transition-transform border-[3px] border-white active:scale-90"
+                                >
+                                    <i className="ri-close-line text-sm font-bold"></i>
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
 
-                <div className="mt-2 flex flex-wrap gap-3">
-                    {previews.map((preview, index) => (
-                        <div key={index} className="relative w-20 group h-[50px]">
-                            {preview.type === 'video' ? (
-                                <div className="w-full h-full bg-slate-100 rounded-xl border border-gray-100 flex items-center justify-center overflow-hidden">
-                                    <i className="ri-vidicon-fill text-slate-400 text-xl"></i>
-                                </div>
-                            ) : (
-                                <img src={preview.url} className="w-max-[50px] h-max-[50px] object-cover rounded-xl border border-gray-100 shadow-sm" alt="preview" />
-                            )}
-                            <button
-                                onClick={() => removeFile(index)}
-                                className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white  flex items-center justify-center shadow-lg hover:bg-red-600 z-10 scale-0 border-4    group-hover:scale-100 transition-transform"
-                            >
-                                <i className="ri-close-line text-sm"></i>
-                            </button>
-                        </div>
-                    ))}
-                    {previews.length < 10 && (
+                <div className="mt-6 border-t border-gray-50 flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
                         <button
                             onClick={() => fileInputRef.current.click()}
-                            className="w-20 h-20 bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center text-gray-400 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-500 transition-all"
+                            className="flex items-center space-x-2 px-4 py-2.5 bg-gray-50 text-gray-500 rounded-xl font-bold text-sm hover:bg-blue-50 hover:text-[#3644D9] transition-all group"
                         >
-                            <i className="ri-add-line text-2xl"></i>
-                            <span className="text-[10px] font-bold">ADD</span>
+                            <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center group-hover:bg-[#3644D9] group-hover:text-white transition-all">
+                                <i className="ri-image-add-line text-lg"></i>
+                            </div>
+                            <span>Photo / Video</span>
                         </button>
-                    )}
-                </div>
-
-
-                <div className=" border-t border-gray-50 flex items-center justify-between">
-                    <div className="flex items-center space-x-1">
-
                         <input
                             type="file"
                             ref={fileInputRef}
@@ -155,16 +151,19 @@ const CreatePostWidget = ({ profileData, onPostCreated }) => {
                             multiple
                             className="hidden"
                         />
-
-
                     </div>
 
                     <button
                         onClick={handlePost}
                         disabled={isLoading || (!content.trim() && selectedFiles.length === 0)}
-                        className={`px-8 py-3 rounded-xl font-bold transition-all shadow-lg ${(isLoading || (!content.trim() && selectedFiles.length === 0)) ? 'bg-gray-100 text-gray-400 shadow-none' : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200 hover:-translate-y-0.5'}`}
+                        className={`px-10 py-3.5 rounded-2xl font-bold transition-all shadow-xl active:scale-95 flex items-center ${(isLoading || (!content.trim() && selectedFiles.length === 0)) ? 'bg-gray-100 text-gray-400 shadow-none' : 'bg-[#3644D9] text-white hover:bg-[#2E3AB8] shadow-blue-100'}`}
                     >
-                        {isLoading ? 'Posting...' : 'Post Now'}
+                        {isLoading ? (
+                            <>
+                                <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                Posting...
+                            </>
+                        ) : 'Post Now'}
                     </button>
                 </div>
             </div>

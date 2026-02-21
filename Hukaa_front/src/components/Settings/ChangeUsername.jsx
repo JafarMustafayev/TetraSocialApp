@@ -37,31 +37,32 @@ const ChangeUsername = () => {
     };
 
     return (
-        <form className="account-setting-form" onSubmit={handleSubmit}>
-
+        <form className="space-y-6 max-w-lg" onSubmit={handleSubmit}>
             {message.text && (
-                <div className={`alert alert-${message.type === 'success' ? 'success' : 'danger'} mb-3`}>
+                <div className={`p-4 rounded-xl text-sm font-medium animate-fade-in ${message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-red-50 text-red-700 border border-red-100'}`}>
                     {message.text}
                 </div>
             )}
 
-            <div className="row">
-                <div className="col-lg-12 col-md-12">
-                    <div className="form-group">
-                        <label>New Username</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Enter new username"
-                            value={userName}
-                            onChange={(e) => setUserName(e.target.value)}
-                            required
-                        />
-                    </div>
+            <div className="space-y-4">
+                <div className="space-y-2">
+                    <label className="block text-sm font-bold text-gray-700 ml-1">New Username</label>
+                    <input
+                        type="text"
+                        className="w-full h-[50px] px-4 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:border-[#3644D9] focus:ring-4 focus:ring-blue-50 outline-none transition-all placeholder:text-gray-400"
+                        placeholder="Enter new username"
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value)}
+                        required
+                    />
                 </div>
 
-                <div className="col-lg-12 col-md-12 text-end">
-                    <button type="submit" className="h-[45px] px-6 rounded-lg font-bold text-[#515355] border border-gray-200 hover:bg-white hover:shadow-sm transition-all btn-primary mt-2" disabled={loading}>
+                <div className="pt-4">
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full md:w-auto px-10 py-3.5 bg-[#3644D9] text-white rounded-xl font-bold hover:bg-[#2E3AB8] hover:shadow-xl hover:shadow-blue-100 active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none"
+                    >
                         {loading ? 'Updating...' : 'Update Username'}
                     </button>
                 </div>

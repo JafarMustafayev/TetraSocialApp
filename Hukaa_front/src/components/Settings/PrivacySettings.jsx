@@ -2,51 +2,47 @@ import React from 'react';
 
 const PrivacySettings = () => {
     return (
-        <form className="account-setting-form">
-
-            <div className="row">
-                <div className="col-lg-6 col-md-6">
-                    <div className="form-group">
-                        <label>Who Can See Your Profile?</label>
-                        <select className="form-select">
-                            <option value="true">All</option>
-                            <option value="false">My followers</option>
-                            <option value="">No one</option>
-                        </select>
-                    </div>
+        <form className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                    <label className="block text-sm font-bold text-gray-700 ml-1">Who Can See Your Profile?</label>
+                    <select className="w-full h-[50px] px-4 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:border-[#3644D9] focus:ring-4 focus:ring-blue-50 outline-none transition-all appearance-none cursor-pointer">
+                        <option value="true">All</option>
+                        <option value="false">My followers</option>
+                        <option value="">No one</option>
+                    </select>
                 </div>
-                <div className="col-lg-6 col-md-6">
-                    <div className="form-group">
-                        <label>Who Can Send You Follow Request?</label>
-                        <select className="form-select">
-                            <option value="true">All</option>
-                            <option value="false">My followers</option>
-                            <option value="">No one</option>
-                        </select>
-                    </div>
+                <div className="space-y-2">
+                    <label className="block text-sm font-bold text-gray-700 ml-1">Who Can Send You Follow Request?</label>
+                    <select className="w-full h-[50px] px-4 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:border-[#3644D9] focus:ring-4 focus:ring-blue-50 outline-none transition-all appearance-none cursor-pointer">
+                        <option value="true">All</option>
+                        <option value="false">My followers</option>
+                        <option value="">No one</option>
+                    </select>
                 </div>
-                <div className="col-lg-6 col-md-6">
-                    <div className="form-group">
-                        <label>Who Can See Your Phone Number?</label>
-                        <select className="form-select">
-                            <option value="true">All</option>
-                            <option value="false">My followers</option>
-                            <option value="">No one</option>
-                        </select>
-                    </div>
+                <div className="space-y-2">
+                    <label className="block text-sm font-bold text-gray-700 ml-1">Who Can See Your Phone Number?</label>
+                    <select className="w-full h-[50px] px-4 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:border-[#3644D9] focus:ring-4 focus:ring-blue-50 outline-none transition-all appearance-none cursor-pointer">
+                        <option value="true">All</option>
+                        <option value="false">My followers</option>
+                        <option value="">No one</option>
+                    </select>
                 </div>
-                <div className="col-lg-6 col-md-6">
-                    <div className="form-group">
-                        <label>Who Can See Your Birthday?</label>
-                        <select className="form-select">
-                            <option value="true">All</option>
-                            <option value="false">My followers</option>
-                            <option value="">No one</option>
-                        </select>
-                    </div>
+                <div className="space-y-2">
+                    <label className="block text-sm font-bold text-gray-700 ml-1">Who Can See Your Birthday?</label>
+                    <select className="w-full h-[50px] px-4 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:border-[#3644D9] focus:ring-4 focus:ring-blue-50 outline-none transition-all appearance-none cursor-pointer">
+                        <option value="true">All</option>
+                        <option value="false">My followers</option>
+                        <option value="">No one</option>
+                    </select>
                 </div>
-                <div className="col-lg-12 col-md-12 text-end">
-                    <button type="submit" className="h-[45px] px-6  font-bold text-[#515355]  hover:bg-white hover:shadow-sm transition-all btn-primary mt-2 ">Save Change</button>
+                <div className="md:col-span-2 pt-4 flex justify-end">
+                    <button
+                        type="submit"
+                        className="px-10 py-3.5 bg-[#3644D9] text-white rounded-xl font-bold hover:bg-[#2E3AB8] hover:shadow-xl hover:shadow-blue-100 active:scale-[0.98] transition-all"
+                    >
+                        Save Changes
+                    </button>
                 </div>
             </div>
         </form>
