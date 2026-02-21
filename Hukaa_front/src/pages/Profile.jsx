@@ -138,7 +138,7 @@ const Profile = () => {
     return (
         <div className="content-page-box-area">
             <div className="mb-6">
-                <div className="bg-white rounded-b-xl shadow-sm overflow-hidden">
+                <div className="bg-white rounded-xl shadow-sm overflow-hidden">
                     <div className="relative w-full h-[300px] overflow-hidden">
                         <img
                             src={profileData.coverImagePath ? `${IMAGE_BASE_URL}/${profileData.coverImagePath}` : "/src/assets/images/my-profile-bg.jpg"}
@@ -185,8 +185,8 @@ const Profile = () => {
                                 <li className="relative">
                                     <button
                                         className={`py-4 font-bold text-[15px] transition-all relative ${activeTab === 'timeline'
-                                                ? 'text-blue-600 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[3px] after:bg-blue-600 after:rounded-t-full'
-                                                : 'text-gray-500 hover:text-blue-500'
+                                            ? 'text-blue-600 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[3px] after:bg-blue-600 after:rounded-t-full'
+                                            : 'text-gray-500 hover:text-blue-500'
                                             }`}
                                         onClick={() => setActiveTab('timeline')}
                                     >
@@ -197,8 +197,8 @@ const Profile = () => {
                                 <li className="relative">
                                     <button
                                         className={`py-4 font-bold text-[15px] transition-all relative ${activeTab === 'about'
-                                                ? 'text-blue-600 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[3px] after:bg-blue-600 after:rounded-t-full'
-                                                : 'text-gray-500 hover:text-blue-500'
+                                            ? 'text-blue-600 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[3px] after:bg-blue-600 after:rounded-t-full'
+                                            : 'text-gray-500 hover:text-blue-500'
                                             }`}
                                         onClick={() => setActiveTab('about')}
                                     >

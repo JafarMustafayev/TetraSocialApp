@@ -17,12 +17,15 @@ import EmailConfirmation from './pages/EmailConfirmation';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
+import SecondaryLayout from './layouts/SecondaryLayout';
+import MyActivities from './pages/MyActivities';
 
 function App() {
     return (
         <AuthProvider>
             <BrowserRouter>
                 <Routes>
+                    {/* Main Layout Routes */}
                     <Route path="/" element={
                         <ProtectedRoute>
                             <MainLayout />
@@ -33,9 +36,19 @@ function App() {
                         <Route path="messages" element={<Messages />} />
                         <Route path="notifications" element={<Notifications />} />
                         <Route path="profile" element={<Profile />} />
-                        <Route path="settings" element={<Settings />} />
                         <Route path="archived" element={<Archived />} />
                     </Route>
+
+                    {/* Secondary Layout Routes (Dual Sidebar) */}
+                    <Route element={
+                        <ProtectedRoute>
+                            <SecondaryLayout />
+                        </ProtectedRoute>
+                    }>
+                        <Route path="/settings" element={<Settings />} />
+                        <Route path="/my-activities" element={<MyActivities />} />
+                    </Route>
+
                     <Route element={<PublicRoute />}>
                         <Route element={<AuthLayout />}>
                             <Route path="/login" element={<Login />} />

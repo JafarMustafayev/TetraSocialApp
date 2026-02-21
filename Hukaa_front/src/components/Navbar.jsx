@@ -226,16 +226,15 @@ const Navbar = () => {
                                             </Link>
                                         </li>
                                         <li>
+                                            <Link to="/my-activities" className="flex items-center py-3 text-[#515355] text-[14px] font-bold  hover:text-[#3644D9] transition-all duration-300" onClick={() => setOpenDropdown(null)}>
+                                                <i className="flaticon-star mr-4 text-lg opacity-70"></i>
+                                                My Activities
+                                            </Link>
+                                        </li>
+                                        <li>
                                             <Link to="/settings" className="flex items-center py-3 text-[#515355] text-[14px] font-bold  hover:text-[#3644D9] transition-all duration-300" onClick={() => setOpenDropdown(null)}>
                                                 <i className="flaticon-settings mr-4 text-lg opacity-70"></i>
                                                 Setting
-                                            </Link>
-                                        </li>
-
-                                        <li className=" border-gray-100">
-                                            <Link to="/archived" className="flex items-center  py-3   hover:text-red-500 text-[14px] font-bold  transition-all duration-300">
-                                                <i className="flaticon-private mr-4 text-lg"></i>
-                                                Archived posts
                                             </Link>
                                         </li>
 

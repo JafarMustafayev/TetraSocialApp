@@ -38,7 +38,6 @@ const ChangeUsername = () => {
 
     return (
         <form className="account-setting-form" onSubmit={handleSubmit}>
-            <h3>Change Username</h3>
 
             {message.text && (
                 <div className={`alert alert-${message.type === 'success' ? 'success' : 'danger'} mb-3`}>
@@ -61,8 +60,8 @@ const ChangeUsername = () => {
                     </div>
                 </div>
 
-                <div className="col-lg-12 col-md-12">
-                    <button type="submit" className="default-btn" disabled={loading}>
+                <div className="col-lg-12 col-md-12 text-end">
+                    <button type="submit" className="h-[45px] px-6 rounded-lg font-bold text-[#515355] border border-gray-200 hover:bg-white hover:shadow-sm transition-all btn-primary mt-2" disabled={loading}>
                         {loading ? 'Updating...' : 'Update Username'}
                     </button>
                 </div>

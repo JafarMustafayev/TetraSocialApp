@@ -157,7 +157,6 @@ const WorkExperience = () => {
 
     return (
         <div className="account-setting-form">
-            <h3 className="mb-4">Work Experience</h3>
 
             {error && (
                 <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4 text-red-700">

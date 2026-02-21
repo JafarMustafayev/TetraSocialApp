@@ -3,7 +3,6 @@ import React from 'react';
 const PrivacySettings = () => {
     return (
         <form className="account-setting-form">
-            <h3>Privacy Settings</h3>
 
             <div className="row">
                 <div className="col-lg-6 col-md-6">
@@ -46,8 +45,8 @@ const PrivacySettings = () => {
                         </select>
                     </div>
                 </div>
-                <div className="col-lg-12 col-md-12">
-                    <button type="submit" className="default-btn">Save Change</button>
+                <div className="col-lg-12 col-md-12 text-end">
+                    <button type="submit" className="h-[45px] px-6  font-bold text-[#515355]  hover:bg-white hover:shadow-sm transition-all btn-primary mt-2 ">Save Change</button>
                 </div>
             </div>
         </form>

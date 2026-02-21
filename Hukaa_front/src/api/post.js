@@ -45,3 +45,16 @@ export const reactToPost = async (postId, reactionType) => {
         body: JSON.stringify({ reactionType }),
     });
 };
+
+export const getLikedPosts = async (page) => {
+    return fetchClient(`/api/post/liked/${page}`, {
+        method: 'GET',
+    });
+};
+
+export const getSavedPosts = async (page) => {
+    return fetchClient(`/api/post/saved/${page}`, {
+        method: 'GET',
+    });
+};
+
