@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 const ImageGalleryPopup = ({ isOpen, onClose, media = [], initialIndex = 0 }) => {
     const [currentIndex, setCurrentIndex] = useState(initialIndex);
@@ -30,11 +31,11 @@ const ImageGalleryPopup = ({ isOpen, onClose, media = [], initialIndex = 0 }) =>
 
     const currentItem = media[currentIndex];
 
-    return (
-        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-xl z-2000 flex flex-col items-center justify-center animate-fade-in">
+    return createPortal(
+        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-xl z-9999 flex flex-col items-center justify-center animate-fade-in">
             {/* Header / Top Controls */}
             <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-50">
-                <div className="text-white/90 font-bold bg-white/10 px-5 py-2 rounded-2xl backdrop-blur-md border border-white/10 shadow-xl tracking-wide text-sm">
+                <div className="text-white/90 font-bold bg-white/10 px-5 py-2 rounded-3xl backdrop-blur-md border border-white/10 shadow-xl tracking-wide text-sm">
                     {currentIndex + 1} <span className="text-white/40 mx-1">/</span> {media.length}
                 </div>
                 <div className="flex items-center space-x-4">
@@ -71,7 +72,7 @@ const ImageGalleryPopup = ({ isOpen, onClose, media = [], initialIndex = 0 }) =>
                     {currentItem.type === 'video' ? (
                         <video
                             src={currentItem.url}
-                            className="max-w-full max-h-full shadow-2xl rounded-2xl border border-white/10"
+                            className="max-w-full max-h-full shadow-2xl rounded-3xl border border-white/10"
                             controls
                             autoPlay
                         />
@@ -79,7 +80,7 @@ const ImageGalleryPopup = ({ isOpen, onClose, media = [], initialIndex = 0 }) =>
                         <img
                             src={currentItem.url}
                             alt={`Gallery item ${currentIndex}`}
-                            className="max-w-full max-h-full object-contain shadow-2xl rounded-2xl border border-white/10"
+                            className="max-w-full max-h-full object-contain shadow-2xl rounded-3xl border border-white/10"
                         />
                     )}
                 </div>
@@ -110,7 +111,8 @@ const ImageGalleryPopup = ({ isOpen, onClose, media = [], initialIndex = 0 }) =>
                     </div>
                 </div>
             )}
-        </div>
+        </div>,
+        document.body
     );
 };
 

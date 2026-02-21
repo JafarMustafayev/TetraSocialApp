@@ -36,10 +36,8 @@ const Settings = () => {
     };
 
     return (
-        <div className="settings-page-wrapper ml-5">
-
-
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in">
+        <div className="animate-fade-in-up">
+            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="border-b border-gray-50 px-8 py-5 bg-gray-50/30 flex justify-between items-center">
                     <h3 className="text-lg font-bold text-gray-800 m-0">{getSectionTitle()}</h3>
                 </div>

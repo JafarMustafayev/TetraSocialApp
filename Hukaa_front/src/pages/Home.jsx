@@ -13,8 +13,8 @@ const Home = () => {
     };
 
     return (
-        <div className="row">
-            <div className="col-lg-9 col-md-12 p-0 p-lg-3"> {/* Adjusted padding classes */}
+        <div className="flex flex-wrap -mx-3">
+            <div className="w-full lg:w-3/4 px-3">
                 <div className="news-feed-area">
                     <CreatePostWidget onPostCreated={handlePostCreated} />
 
@@ -26,8 +26,6 @@ const Home = () => {
                     ))}
                 </div>
             </div>
-
-
         </div>
     );
 };

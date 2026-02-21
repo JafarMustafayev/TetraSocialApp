@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { IMAGE_BASE_URL } from '../api/client';
+import { IMAGE_BASE_URL, USER_AVATAR, LOGO } from '../api/client';
 
 const Navbar = () => {
     const { user, logout } = useAuth();
@@ -29,243 +29,165 @@ const Navbar = () => {
 
     const stopPropagation = (e) => e.stopPropagation();
 
-    return (
-        <div className="fixed top-0 left-0 w-full z-999 bg-[#3644D9] shadow-[0_0_12px_rgba(0,0,0,0.12)]">
-            {/* Desktop & Main Content Container */}
-            <div className="p-[15px]">
-                <nav className="flex items-center justify-between">
-                    {/* Brand / Logo */}
-                    <div className="flex items-center shrink-0">
-                        <Link to="/" className="flex items-center">
-                            <img src="/src/assets/images/logo.png" alt="logo" className="max-w-full h-auto" />
-                        </Link>
-                    </div>
+    console.log(user);
 
-                    {/* Desktop Search Box (Hidden on small screens) */}
-                    <div className="hidden lg:block relative w-[430px] mx-auto group">
+    return (
+        <nav className="fixed top-0 left-0 w-full h-[85px] bg-[#3644D9] shadow-lg z-1000 flex items-center px-4 lg:px-8">
+            <div className="flex items-center justify-between w-full max-w-[1920px] mx-auto">
+                {/* Logo Section */}
+                <div className="flex items-center gap-6">
+                    <Link to="/" className="shrink-0">
+                        <img src={LOGO} alt="logo" className="h-[45px] w-auto" />
+                    </Link>
+
+                    {/* Search Bar */}
+                    <div className="hidden md:block relative group">
                         <form className="relative">
                             <input
                                 type="text"
-                                className="w-full h-[50px] bg-[#2E3AB8] rounded-[50px] pl-[25px] pr-[60px] text-white placeholder-white placeholder:opacity-100 outline-none transition-all duration-400 focus:placeholder-transparent cursor-text"
-                                placeholder="Search..."
+                                className="w-[300px] lg:w-[450px] h-[45px] bg-white/10 border border-white/20 rounded-full pl-12 pr-5 text-white placeholder-white/60 focus:bg-white focus:text-gray-800 focus:placeholder-gray-400 outline-none transition-all duration-300"
+                                placeholder="Search everything..."
                             />
-                            <button type="submit" className="absolute right-0 top-0 h-full px-5 bg-transparent border-none text-white text-lg">
-                                <i className="ri-search-line"></i>
+                            <button type="submit" className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60 group-focus-within:text-gray-400">
+                                <i className="ri-search-line text-xl"></i>
                             </button>
                         </form>
                     </div>
+                </div>
 
-                    {/* Right Side Options (Icons and Profile) */}
-                    <div className="flex items-center space-x-2 md:space-x-4">
+                {/* Right Side Icons & Profile */}
+                <div className="flex items-center gap-2 lg:gap-4">
+                    {/* Inbox Dropdown */}
+                    <div className="relative" onClick={stopPropagation}>
+                        <button
+                            onClick={(e) => toggleDropdown('inbox', e)}
+                            className="w-[45px] h-[45px] flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white hover:text-[#3644D9] transition-all relative"
+                        >
+                            <i className="ri-mail-line text-[22px]"></i>
+                            <span className="absolute -top-[2px] -right-[2px] w-5 h-5 flex items-center justify-center rounded-full bg-[#1CCD16] text-white text-[10px] font-bold border-2 border-[#3644D9]">2</span>
+                        </button>
 
-                        {/* Friend Requests Icon with Dropdown */}
-                        <div className="relative group px-1 md:px-3" onClick={stopPropagation}>
-                            <a
-                                href="#"
-                                onClick={(e) => toggleDropdown('friendRequests', e)}
-                                className="relative block transition-transform duration-400 hover:translate-x-px"
-                            >
-                                <i className="flaticon-user text-white text-[25px]"></i>
-                                <span className="absolute -top-[2px] -right-[5px] w-[15px] h-[15px] flex items-center justify-center rounded-full bg-[#3ED7FF] text-white text-[10px] font-bold">
-                                    3
-                                    <span className="absolute inset-0 rounded-full border border-[#3ED7FF] animate-ping opacity-75"></span>
-                                </span>
-                            </a>
-
-                            {/* Dropdown Menu */}
-                            <div className={`absolute right-0 mt-[20px] min-w-[310px] bg-white shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-50 rounded-sm transition-all duration-300 transform origin-top ${openDropdown === 'friendRequests' ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-[10px]'}`}>
-                                <div className="p-[15px] flex justify-between items-center border-b border-gray-50 bg-gray-50/30">
-                                    <h3 className="text-[16px] font-bold text-[#515355] m-0">Friend Requests</h3>
-                                    <i className="flaticon-menu text-[#727E8C] text-[18px] cursor-pointer hover:text-[#3644D9] transition-colors"></i>
-                                </div>
-                                <div className="p-[15px] max-h-[400px] overflow-y-auto">
-                                    <div className="flex items-center mb-[20px] last:mb-0 group/item">
-                                        <div className="shrink-0 relative">
-                                            <img src="/src/assets/images/user/user-2.jpg" alt="user" className="w-[55px] h-[55px] rounded-full border border-gray-100" />
-                                        </div>
-                                        <div className="ml-[12px] flex-1 flex justify-between items-center">
-                                            <div>
-                                                <h4 className="text-[15px] font-bold text-[#515355] m-0 hover:text-[#3644D9] transition-colors"><a href="#">Sandra Cross</a></h4>
-                                                <span className="text-[#6B7C8F] text-[13px] mt-[2px] block">26 Friends</span>
-                                            </div>
-                                            <div className="flex items-center space-x-2">
-                                                <button className="w-[28px] h-[28px] flex items-center justify-center rounded-full border border-gray-200 text-gray-400 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all duration-300"><i className="ri-close-line"></i></button>
-                                                <button className="w-[28px] h-[28px] flex items-center justify-center rounded-full border border-gray-200 text-gray-400 hover:bg-[#3644D9] hover:text-white hover:border-[#3644D9] transition-all duration-300"><i className="ri-check-line"></i></button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="mt-4">
-                                        <Link to="/friends" className="block w-full text-center py-3 bg-[#3644D9] text-white text-[14px] font-bold rounded-md hover:bg-[#2E3AB8] transition-colors duration-400 shadow-sm" onClick={() => setOpenDropdown(null)}>View All Requests</Link>
-                                    </div>
-                                </div>
+                        <div className={`absolute right-0 top-full mt-4 w-[320px] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 transform origin-top ${openDropdown === 'inbox' ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-4'}`}>
+                            <div className="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
+                                <h3 className="font-bold text-gray-800">Messages</h3>
+                                <Link to="/messages" className="text-xs text-[#3644D9] font-bold hover:underline">View All</Link>
                             </div>
-                        </div>
-
-                        {/* Messages Icon with Dropdown */}
-                        <div className="relative group px-1 md:px-3" onClick={stopPropagation}>
-                            <a
-                                href="#"
-                                onClick={(e) => toggleDropdown('messages', e)}
-                                className="relative block transition-transform duration-400 hover:translate-x-px"
-                            >
-                                <i className="flaticon-email text-white text-[25px]"></i>
-                                <span className="absolute -top-[2px] -right-[5px] w-[15px] h-[15px] flex items-center justify-center rounded-full bg-[#1CCD16] text-white text-[9px] font-bold">
-                                    2
-                                    <span className="absolute inset-0 rounded-full border border-[#1CCD16] animate-pulse opacity-75"></span>
-                                </span>
-                            </a>
-
-                            <div className={`absolute right-0 mt-[20px] min-w-[310px] bg-white shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-50 rounded-sm transition-all duration-300 transform origin-top ${openDropdown === 'messages' ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-[10px]'}`}>
-                                <div className="p-[15px] flex justify-between items-center border-b border-gray-50 bg-gray-50/30">
-                                    <h3 className="text-[16px] font-bold text-[#515355] m-0">Messages</h3>
-                                    <i className="flaticon-menu text-[#727E8C] text-[18px] cursor-pointer hover:text-[#3644D9]"></i>
-                                </div>
-                                <div className="p-[15px]">
-                                    <div className="relative w-full mb-4">
-                                        <input type="text" className="w-full h-[40px] bg-[#F4F7FC] rounded-[30px] pl-[15px] pr-[40px] text-[13px] text-[#6B7C8F] outline-none border-none" placeholder="Search..." />
-                                        <button className="absolute right-[12px] top-1/2 -translate-y-1/2 text-[#6B7C8F]"><i className="ri-search-line"></i></button>
+                            <div className="p-2 max-h-[400px] overflow-y-auto">
+                                <div className="p-3 flex items-center gap-3 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer">
+                                    <img src={USER_AVATAR} className="w-10 h-10 rounded-full object-cover" alt="user" />
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="text-sm font-bold text-gray-800 truncate">James Vanwin</h4>
+                                        <p className="text-xs text-gray-500 truncate">Hello Dear I Want Talk To You</p>
                                     </div>
-                                    <div className="max-h-[350px] overflow-y-auto">
-                                        <div className="flex items-center mb-[15px] last:mb-0">
-                                            <div className="shrink-0 relative">
-                                                <img src="/src/assets/images/user/user-11.jpg" alt="user" className="w-[50px] h-[50px] rounded-full" />
-                                                <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
-                                            </div>
-                                            <div className="ml-[12px] w-[210px]">
-                                                <h4 className="text-[14px] font-bold text-[#515355] m-0 hover:text-[#3644D9] transition-colors"><a href="#">James Vanwin</a></h4>
-                                                <span className="text-[#6B7C8F] text-[13px] mt-1 block truncate w-full">Hello Dear I Want Talk To You</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="mt-4">
-                                        <Link to="/messages" className="block w-full text-center py-3 bg-[#3644D9] text-white text-[14px] font-bold rounded-md hover:bg-[#2E3AB8] transition-colors" onClick={() => setOpenDropdown(null)}>View All Messages</Link>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Notifications Icon with Dropdown */}
-                        <div className="relative group px-1 md:px-3" onClick={stopPropagation}>
-                            <a
-                                href="#"
-                                onClick={(e) => toggleDropdown('notifications', e)}
-                                className="relative block transition-transform duration-400 hover:translate-x-px"
-                            >
-                                <i className="flaticon-bell text-white text-[25px]"></i>
-                                <span className="absolute -top-[2px] -right-[5px] w-[15px] h-[15px] flex items-center justify-center rounded-full bg-[#FF3E3E] text-white text-[9px] font-bold">
-                                    1
-                                </span>
-                            </a>
-
-                            <div className={`absolute right-0 mt-[20px] min-w-[325px] bg-white shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-50 rounded-sm transition-all duration-300 transform origin-top ${openDropdown === 'notifications' ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-[10px]'}`}>
-                                <div className="p-[15px_15px_20px] flex justify-between items-center border-b border-gray-50 bg-gray-50/30">
-                                    <h3 className="text-[16px] font-bold text-[#515355] m-0">Notifications</h3>
-                                    <i className="flaticon-menu text-[#727E8C] text-[18px] cursor-pointer hover:text-[#3644D9]"></i>
-                                </div>
-                                <div className="p-[15px] max-h-[350px] overflow-y-auto">
-                                    <div className="flex items-center mb-[20px] last:mb-0">
-                                        <div className="shrink-0 relative">
-                                            <div className="w-[50px] h-[50px] rounded-full bg-blue-100 flex items-center justify-center text-[#3644D9]">
-                                                <i className="ri-chat-3-line text-xl"></i>
-                                            </div>
-                                        </div>
-                                        <div className="ml-[12px] flex-1">
-                                            <h4 className="text-[14px] font-bold text-[#515355] m-0"><a href="#" className="hover:text-[#3644D9]">James Vanwin</a></h4>
-                                            <span className="text-[#6B7C8F] text-[13px] mt-1 block leading-tight">Posted A Comment On Your Status</span>
-                                            <span className="text-[#3644D9] text-[12px] mt-1 block font-bold">20 Minutes Ago</span>
-                                        </div>
-                                    </div>
-                                    <div className="mt-4">
-                                        <Link to="/notifications" className="block w-full text-center py-3 bg-[#3644D9] text-white text-[14px] font-bold rounded-md hover:bg-[#2E3AB8] transition-colors" onClick={() => setOpenDropdown(null)}>View All Notifications</Link>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Profile Section with Dropdown */}
-                        <div className="pl-2 md:pl-4 border-l border-white/20" onClick={stopPropagation}>
-                            <div className="relative">
-                                <a
-                                    href="#"
-                                    onClick={(e) => toggleDropdown('profile', e)}
-                                    className="flex items-center focus:outline-none"
-                                >
-                                    <div className="relative flex items-center group cursor-pointer transition-transform duration-400 hover:-translate-y-px">
-                                        <img
-                                            src={user?.profilePhoto ? `${IMAGE_BASE_URL}/${user.profilePhoto}` : "/src/assets/images/user/user-1.jpg"}
-                                            alt="profile"
-                                            className="w-10 h-10 object-cover rounded-full border-2 border-white/20 shadow-sm"
-                                        />
-                                        <span className="hidden lg:block text-white text-[15px] font-bold ml-3 mr-1">{user?.username || 'Matthew'}</span>
-                                        <i className="ri-arrow-down-s-line text-white/50 ml-1 hidden lg:block"></i>
-                                    </div>
-                                </a>
-
-                                {/* Dropdown Menu */}
-                                <div className={`absolute right-0 mt-[25px] w-[250px] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-gray-100 rounded-md overflow-hidden transition-all duration-300 transform origin-top ${openDropdown === 'profile' ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-[10px]'}`}>
-                                    <div className="p-2 border-b border-gray-50 bg-[#F9FBFF]">
-                                        <div className="flex items-center space-x-3 mb-3">
-                                            <img
-                                                src={user?.profilePhoto ? `${IMAGE_BASE_URL}/${user.profilePhoto}` : "/src/assets/images/user/user-1.jpg"}
-                                                alt="user"
-                                                className="w-12 h-12 object-cover rounded-full ring-2 ring-white shadow-sm"
-                                            />
-                                            <div className="flex-1 min-w-0">
-                                                <h3 className="text-[17px] font-bold text-[#515355] truncate m-0">{user?.username || 'Matthew Turner'}</h3>
-
-                                            </div>
-                                        </div>
-
-
-                                    </div>
-                                    <ul className="py-2 list-none m-0">
-                                        <li>
-                                            <Link to="/profile" className="flex items-center  py-3 text-[#515355] text-[14px] font-bold  hover:text-[#3644D9] transition-all duration-300" onClick={() => setOpenDropdown(null)}>
-                                                <i className="flaticon-user mr-4 text-lg opacity-70"></i>
-                                                My Profile
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link to="/my-activities" className="flex items-center py-3 text-[#515355] text-[14px] font-bold  hover:text-[#3644D9] transition-all duration-300" onClick={() => setOpenDropdown(null)}>
-                                                <i className="flaticon-star mr-4 text-lg opacity-70"></i>
-                                                My Activities
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link to="/settings" className="flex items-center py-3 text-[#515355] text-[14px] font-bold  hover:text-[#3644D9] transition-all duration-300" onClick={() => setOpenDropdown(null)}>
-                                                <i className="flaticon-settings mr-4 text-lg opacity-70"></i>
-                                                Setting
-                                            </Link>
-                                        </li>
-
-                                        <li className=" border-gray-100">
-                                            <Link to="/logout" className="flex items-center  py-3   hover:text-red-500 text-[14px] font-bold  transition-all duration-300" onClick={handleLogout}>
-                                                <i className="flaticon-logout mr-4 text-lg"></i>
-                                                Logout
-                                            </Link>
-                                        </li>
-                                    </ul>
+                                    <span className="w-2 h-2 bg-[#3644D9] rounded-full"></span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </nav>
-            </div>
 
-            {/* Mobile Search - Bottom Bar (Optional based on design needs) */}
-            <div className="lg:hidden px-[15px] pb-[15px]">
-                <form className="relative">
-                    <input
-                        type="text"
-                        className="w-full h-[40px] bg-[#2E3AB8] rounded-[50px] pl-[20px] pr-[50px] text-white placeholder-white placeholder:opacity-100 outline-none flex items-center text-sm"
-                        placeholder="Search..."
-                    />
-                    <button type="submit" className="absolute right-0 top-0 h-full px-4 bg-transparent border-none text-white text-lg">
-                        <i className="ri-search-line"></i>
-                    </button>
-                </form>
+                    {/* Requests Dropdown */}
+                    <div className="relative" onClick={stopPropagation}>
+                        <button
+                            onClick={(e) => toggleDropdown('requests', e)}
+                            className="w-[45px] h-[45px] flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white hover:text-[#3644D9] transition-all relative"
+                        >
+                            <i className="ri-user-follow-line text-[22px]"></i>
+                            <span className="absolute -top-[2px] -right-[2px] w-5 h-5 flex items-center justify-center rounded-full bg-[#3ED7FF] text-white text-[10px] font-bold border-2 border-[#3644D9]">3</span>
+                        </button>
+
+                        <div className={`absolute right-0 top-full mt-4 w-[320px] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 transform origin-top ${openDropdown === 'requests' ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-4'}`}>
+                            <div className="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
+                                <h3 className="font-bold text-gray-800">Friend Requests</h3>
+                                <Link to="/friends" className="text-xs text-[#3644D9] font-bold hover:underline">View All</Link>
+                            </div>
+                            <div className="p-4 space-y-4">
+                                <div className="flex items-center gap-3">
+                                    <img src={USER_AVATAR} className="w-10 h-10 rounded-full object-cover" alt="user" />
+                                    <div className="flex-1">
+                                        <h4 className="text-sm font-bold text-gray-800">Sandra Cross</h4>
+                                        <p className="text-[11px] text-gray-400">26 Friends</p>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <button className="w-7 h-7 flex items-center justify-center rounded-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all"><i className="ri-close-line text-sm"></i></button>
+                                        <button className="w-7 h-7 flex items-center justify-center rounded-full bg-blue-50 text-[#3644D9] hover:bg-[#3644D9] hover:text-white transition-all"><i className="ri-check-line text-sm"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Notifications Dropdown */}
+                    <div className="relative" onClick={stopPropagation}>
+                        <button
+                            onClick={(e) => toggleDropdown('notifications', e)}
+                            className="w-[45px] h-[45px] flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white hover:text-[#3644D9] transition-all relative"
+                        >
+                            <i className="ri-notification-3-line text-[22px]"></i>
+                            <span className="absolute -top-[2px] -right-[2px] w-5 h-5 flex items-center justify-center rounded-full bg-[#FF3E3E] text-white text-[10px] font-bold border-2 border-[#3644D9]">1</span>
+                        </button>
+
+                        <div className={`absolute right-0 top-full mt-4 w-[320px] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 transform origin-top ${openDropdown === 'notifications' ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-4'}`}>
+                            <div className="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
+                                <h3 className="font-bold text-gray-800">Notifications</h3>
+                                <Link to="/notifications" className="text-xs text-[#3644D9] font-bold hover:underline">View All</Link>
+                            </div>
+                            <div className="p-2">
+                                <Link to="/notifications" className="p-3 flex items-start gap-3 hover:bg-gray-50 rounded-xl transition-colors group">
+                                    <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-[#3644D9] shrink-0">
+                                        <i className="ri-chat-3-line"></i>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="text-sm font-bold text-gray-800">James Vanwin</h4>
+                                        <p className="text-xs text-gray-500">Posted A Comment On Your Status</p>
+                                        <span className="text-[10px] font-bold text-[#3644D9] uppercase mt-1 block">20 Minutes Ago</span>
+                                    </div>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* User Profile */}
+                    <div className="relative ml-2" onClick={stopPropagation}>
+                        <div
+                            onClick={(e) => toggleDropdown('profile', e)}
+                            className="flex items-center gap-3 pl-2 pr-1 py-1 rounded-full hover:bg-white/10 cursor-pointer transition-all border border-transparent hover:border-white/20"
+                        >
+                            <div className="hidden lg:block text-right">
+                                <span className="block text-sm font-bold text-white leading-none">{user?.firstName || 'User'}</span>
+                                <span className="text-[10px] text-white/70 font-medium uppercase tracking-wider">{user?.lastName || 'Profile'}</span>
+                            </div>
+                            <img
+                                src={user?.profilePhoto ? `${IMAGE_BASE_URL}/${user.profilePhoto}` : USER_AVATAR}
+                                className="w-[40px] h-[40px] rounded-full border-2 border-white/20 object-cover shadow-sm"
+                                alt="user"
+                            />
+                        </div>
+
+                        {/* Dropdown Menu */}
+                        <div className={`absolute right-0 top-full mt-4 w-[240px] bg-white rounded-2xl shadow-2xl border border-gray-100 py-3 transition-all duration-300 transform origin-top ${openDropdown === 'profile' ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-4'}`}>
+                            <div className="px-5 py-3 border-b border-gray-50 mb-2">
+                                <span className="block text-sm font-bold text-gray-800">{user?.firstName} {user?.lastName}</span>
+                                <span className="text-xs text-gray-400 truncate block">@{user?.username}</span>
+                            </div>
+                            <Link to="/profile" className="flex items-center px-5 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-[#3644D9] transition-all group" onClick={() => setOpenDropdown(null)}>
+                                <i className="ri-user-line mr-3 text-lg text-gray-400 group-hover:text-[#3644D9]"></i> My Profile
+                            </Link>
+                            <Link to="/my-activities" className="flex items-center px-5 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-[#3644D9] transition-all group" onClick={() => setOpenDropdown(null)}>
+                                <i className="ri-layout-grid-line mr-3 text-lg text-gray-400 group-hover:text-[#3644D9]"></i> My activities
+                            </Link>
+                            <Link to="/settings" className="flex items-center px-5 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-[#3644D9] transition-all group" onClick={() => setOpenDropdown(null)}>
+                                <i className="ri-settings-line mr-3 text-lg text-gray-400 group-hover:text-[#3644D9]"></i> Settings
+                            </Link>
+                            <div className="border-t border-gray-50 mt-2 pt-2">
+                                <button onClick={handleLogout} className="w-full flex items-center px-5 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-all group">
+                                    <i className="ri-logout-box-line mr-3 text-lg text-red-400 group-hover:text-red-500"></i> Sign Out
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+        </nav>
     );
 };
 

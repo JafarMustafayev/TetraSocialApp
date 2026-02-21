@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { LOGO } from '../api/client';
 
 const Login = () => {
     const { login } = useAuth();
@@ -40,14 +41,14 @@ const Login = () => {
     };
 
     return (
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 profile-authentication-area">
             <div className="flex flex-wrap justify-center items-center py-20">
                 <div className="w-full lg:w-1/2 md:w-full">
                     <div className="bg-transparent p-10 md:p-[65px_45px]">
                         <div className="text-center mb-[30px]">
                             <img
                                 className="max-w-[140px] h-auto"
-                                src="/src/assets/images/huka_logo.png"
+                                src={LOGO}
                                 alt="Huka Logo"
                             />
                         </div>
@@ -83,17 +84,10 @@ const Login = () => {
                                 />
                             </div>
 
-                            <div className="flex justify-between items-center mb-0">
-                                <div className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        id="test1"
-                                        className="w-[20px] h-[20px] border border-[#DDDDDD] rounded-[5px] bg-white accent-[#3644D9] cursor-pointer"
-                                    />
-                                    <label htmlFor="test1" className="ml-2 text-[#6B7C8F] font-medium text-[15px] cursor-pointer selection:bg-none">Remember me</label>
-                                </div>
+                            <div className="flex justify-between items-center mb-0 text-end">
 
-                                <div className="text-right">
+
+                                <div className="text-end">
                                     <Link to="/forgot-password" className="text-[#6B7C8F] font-medium text-[15px] hover:text-[#3644D9] transition duration-400 hover:underline">
                                         Forgot password ?
                                     </Link>

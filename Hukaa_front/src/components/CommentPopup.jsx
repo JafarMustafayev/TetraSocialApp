@@ -113,7 +113,7 @@ const CommentPopup = ({ isOpen, onClose, postId, onCommentCountChange }) => {
 
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-1000 p-4 transition-all duration-300">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate-fade-in-up">
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate-fade-in-up">
                 {/* Header */}
                 <div className="p-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                     <div>

@@ -17,9 +17,9 @@ const MyActivities = () => {
     const [error, setError] = useState(null);
 
     const tabs = [
-        { id: 'liked', label: 'Liked Posts', icon: 'flaticon-heart-shape-outline' },
-        { id: 'saved', label: 'Saved Posts', icon: 'flaticon-star' },
-        { id: 'archived', label: 'Archived Posts', icon: 'flaticon-private' },
+        { id: 'liked', label: 'Liked Posts', icon: 'ri-heart-3-line' },
+        { id: 'saved', label: 'Saved Posts', icon: 'ri-bookmark-line' },
+        { id: 'archived', label: 'Archived Posts', icon: 'ri-lock-line' },
     ];
 
     const setActiveTab = (tab) => {
@@ -119,44 +119,39 @@ const MyActivities = () => {
     if (loading) return <div className="p-5 text-center">Loading...</div>;
 
     return (
-        <div className="content-page-box-area">
-            <div className="container-fluid">
-                {/* Content */}
-                <div className="row justify-content-center ml-3">
-                    <div className="col-lg-12 ml-5">
-                        {posts.length === 0 && !isPostsLoading ? (
-                            <div className="bg-white rounded-2xl p-16 text-center shadow-sm border border-gray-100">
-                                <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <i className={`${tabs.find(t => t.id === activeTab).icon} text-4xl text-gray-300`}></i>
-                                </div>
-                                <h3 className="text-2xl font-bold text-gray-800 mb-2">No {activeTab} posts found</h3>
-                                <p className="text-gray-500 max-w-md mx-auto">
-                                    Posts you {activeTab === 'archived' ? 'archive' : activeTab} will appear here. This helps you keep track of your favorites and history.
-                                </p>
-                            </div>
-                        ) : (
-                            <div className="activities-posts-list">
-                                {posts.map(post => (
-                                    <PostWidget
-                                        key={post.id}
-                                        post={{ ...post, isArchived: activeTab === 'archived' }}
-                                        profileData={profileData}
-                                        onDelete={() => handlePostAction(post.id)}
-                                        onUpdate={(updated) => setPosts(prev => prev.map(p => p.id === updated.id ? updated : p))}
-                                        onArchive={() => activeTab === 'archived' && handlePostAction(post.id)}
-                                    />
-                                ))}
+        <div className="animate-fade-in-up">
+            <div className="max-w-4xl mx-auto">
+                {posts.length === 0 && !isPostsLoading ? (
+                    <div className="bg-white rounded-3xl p-16 text-center shadow-sm border border-gray-100">
+                        <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i className={`${tabs.find(t => t.id === activeTab).icon} text-4xl text-gray-300`}></i>
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-800 mb-2 font-heading tracking-tight">No {activeTab} posts found</h3>
+                        <p className="text-gray-500 max-w-md mx-auto">
+                            Posts you {activeTab === 'archived' ? 'archive' : activeTab} will appear here. This helps you keep track of your favorites and history.
+                        </p>
+                    </div>
+                ) : (
+                    <div className="space-y-6">
+                        {posts.map(post => (
+                            <PostWidget
+                                key={post.id}
+                                post={{ ...post, isArchived: activeTab === 'archived' }}
+                                profileData={profileData}
+                                onDelete={() => handlePostAction(post.id)}
+                                onUpdate={(updated) => setPosts(prev => prev.map(p => p.id === updated.id ? updated : p))}
+                                onArchive={() => activeTab === 'archived' && handlePostAction(post.id)}
+                            />
+                        ))}
 
-                                {isPostsLoading && (
-                                    <div className="p-8 text-center text-gray-400 font-medium">
-                                        <div className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-blue-600 rounded-full mr-3" role="status"></div>
-                                        <span>Loading posts...</span>
-                                    </div>
-                                )}
+                        {isPostsLoading && (
+                            <div className="p-8 text-center text-gray-400 font-medium">
+                                <div className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-[#3644D9] rounded-full mr-3" role="status"></div>
+                                <span>Loading posts...</span>
                             </div>
                         )}
                     </div>
-                </div>
+                )}
             </div>
         </div>
     );

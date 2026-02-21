@@ -1,6 +1,17 @@
 @import "tailwindcss";
+@import "remixicon/fonts/remixicon.css";
 
 @theme {
+  /* Colors */
+  --color-main: #3644D9;
+  --color-optional: #2E3AB8;
+  --color-black: #515355;
+  --color-paragraph: #6B7C8F;
+
+  /* Fonts */
+  --font-main: "Open Sans", sans-serif;
+  --font-heading: "Montserrat", sans-serif;
+
   @keyframes bounce-subtle {
 
     0%,
@@ -48,4 +59,48 @@
 
 @utility animate-zoom-in {
   animation: zoom-in 0.3s ease-out forwards;
+}
+
+/* Base Styles */
+@layer base {
+  body {
+    @apply font-main m-0 p-0 bg-[#F4F7FC] text-black;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading font-semibold text-black;
+  }
+
+  a {
+    @apply no-underline transition-all duration-400 text-black hover:text-main;
+  }
+
+  textarea {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    resize: none;
+  }
+
+  textarea::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.profile-authentication-area {
+  background-image: url("./assets/images/auth-background.jpg");
+  background-color: var(--color-black);
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  height: 100vh;
+
+
+  position: relative;
+  z-index: 1;
 }

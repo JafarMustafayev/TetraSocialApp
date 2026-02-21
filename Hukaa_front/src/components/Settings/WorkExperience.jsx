@@ -156,52 +156,55 @@ const WorkExperience = () => {
     }
 
     return (
-        <div className="account-setting-form">
-
+        <div className="space-y-8">
             {error && (
-                <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4 text-red-700">
-                    <p className="font-bold">Error</p>
-                    <p>{error}</p>
+                <div className="p-4 rounded-xl bg-red-50 text-red-700 border border-red-100 animate-fade-in font-medium text-sm">
+                    <span className="font-bold block mb-1">Error</span>
+                    {error}
                 </div>
             )}
 
             {/* List of Experiences */}
-            <div className="experience-list mb-6">
+            <div className="space-y-4">
+                <h3 className="text-lg font-bold text-gray-800 ml-1">Your Career Journey</h3>
                 {experiences.length === 0 ? (
-                    <div className="p-6 border-2 border-dashed border-gray-200 rounded-lg text-center text-gray-400">
-                        No work experience recorded yet.
+                    <div className="p-10 border-2 border-dashed border-gray-100 rounded-2xl text-center">
+                        <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                            <i className="ri-briefcase-line text-3xl"></i>
+                        </div>
+                        <p className="text-gray-400 font-medium">No work experience recorded yet.</p>
                     </div>
                 ) : (
-                    <div className="space-y-4">
+                    <div className="grid grid-cols-1 gap-4">
                         {experiences.map((exp) => (
-                            <div key={exp.id} className="relative group p-4 border rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow">
+                            <div key={exp.id} className="relative group p-5 border border-gray-100 rounded-2xl bg-white shadow-sm hover:shadow-xl hover:shadow-blue-50/50 transition-all duration-300">
                                 <div className="flex justify-between items-start">
-                                    <div className="flex-1">
-                                        <h5 className="text-[17px] font-bold text-[#3644D9]">{exp.position}</h5>
-                                        <div className="flex items-center text-[#515355] font-semibold mt-1">
-                                            <i className="ri-building-line mr-2"></i>
+                                    <div className="flex-1 space-y-1">
+                                        <h5 className="text-lg font-bold text-[#3644D9]">{exp.position}</h5>
+                                        <div className="flex items-center text-gray-700 font-bold text-sm">
+                                            <i className="ri-building-line mr-2 text-gray-400"></i>
                                             {exp.company}
                                         </div>
-                                        <div className="flex items-center text-sm text-gray-500 mt-1">
+                                        <div className="flex items-center text-xs text-gray-400 font-bold uppercase tracking-wider">
                                             <i className="ri-calendar-line mr-2"></i>
                                             {exp.startDate || 'N/A'} — {exp.isCurrent || !exp.endDate ? 'Present' : exp.endDate}
                                         </div>
                                         {exp.description && (
-                                            <p className="mt-3 text-[#6B7C8F] text-[14px] leading-relaxed italic border-l-2 border-gray-100 pl-3">
+                                            <p className="mt-4 text-gray-500 text-sm leading-relaxed italic line-clamp-3">
                                                 {exp.description}
                                             </p>
                                         )}
                                     </div>
-                                    <div className="flex space-x-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
+                                    <div className="flex gap-2">
                                         <button
-                                            className="w-8 h-8 flex items-center justify-center rounded-full text-blue-500 hover:bg-blue-50 transition-colors"
+                                            className="w-9 h-9 flex items-center justify-center rounded-xl bg-blue-50 text-[#3644D9] hover:bg-[#3644D9] hover:text-white transition-all shadow-sm"
                                             onClick={() => handleEdit(exp)}
                                             title="Edit"
                                         >
                                             <i className="ri-pencil-line"></i>
                                         </button>
                                         <button
-                                            className="w-8 h-8 flex items-center justify-center rounded-full text-red-500 hover:bg-red-50 transition-colors"
+                                            className="w-9 h-9 flex items-center justify-center rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm"
                                             onClick={() => handleDelete(exp.id)}
                                             title="Delete"
                                         >
@@ -216,18 +219,20 @@ const WorkExperience = () => {
             </div>
 
             {/* Form */}
-            <div className="bg-gray-50/50 p-6 rounded-xl border border-gray-100">
-                <h4 className="mb-4 font-bold text-lg flex items-center">
-                    <i className={`mr-2 ${isEditing ? 'ri-edit-line text-blue-500' : 'ri-add-circle-line text-green-500'}`}></i>
+            <div className="p-6 md:p-8 rounded-2xl bg-gray-50/50 border border-gray-100">
+                <h4 className="mb-6 font-bold text-lg flex items-center text-gray-800">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center mr-3 ${isEditing ? 'bg-blue-100 text-[#3644D9]' : 'bg-green-100 text-green-600'}`}>
+                        <i className={isEditing ? 'ri-edit-line text-xl' : 'ri-add-circle-line text-xl'}></i>
+                    </div>
                     {isEditing ? 'Edit Experience' : 'Add New Work Experience'}
                 </h4>
-                <form onSubmit={handleSubmit}>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="form-group mb-3">
-                            <label className="block mb-1.5 font-bold text-[#515355] text-sm">Company Name *</label>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="block text-sm font-bold text-gray-700 ml-1">Company Name *</label>
                             <input
                                 type="text"
-                                className="w-full h-[45px] px-4 rounded-lg border border-gray-200 focus:border-[#3644D9] focus:ring-1 focus:ring-[#3644D9] outline-none transition-all"
+                                className="w-full h-[50px] px-4 rounded-xl border border-gray-200 bg-white focus:border-[#3644D9] focus:ring-4 focus:ring-blue-50 outline-none transition-all placeholder:text-gray-400"
                                 placeholder="e.g. Acme Corporation"
                                 name="company"
                                 value={formData.company}
@@ -236,11 +241,11 @@ const WorkExperience = () => {
                             />
                         </div>
 
-                        <div className="form-group mb-3">
-                            <label className="block mb-1.5 font-bold text-[#515355] text-sm">Position / Designation *</label>
+                        <div className="space-y-2">
+                            <label className="block text-sm font-bold text-gray-700 ml-1">Position / Designation *</label>
                             <input
                                 type="text"
-                                className="w-full h-[45px] px-4 rounded-lg border border-gray-200 focus:border-[#3644D9] focus:ring-1 focus:ring-[#3644D9] outline-none transition-all"
+                                className="w-full h-[50px] px-4 rounded-xl border border-gray-200 bg-white focus:border-[#3644D9] focus:ring-4 focus:ring-blue-50 outline-none transition-all placeholder:text-gray-400"
                                 placeholder="e.g. Lead Software Engineer"
                                 name="position"
                                 value={formData.position}
@@ -249,11 +254,11 @@ const WorkExperience = () => {
                             />
                         </div>
 
-                        <div className="form-group mb-3">
-                            <label className="block mb-1.5 font-bold text-[#515355] text-sm">Start Date *</label>
+                        <div className="space-y-2">
+                            <label className="block text-sm font-bold text-gray-700 ml-1">Start Date *</label>
                             <input
                                 type="date"
-                                className="w-full h-[45px] px-4 rounded-lg border border-gray-200 focus:border-[#3644D9] focus:ring-1 focus:ring-[#3644D9] outline-none transition-all"
+                                className="w-full h-[50px] px-4 rounded-xl border border-gray-200 bg-white focus:border-[#3644D9] focus:ring-4 focus:ring-blue-50 outline-none transition-all cursor-pointer"
                                 name="startDate"
                                 value={formData.startDate}
                                 onChange={handleInputChange}
@@ -261,22 +266,22 @@ const WorkExperience = () => {
                             />
                         </div>
 
-                        <div className="form-group mb-3">
-                            <label className="block mb-1.5 font-bold text-[#515355] text-sm">End Date</label>
+                        <div className="space-y-2">
+                            <label className="block text-sm font-bold text-gray-700 ml-1">End Date</label>
                             <input
                                 type="date"
-                                className="w-full h-[45px] px-4 rounded-lg border border-gray-200 focus:border-[#3644D9] focus:ring-1 focus:ring-[#3644D9] outline-none transition-all"
+                                className="w-full h-[50px] px-4 rounded-xl border border-gray-200 bg-white focus:border-[#3644D9] focus:ring-4 focus:ring-blue-50 outline-none transition-all cursor-pointer"
                                 name="endDate"
                                 value={formData.endDate}
                                 onChange={handleInputChange}
                             />
-                            <p className="text-[11px] text-gray-500 mt-1 font-medium italic">Leave empty if you currently work here.</p>
+                            <p className="text-[11px] text-gray-400 mt-1 font-bold italic ml-1">Leave empty if you currently work here.</p>
                         </div>
 
-                        <div className="md:col-span-2 form-group mb-4">
-                            <label className="block mb-1.5 font-bold text-[#515355] text-sm">Work Description</label>
+                        <div className="md:col-span-2 space-y-2">
+                            <label className="block text-sm font-bold text-gray-700 ml-1">Work Description</label>
                             <textarea
-                                className="w-full min-h-[120px] p-4 rounded-lg border border-gray-200 focus:border-[#3644D9] focus:ring-1 focus:ring-[#3644D9] outline-none transition-all resize-none"
+                                className="w-full min-h-[120px] p-4 rounded-xl border border-gray-200 bg-white focus:border-[#3644D9] focus:ring-4 focus:ring-blue-50 outline-none transition-all resize-none placeholder:text-gray-400"
                                 placeholder="Describe your role, accomplishments, and tech stack..."
                                 name="description"
                                 value={formData.description}
@@ -284,21 +289,20 @@ const WorkExperience = () => {
                             ></textarea>
                         </div>
 
-                        <div className="md:col-span-2 flex items-center space-x-3 pt-2">
+                        <div className="md:col-span-2 flex items-center gap-3 pt-2">
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className={`h-[45px] px-8 rounded-lg font-bold text-white transition-all shadow-sm flex items-center justify-center ${isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#3644D9] hover:bg-[#2E3AB8] transform active:scale-95'
-                                    }`}
+                                className="px-10 py-3.5 bg-[#3644D9] text-white rounded-xl font-bold hover:bg-[#2E3AB8] hover:shadow-xl hover:shadow-blue-100 active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none"
                             >
                                 {isSubmitting ? (
-                                    <>
-                                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <span className="flex items-center gap-2">
+                                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
                                         Processing...
-                                    </>
+                                    </span>
                                 ) : (
                                     isEditing ? 'Update Experience' : 'Save Experience'
                                 )}
@@ -306,7 +310,7 @@ const WorkExperience = () => {
                             {isEditing && (
                                 <button
                                     type="button"
-                                    className="h-[45px] px-6 rounded-lg font-bold text-[#515355] border border-gray-200 hover:bg-white hover:shadow-sm transition-all"
+                                    className="px-8 py-3.5 bg-white text-gray-500 border border-gray-200 rounded-xl font-bold hover:bg-gray-50 hover:text-[#3644D9] transition-all"
                                     onClick={handleCancel}
                                 >
                                     Cancel

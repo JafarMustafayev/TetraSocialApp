@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { resetPassword } from '../api/auth';
+import { LOGO } from '../api/client';
 
 const ResetPassword = () => {
     const [searchParams] = useSearchParams();
@@ -62,13 +63,13 @@ const ResetPassword = () => {
     };
 
     return (
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 profile-authentication-area">
             <div className="flex flex-wrap justify-center items-center min-h-screen py-32">
                 <div className="w-full lg:w-1/2 md:w-full">
                     <div className="bg-transparent p-10 md:p-[65px_45px]">
                         <div className="text-center mb-[30px]">
                             <img
-                                src="/src/assets/images/huka_logo.png"
+                                src={LOGO}
                                 alt="Huka Logo"
                                 className="inline-block max-w-[240px] h-auto"
                             />
