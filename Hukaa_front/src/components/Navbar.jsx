@@ -169,15 +169,7 @@ const Navbar = () => {
                                 <span className="block text-sm font-bold text-gray-800">{user?.firstName} {user?.lastName}</span>
                                 <span className="text-xs text-gray-400 truncate block">@{user?.username}</span>
                             </div>
-                            <Link to="/profile" className="flex items-center px-5 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-[#3644D9] transition-all group" onClick={() => setOpenDropdown(null)}>
-                                <i className="ri-user-line mr-3 text-lg text-gray-400 group-hover:text-[#3644D9]"></i> My Profile
-                            </Link>
-                            <Link to="/my-activities" className="flex items-center px-5 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-[#3644D9] transition-all group" onClick={() => setOpenDropdown(null)}>
-                                <i className="ri-layout-grid-line mr-3 text-lg text-gray-400 group-hover:text-[#3644D9]"></i> My activities
-                            </Link>
-                            <Link to="/settings" className="flex items-center px-5 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-[#3644D9] transition-all group" onClick={() => setOpenDropdown(null)}>
-                                <i className="ri-settings-line mr-3 text-lg text-gray-400 group-hover:text-[#3644D9]"></i> Settings
-                            </Link>
+
                             <div className="border-t border-gray-50 mt-2 pt-2">
                                 <button onClick={handleLogout} className="w-full flex items-center px-5 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-all group">
                                     <i className="ri-logout-box-line mr-3 text-lg text-red-400 group-hover:text-red-500"></i> Sign Out

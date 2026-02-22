@@ -1,54 +1,23 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { USER_AVATAR } from '../api/client';
+import NotificationsList from '../components/Notifications/NotificationsList';
+import FollowerRequests from '../components/Notifications/FollowerRequests';
+import PeopleMightKnow from '../components/Notifications/PeopleMightKnow';
 
 const Notifications = () => {
     return (
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in-up">
-            <div className="p-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
-                <h3 className="text-xl font-bold text-gray-800 m-0">Notifications</h3>
-
-                <div className="relative group">
-                    <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-gray-100 text-gray-500 hover:text-[#3644D9] hover:border-[#3644D9] transition-all" type="button">
-                        <i className="ri-more-2-line text-lg"></i>
-                    </button>
-                    <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                        <Link className="flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-red-500 transition-colors" to="#">
-                            <i className="ri-delete-bin-line mr-3"></i> Clean Notification
-                        </Link>
-                    </div>
+        <div className="container mx-auto h-full">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in-up items-stretch">
+                <div className="lg:col-span-1 h-full">
+                    <NotificationsList />
                 </div>
-            </div>
 
-            <div className="divide-y divide-gray-50">
-                {[
-                    { name: 'James Vanwin', img: 'user-55.jpg', text: 'Posted A Comment On Your Status', time: '20 Minutes Ago' },
-                    { name: 'Dwight Schoolcraft', img: 'user-45.jpg', text: 'Sent You a Friend Request', time: '35 Minutes Ago' },
-                    { name: 'Susan Hadden', img: 'user-48.jpg', text: 'Add a Photo in Design Group', time: '50 Minutes Ago' },
-                    { name: 'Herta Smith', img: 'user-49.jpg', text: 'Posted in Graphic Design Learn', time: '1 Hour Ago' },
-                    { name: 'Francis L. Tay', img: 'user-50.jpg', text: 'Like Your Comment', time: '5 Hours Ago' },
-                    { name: 'Laura Hildebrandt', img: 'user-51.jpg', text: 'Comment On Your Status', time: '1 Day Ago' },
-                    { name: 'Martha Wilkes', img: 'user-52.jpg', text: 'Reacted To Your Comment "Happy Birthday"', time: '3 Days Ago' },
-                    { name: 'Howard Harris', img: 'user-53.jpg', text: 'Added a Photo in Graphic Design Group', time: '7 Days Ago' },
-                    { name: 'Martha Wilkes', img: 'user-54.jpg', text: 'Added a Photo in Graphic Design Group', time: '7 Days Ago' },
-                    { name: 'David Gibson', img: 'user-30.jpg', text: 'Commented on Your Newstatus', time: '1 Month Ago' }
-                ].map((notif, idx) => (
-                    <div key={idx} className="p-5 flex items-center hover:bg-gray-50/50 transition-colors group">
-                        <div className="shrink-0">
-                            <Link to="/profile">
-                                <img src={USER_AVATAR} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" alt="image" />
-                            </Link>
-                        </div>
-                        <div className="ml-4 flex-1">
-                            <h4 className="text-[15px] font-bold text-gray-800 hover:text-[#3644D9] transition-colors"><Link to="/profile">{notif.name}</Link></h4>
-                            <p className="text-[13px] text-gray-500 mt-0.5">{notif.text}</p>
-                            <span className="text-[11px] font-bold text-[#3644D9] uppercase mt-1 block">{notif.time}</span>
-                        </div>
-                        <button className="w-8 h-8 flex items-center justify-center rounded-full text-gray-300 hover:bg-red-50 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100">
-                            <i className="ri-close-line text-xs font-bold"></i>
-                        </button>
-                    </div>
-                ))}
+                <div className="lg:col-span-1 h-full">
+                    <FollowerRequests />
+                </div>
+
+                <div className="lg:col-span-1 h-full">
+                    <PeopleMightKnow />
+                </div>
             </div>
         </div>
     );

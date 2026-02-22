@@ -76,11 +76,11 @@ const Register = () => {
             <div className="flex flex-wrap justify-center items-center min-h-screen ">
                 <div className="w-full lg:w-1/2 md:w-full">
                     <div className="bg-transparent p-10 md:p-[45px_45px]">
-                        <div className="text-center ">
+                        <div className="text-center mb-[30px]">
                             <img
                                 src={LOGO}
                                 alt="Huka Logo"
-                                className=" max-w-[240px]"
+                                className="inline-block max-w-[240px] h-auto"
                             />
                         </div>
 

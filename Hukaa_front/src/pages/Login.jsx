@@ -47,9 +47,9 @@ const Login = () => {
                     <div className="bg-transparent p-10 md:p-[65px_45px]">
                         <div className="text-center mb-[30px]">
                             <img
-                                className="max-w-[140px] h-auto"
                                 src={LOGO}
                                 alt="Huka Logo"
+                                className="inline-block max-w-[240px] h-auto"
                             />
                         </div>
 

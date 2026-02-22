@@ -5,9 +5,12 @@ import { getMyPosts } from '../api/post';
 import { IMAGE_BASE_URL, USER_AVATAR, COVER_IMAGE } from '../api/client';
 import PostWidget from '../components/PostWidget';
 import CreatePostWidget from '../components/CreatePostWidget';
+import ConnectionsPopup from '../components/ConnectionsPopup';
 
 const Profile = () => {
     const [activeTab, setActiveTab] = useState('timeline');
+    const [isConnectionsPopupOpen, setIsConnectionsPopupOpen] = useState(false);
+    const [connectionsPopupTab, setConnectionsPopupTab] = useState('followers');
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -135,6 +138,11 @@ const Profile = () => {
         setPosts(prev => prev.filter(p => p.id !== postId));
     };
 
+    const openConnections = (tab) => {
+        setConnectionsPopupTab(tab);
+        setIsConnectionsPopupOpen(true);
+    };
+
     return (
         <div className="content-page-box-area">
             <div className="mb-6">
@@ -165,18 +173,25 @@ const Profile = () => {
                                     <span className="block text-lg font-bold text-gray-800 leading-none">{profileData.postCount || 0}</span>
                                     <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1 block">Posts</span>
                                 </li>
-                                <li className="text-center relative after:content-[''] after:absolute after:right-[-12px] lg:after:right-[-24px] after:top-1/4 after:h-1/2 after:w-px after:bg-gray-200 last:after:hidden">
-                                    <Link to="#" className="block group">
-                                        <span className="block text-lg font-bold text-gray-800 leading-none group-hover:text-blue-600 transition-colors">{profileData.followingCount || 0}</span>
-                                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1 block group-hover:text-gray-500 transition-colors">Following</span>
-                                    </Link>
-                                </li>
                                 <li className="text-center">
-                                    <Link to="#" className="block group">
-                                        <span className="block text-lg font-bold text-gray-800 leading-none group-hover:text-blue-600 transition-colors">{profileData.followersCount || 0}</span>
+                                    <button
+                                        onClick={() => openConnections('followers')}
+                                        className="block group"
+                                    >
+                                        <span className="block text-lg font-bold text-gray-800 leading-none group-hover:text-blue-600 transition-colors uppercase tracking-tight">{profileData.followersCount || 0}</span>
                                         <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1 block group-hover:text-gray-500 transition-colors">Followers</span>
-                                    </Link>
+                                    </button>
                                 </li>
+                                <li className="text-center relative after:content-[''] after:absolute after:right-[-12px] lg:after:right-[-24px] after:top-1/4 after:h-1/2 after:w-px after:bg-gray-200 last:after:hidden">
+                                    <button
+                                        onClick={() => openConnections('following')}
+                                        className="block group"
+                                    >
+                                        <span className="block text-lg font-bold text-gray-800 leading-none group-hover:text-blue-600 transition-colors uppercase tracking-tight">{profileData.followingCount || 0}</span>
+                                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1 block group-hover:text-gray-500 transition-colors">Following</span>
+                                    </button>
+                                </li>
+
                             </ul>
                         </div>
 
@@ -359,7 +374,7 @@ const Profile = () => {
                                                 profileData.experiences.map((exp) => (
                                                     <div key={exp.id} className="box-content border-l-2 border-blue-100 pl-4 py-1 relative">
                                                         <div className="absolute w-3 h-3 bg-blue-500 rounded-full -left-[7px] top-2 border-2 border-white shadow-sm"></div>
-                                                        <p className="designation font-bold text-[16px] text-[#3644D9] flex items-center">
+                                                        <p className="designation font-bold text-[16px] text-main flex items-center">
                                                             {exp.position}
                                                             <span className="ml-2 px-2 py-0.5 bg-blue-50 text-[11px] font-semibold text-blue-600 rounded uppercase">
                                                                 {exp.startAt && !exp.startAt.startsWith('0001') ? new Date(exp.startAt).getFullYear() : 'N/A'} — {exp.isCurrent || !exp.endAt ? 'Present' : new Date(exp.endAt).getFullYear()}
@@ -380,6 +395,12 @@ const Profile = () => {
                     </div>
                 )}
             </div>
+
+            <ConnectionsPopup
+                isOpen={isConnectionsPopupOpen}
+                onClose={() => setIsConnectionsPopupOpen(false)}
+                initialTab={connectionsPopupTab}
+            />
         </div >
     );
 };
