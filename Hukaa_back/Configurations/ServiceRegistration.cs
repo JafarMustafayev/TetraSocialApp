@@ -39,6 +39,7 @@ public static class ServiceRegistration
         services.AddScoped<IAccountManagementService, AccountManagementService>();
         services.AddScoped<IReactionService, ReactionService>();
         services.AddScoped<ICommentService, CommentService>();
+        services.AddScoped<IFollowService, FollowService>();
 
     }
 
