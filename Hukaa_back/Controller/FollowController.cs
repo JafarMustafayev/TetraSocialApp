@@ -20,6 +20,13 @@ public class FollowController(
         return StatusCode(res.StatusCode, res);
     }
 
+    [HttpPost("{followingId}/cancel-request")]
+    public async Task<IActionResult> CancelFollowRequest(string followingId)
+    {
+        var res = await followService.CancelFollowRequestAsync(followingId);
+        return StatusCode(res.StatusCode, res);
+    }
+
     [HttpGet("pending-requests")]
     public async Task<IActionResult> PendingFollowRequests()
     {
@@ -38,6 +45,13 @@ public class FollowController(
     public async Task<IActionResult> RejectFollowRequest(string requesterId)
     {
         var res = await followService.RejectFollowRequestAsync(requesterId);
+        return StatusCode(res.StatusCode, res);
+    }
+
+    [HttpPost("{userId}/remove")]
+    public async Task<IActionResult> RemoveFollower(string userId)
+    {
+        var res = await followService.RemoveFollower(userId);
         return StatusCode(res.StatusCode, res);
     }
 

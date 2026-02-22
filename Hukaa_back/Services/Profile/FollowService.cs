@@ -71,6 +71,30 @@ public class FollowService(
             Data = null
         };
     }
+    public async Task<ResponseDto> CancelFollowRequestAsync(string followingId)
+    {
+        var follow = await context.Follows.FirstOrDefaultAsync(
+            x => x.FollowingId == followingId
+            && x.FollowerId == currentUserService.UserId
+            && x.Status == FollowStatus.Pending);
+
+        if (follow == null)
+        {
+            throw new BadRequestException("Pending follow request not found.");
+        }
+
+        context.Follows.Remove(follow);
+        await context.SaveChangesAsync();
+
+
+        return new()
+        {
+            Success = true,
+            StatusCode = StatusCodes.Status200OK,
+            Message = "Your follow request has been canceled.",
+            Data = null
+        };
+    }
     public async Task<ResponseDto> PendingFollowRequestsAsync()
     {
         var follow = await context.Follows
@@ -133,6 +157,29 @@ public class FollowService(
             Success = true,
             StatusCode = StatusCodes.Status200OK,
             Message = "Follow request rejected.",
+            Data = null
+        };
+    }
+    public async Task<ResponseDto> RemoveFollower(string userId)
+    {
+        var follow = await context.Follows.FirstOrDefaultAsync(
+            x => x.FollowerId == userId
+            && x.FollowingId == currentUserService.UserId
+            && x.Status == FollowStatus.Accepted);
+
+        if (follow == null)
+        {
+            throw new BadRequestException("This user is not your follower.");
+        }
+
+        context.Follows.Remove(follow);
+        await context.SaveChangesAsync();
+
+        return new()
+        {
+            Success = true,
+            StatusCode = StatusCodes.Status200OK,
+            Message = "User has been removed from your followers.",
             Data = null
         };
     }
@@ -224,4 +271,6 @@ public class FollowService(
             Data = map
         };
     }
+
+   
 }
