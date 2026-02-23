@@ -34,7 +34,7 @@ public class FollowService(
         {
             FollowerId = currentUserService.UserId,
             Following = user,
-            Status = user.IsPublicAccount ? FollowStatus.Accepted : FollowStatus.Pending
+            Status = user.AccountType == AccountType.PublicAccount ? FollowStatus.Accepted : FollowStatus.Pending
         });
         await context.SaveChangesAsync();
 
@@ -42,7 +42,7 @@ public class FollowService(
         {
             Success = true,
             StatusCode = StatusCodes.Status200OK,
-            Message = user.IsPublicAccount
+            Message = user.AccountType == AccountType.PublicAccount
             ? "User followed successfully."
             : "Follow request sent successfully.",
             Data = null
@@ -104,7 +104,7 @@ public class FollowService(
                 && x.Status == FollowStatus.Pending)
             .ToListAsync();
 
-        var map = mapper.Map<List<FollowerDto>>(follow);
+        var map = mapper.Map<List<FollowerPreviewDto>>(follow);
 
         return new()
         {
@@ -190,7 +190,7 @@ public class FollowService(
             .Where(x => x.FollowingId == currentUserService.UserId && x.Status == FollowStatus.Accepted)
             .ToListAsync();
 
-        var map = mapper.Map<List<FollowerDto>>(followers);
+        var map = mapper.Map<List<FollowerPreviewDto>>(followers);
 
         return new()
         {
@@ -207,7 +207,7 @@ public class FollowService(
             .Where(x => x.FollowerId == currentUserService.UserId && x.Status == FollowStatus.Accepted)
             .ToListAsync();
 
-        var map = mapper.Map<List<FollowingDto>>(following);
+        var map = mapper.Map<List<FollowingPreviewDto>>(following);
 
         return new()
         {
@@ -234,7 +234,7 @@ public class FollowService(
            .Where(x => x.FollowerId == userId && x.Status == FollowStatus.Accepted)
            .ToListAsync();
 
-        var map = mapper.Map<List<FollowingDto>>(following);
+        var map = mapper.Map<List<FollowingPreviewDto>>(following);
 
         return new()
         {
@@ -261,7 +261,7 @@ public class FollowService(
             .Where(x => x.FollowingId == userId && x.Status == FollowStatus.Accepted)
             .ToListAsync();
 
-        var map = mapper.Map<List<FollowerDto>>(followers);
+        var map = mapper.Map<List<FollowerPreviewDto>>(followers);
 
         return new()
         {

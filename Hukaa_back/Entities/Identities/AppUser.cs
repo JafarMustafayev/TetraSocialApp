@@ -6,7 +6,7 @@ public class AppUser : IdentityUser<string>
     public string? LastName { get; set; }
     public DateTime? BirthDay { get; set; }
     public Gender Gender { get; set; }
-    public bool IsPublicAccount { get; set; }
+    public AccountType AccountType { get; set; }
     public RelationshipStatus RelationshipStatus { get; set; }
     public string ProfilePhotoPath { get; set; }
     public string CoverPhotoPath { get; set; }
@@ -32,6 +32,6 @@ public class AppUser : IdentityUser<string>
         CoverPhotoPath = string.Empty;
         Bio = string.Empty;
         UserStatus = UserStatus.PendingVerification;
-        IsPublicAccount = false;
+        AccountType = AccountType.PrivateAccount;
     }
 }

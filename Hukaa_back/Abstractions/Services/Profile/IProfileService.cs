@@ -4,8 +4,10 @@ public interface IProfileService
 {
     Task<ResponseDto> GetMyProfileHeaderAsync();
     Task<ResponseDto> GetMyProfileAsync();
-    Task<ResponseDto> GetSettingsData();
+    Task<ResponseDto> GetProfileInformationSettingsDataAsync();
+    Task<ResponseDto> GetPrivacySettingDataAsync();
     Task<ResponseDto> GetUserProfileAsync(string targetUserId);
+    Task<ResponseDto> SearchUserProfileAsync(string query);
     Task<ResponseDto> UpdateProfileAsync(UpdateProfileInformationDto dto);
     Task<ResponseDto> ChangeProfilePhotoAsync(ChangeProfilePhotoCoverDto dto);
     Task<ResponseDto> ChangeCoverPhotoAsync(ChangeProfilePhotoCoverDto dto);

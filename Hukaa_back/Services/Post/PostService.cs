@@ -12,8 +12,9 @@ public class PostService(IFileService fileService,
 
     public async Task<ResponseDto> GetMyPosts(int page, int take)
     {
+        if (page < 1) page = 1;
+        if (take < 1) take = 10;
         var userId = currentUserService.UserId;
-
         var posts = await context.Posts
             .Where(x => x.AppUserId == userId && !x.IsArchived)
             .Include(x => x.PostFiles)
@@ -49,6 +50,46 @@ public class PostService(IFileService fileService,
             Message = "",
             StatusCode = StatusCodes.Status200OK,
             Data = map
+        };
+    }
+
+    public async Task<ResponseDto> GetUserPostsAsync(string userId, int page, int take)
+    {
+        if (page < 1) page = 1;
+        if (take < 1) take = 10;
+
+        var posts = await context.Posts
+            .AsNoTracking()
+            .Where(p => p.AppUserId == userId && !p.IsArchived)
+            .Include(p => p.PostFiles)
+            .Include(p => p.Comments)
+            .OrderByDescending(p => p.CreatedAt)
+            .Skip((page - 1) * take)
+            .Take(take)
+            .ToListAsync();
+
+        var postDtos = mapper.Map<List<SinglePostDto>>(posts);
+        var postIds = postDtos.Select(p => p.Id).ToList();
+
+        var reactionCounts = await reactionService.GetReactionCountsAsync(postIds);
+        var myReactions = await reactionService.GetMyReactionsAsync(postIds);
+
+        foreach (var post in postDtos)
+        {
+            if (reactionCounts.TryGetValue(post.Id, out var count))
+                post.TotalReactionCount = count;
+
+            if (myReactions.TryGetValue(post.Id, out var myReaction))
+                post.MyReaction = myReaction;
+        }
+
+        SetPostPermissions(postDtos, userId);
+
+        return new ResponseDto
+        {
+            Success = true,
+            StatusCode = StatusCodes.Status200OK,
+            Data = postDtos
         };
     }
 

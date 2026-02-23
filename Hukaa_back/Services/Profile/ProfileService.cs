@@ -6,31 +6,31 @@ public class ProfileService(
     IMapper mapper,
     IFileService fileService) : IProfileService
 {
-
+    // get profile information 
     public async Task<ResponseDto> GetMyProfileHeaderAsync()
     {
         var userId = currentUser.UserId;
+        var user = await dbContext.Users
+            .FirstOrDefaultAsync(user => user.Id == userId);
 
-        var myProfile = await dbContext.Users
-            .FirstOrDefaultAsync(x => x.Id == userId);
-
-        if (myProfile == null)
+        if (user == null)
         {
             throw new NotFoundException("User", userId);
         }
 
-        return new()
+        return new ResponseDto
         {
             StatusCode = 200,
             Message = "Your profile data has been successfully retrieved.",
             Success = true,
             Data = new
             {
-                Username = myProfile.UserName,
-                Email = myProfile.Email,
-                FirstName = myProfile.FirstName,
-                LastName = myProfile.LastName,
-                ProfilePhoto = myProfile.ProfilePhotoPath
+                Id = user.Id,
+                Email = user.Email,
+                Username = user.UserName,
+                LastName = user.LastName,
+                FirstName = user.FirstName,
+                ProfilePhoto = user.ProfilePhotoPath
             }
         };
     }
@@ -39,21 +39,22 @@ public class ProfileService(
     {
         var userId = currentUser.UserId;
 
-        var myProfile = await dbContext.Users
-            .Include(x => x.WorkExperiences.Where(x => !x.IsDeleted))
-            .Include(x => x.Posts.Where(x => !x.IsArchived))
-            .FirstOrDefaultAsync(x => x.Id == userId);
+        var user = await dbContext.Users
+            .Include(user => user.WorkExperiences.Where(experience => !experience.IsDeleted))
+            .Include(user => user.Posts.Where(post => !post.IsArchived))
+            .Include(user => user.Followers.Where(follow => follow.Status == FollowStatus.Accepted))
+            .Include(user => user.Following.Where(follow => follow.Status == FollowStatus.Accepted))
+            .FirstOrDefaultAsync(user => user.Id == userId);
 
-        if (myProfile == null)
+        if (user == null)
         {
             throw new NotFoundException("User", userId);
         }
 
-        var profileDetail = mapper.Map<MyProfileDto>(myProfile);
+        var profileDetail = mapper.Map<ProfileDetailsDto>(user);
+        profileDetail.Experiences = mapper.Map<List<ExperienceDataDto>>(user.WorkExperiences);
 
-        profileDetail.Experiences = mapper.Map<List<ExperienceDataDto>>(myProfile.WorkExperiences);
-
-        return new()
+        return new ResponseDto
         {
             StatusCode = 200,
             Message = "Your profile data has been successfully retrieved.",
@@ -62,64 +63,8 @@ public class ProfileService(
         };
     }
 
-    public async Task<ResponseDto> GetSettingsData()
+    public async Task<ResponseDto> GetProfileInformationSettingsDataAsync()
     {
-        var userId = currentUser.UserId;
-
-        var myProfile = await dbContext.Users
-            .FirstOrDefaultAsync(x => x.Id == userId);
-
-        if (myProfile == null)
-        {
-            throw new NotFoundException("User", userId);
-        }
-
-        return new()
-        {
-            StatusCode = 200,
-            Message = "Your profile settings data has been successfully retrieved.",
-            Success = true,
-            Data = new
-            {
-                FirstName = myProfile.FirstName,
-                LastName = myProfile.LastName,
-                Bio = myProfile.Bio,
-                BirthDay = myProfile.BirthDay,
-                PhoneNumber = myProfile.PhoneNumber,
-                Gender = myProfile.Gender,
-                RelationshipStatus = myProfile.RelationshipStatus
-            }
-        };
-    }
-
-    public async Task<ResponseDto> UpdateProfileAsync(UpdateProfileInformationDto dto)
-    {
-        var userId = currentUser.UserId;
-
-        var myProfile = await dbContext.Users
-            .FirstOrDefaultAsync(x => x.Id == userId);
-
-        if (myProfile == null)
-        {
-            throw new NotFoundException("User", userId);
-        }
-
-        mapper.Map(dto, myProfile);
-
-        await dbContext.SaveChangesAsync();
-
-        return new()
-        {
-            Success = true,
-            StatusCode = StatusCodes.Status200OK,
-
-            Data = dto
-        };
-    }
-
-    public async Task<ResponseDto> ChangeCoverPhotoAsync(ChangeProfilePhotoCoverDto dto)
-    {
-
         var userId = currentUser.UserId;
 
         var user = await dbContext.Users
@@ -130,7 +75,156 @@ public class ProfileService(
             throw new NotFoundException("User", userId);
         }
 
-        if (user.CoverPhotoPath != null
+        return new ResponseDto
+        {
+            StatusCode = 200,
+            Message = "Your profile settings data has been successfully retrieved.",
+            Success = true,
+            Data = new
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Bio = user.Bio,
+                BirthDay = user.BirthDay,
+                PhoneNumber = user.PhoneNumber,
+                Gender = user.Gender,
+                RelationshipStatus = user.RelationshipStatus
+            }
+        };
+    }
+
+    public async Task<ResponseDto> GetPrivacySettingDataAsync()
+    {
+        var userId = currentUser.UserId;
+
+        var user = await dbContext.Users
+            .FirstOrDefaultAsync(x => x.Id == userId);
+
+        if (user == null)
+        {
+            throw new NotFoundException("User", userId);
+        }
+
+        return new ResponseDto
+        {
+            StatusCode = 200,
+            Message = "Your profile settings data has been successfully retrieved.",
+            Success = true,
+            Data = new
+            {
+                AccountType = user.AccountType
+            }
+        };
+    }
+
+    public async Task<ResponseDto> GetUserProfileAsync(string targetUserId)
+    {
+        var user = await dbContext.Users
+            .Include(user => user.Followers)
+            .Include(user => user.WorkExperiences)
+            .Include(user => user.Posts.Where(post => !post.IsArchived && !post.IsDeleted))
+            .FirstOrDefaultAsync(user => user.Id == targetUserId);
+
+        if (user == null)
+        {
+            throw new NotFoundException("User", targetUserId);
+        }
+
+        ProfileSummaryDto profileSummaryDetail  = new();
+        profileSummaryDetail.IsFollowing = user.Followers
+            .Any(f => f.Status == FollowStatus.Accepted
+                      && f.FollowerId == currentUser.UserId);
+
+
+        if (user.AccountType == AccountType.PublicAccount || profileSummaryDetail.IsFollowing)
+        {
+            profileSummaryDetail = mapper.Map<ProfileDetailsDto>(user);
+        }
+        else
+        {
+            profileSummaryDetail = mapper.Map<ProfileSummaryDto>(user);
+        }
+
+        return new ResponseDto
+        {
+            StatusCode = 200,
+            Message = "Profile data has been successfully retrieved.",
+            Success = true,
+            Data = profileSummaryDetail
+        };
+    }
+
+    public async Task<ResponseDto> SearchUserProfileAsync(string query)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return new ResponseDto
+            {
+                StatusCode = 400,
+                Message = "Search query cannot be empty.",
+                Success = false
+            };
+        }
+
+        query = query.Trim();
+        var usersList = await dbContext.Users
+            .AsNoTracking()
+            .Where(user =>
+                user.FirstName != null && user.FirstName.Contains(query)
+                || user.LastName != null && user.LastName.Contains(query)
+                || user.UserName.Contains(query))
+            .OrderBy(user => user.UserName)
+            .ToListAsync();
+
+        var profileDetail = mapper.Map<List<UserPreviewDto>>(usersList);
+
+        return new ResponseDto
+        {
+            StatusCode = 200,
+            Message = "Profile data has been successfully retrieved.",
+            Success = true,
+            Data = profileDetail
+        };
+    }
+
+    // manage profile information 
+    public async Task<ResponseDto> UpdateProfileAsync(UpdateProfileInformationDto dto)
+    {
+        var userId = currentUser.UserId;
+
+        var user = await dbContext.Users
+            .FirstOrDefaultAsync(x => x.Id == userId);
+
+        if (user == null)
+        {
+            throw new NotFoundException("User", userId);
+        }
+
+        mapper.Map(dto, user);
+        await dbContext.SaveChangesAsync();
+
+        return new ResponseDto
+        {
+            Success = true,
+            StatusCode = StatusCodes.Status200OK,
+
+            Data = dto
+        };
+    }
+
+    public async Task<ResponseDto> ChangeCoverPhotoAsync(ChangeProfilePhotoCoverDto dto)
+    {
+        var userId = currentUser.UserId;
+
+        var user = await dbContext.Users
+            .FirstOrDefaultAsync(x => x.Id == userId);
+
+        if (user == null)
+        {
+            throw new NotFoundException("User", userId);
+        }
+
+        if (user?.CoverPhotoPath != null
             && user.CoverPhotoPath != "profile/cover/default-my-profile-bg.jpg"
             && fileService.IsExist(user.CoverPhotoPath))
         {
@@ -141,14 +235,14 @@ public class ProfileService(
         user.CoverPhotoPath = filePath;
         await dbContext.SaveChangesAsync();
 
-        return new()
+        return new ResponseDto
         {
             StatusCode = 200,
             Success = true,
-            Message = "",
+            Message = "Updated your profile cover picture",
             Data = new
             {
-                FilePath = filePath,
+                FilePath = filePath
             }
         };
     }
@@ -165,11 +259,10 @@ public class ProfileService(
             throw new NotFoundException("User", userId);
         }
 
-
         if (user.ProfilePhotoPath != null
             && user.ProfilePhotoPath != "profile/photo/default-my-profile.png"
             && fileService.IsExist(user.ProfilePhotoPath)
-            )
+           )
         {
             await fileService.DeleteFileAsync(user.ProfilePhotoPath);
         }
@@ -178,45 +271,40 @@ public class ProfileService(
         user.ProfilePhotoPath = filePath;
         await dbContext.SaveChangesAsync();
 
-        return new()
+        return new ResponseDto
         {
             StatusCode = 200,
             Success = true,
             Message = "",
             Data = new
             {
-                FilePath = filePath,
+                FilePath = filePath
             }
         };
     }
 
-    public async Task<ResponseDto> GetUserProfileAsync(string targetUserId)
-    {
-        var myProfile = await dbContext.Users
-            .Include(x => x.WorkExperiences)
-            .Include(x => x.Posts.Where(x => !x.IsArchived && !x.IsDeleted))
-            .FirstOrDefaultAsync(x => x.Id == targetUserId);
-
-        if (myProfile == null)
-        {
-            throw new NotFoundException("User", targetUserId);
-        }
-        var profileDetail = mapper.Map<MyProfileDto>(myProfile);
-
-        return new()
-        {
-            StatusCode = 200,
-            Message = "Profile data has been successfully retrieved.",
-            Success = true,
-            Data = profileDetail
-        };
-    }
-
-    public Task<ResponseDto> TogglePrivacyAsync()
+    public async Task<ResponseDto> TogglePrivacyAsync()
     {
         var userId = currentUser.UserId;
-        throw new NotImplementedException();
+        var user = await dbContext.Users
+            .FirstOrDefaultAsync(user => user.Id == userId);
+
+        if (user == null)
+        {
+            throw new NotFoundException("User", userId);
+        }
+
+        user.AccountType = user.AccountType == AccountType.PrivateAccount
+            ? AccountType.PublicAccount
+            : AccountType.PrivateAccount;
+
+        await dbContext.SaveChangesAsync();
+
+        return new ResponseDto
+        {
+            StatusCode = 200,
+            Success = true,
+            Message = "Privacy setting updated successfully."
+        };
     }
-
-
 }

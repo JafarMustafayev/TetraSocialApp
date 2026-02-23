@@ -21,9 +21,16 @@ public class ProfileController(
     }
 
     [HttpGet("settings/profile-information")]
-    public async Task<IActionResult> GetSettingsData()
+    public async Task<IActionResult> GetProfileInformationSettingsData()
     {
-        var res = await profileService.GetSettingsData();
+        var res = await profileService.GetProfileInformationSettingsDataAsync();
+        return StatusCode(res.StatusCode, res);
+    }
+    
+    [HttpGet("settings/privacy-information")]
+    public async Task<IActionResult> GetPrivacySettingData()
+    {
+        var res = await profileService.GetPrivacySettingDataAsync();
         return StatusCode(res.StatusCode, res);
     }
 
@@ -31,6 +38,13 @@ public class ProfileController(
     public async Task<IActionResult> GetUserProfile(string userId)
     {
         var res = await profileService.GetUserProfileAsync(userId);
+        return StatusCode(res.StatusCode, res);
+    }
+    
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchUserProfile([FromQuery]string query)
+    {
+        var res = await profileService.SearchUserProfileAsync(query);
         return StatusCode(res.StatusCode, res);
     }
 

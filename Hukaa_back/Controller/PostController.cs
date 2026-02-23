@@ -19,6 +19,13 @@ public class PostController(
         var res = await postService.GetMyArchivedPosts(page, take: 20);
         return Ok(res);
     }
+    
+    [HttpGet("{userId}/posts/{page}")]
+    public async Task<IActionResult> GetUserPosts(string userId,int page = 1)
+    {
+        var res = await postService.GetUserPostsAsync(userId,page, take: 20);
+        return Ok(res);
+    }
 
     [HttpPost]
     public async Task<IActionResult> CreatePost([FromForm] PostCreateRequestDto post)

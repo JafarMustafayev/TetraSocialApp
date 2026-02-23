@@ -1,16 +1,16 @@
 ﻿namespace Hukaa_back.DTOs.Profile;
 
-public class FollowUserDto
+public class UserPreviewDto
 {
     public string Id { get; set; } = default!;
     public string UserName { get; set; } = default!;
     public string? ProfileImageUrl { get; set; }
 }
 
-public class FollowerDto :FollowUserDto
+public class FollowerPreviewDto :UserPreviewDto
 { 
 }
 
-public class FollowingDto : FollowUserDto
+public class FollowingPreviewDto : UserPreviewDto
 {
 }

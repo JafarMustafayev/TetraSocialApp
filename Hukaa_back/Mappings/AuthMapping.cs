@@ -6,7 +6,7 @@ public class AuthMapping:Profile
     {
         CreateMap<RegisterRequestDto, AppUser>()
             .ForMember(des => des.Gender, opt => opt.MapFrom(src => Gender.None))
-            .ForMember(des => des.IsPublicAccount, opt => opt.MapFrom(src => false))
+            .ForMember(des => des.AccountType, opt => opt.MapFrom(src =>AccountType.PrivateAccount ))
             .ForMember(des => des.RelationshipStatus, opt => opt.MapFrom(src => RelationshipStatus.None))
             .ForMember(des => des.UserStatus, opt => opt.MapFrom(src => UserStatus.PendingVerification))
             .ForMember(des => des.CoverPhotoPath, opt => opt.MapFrom(src => "profile/cover/default-my-profile-bg.jpg"))
