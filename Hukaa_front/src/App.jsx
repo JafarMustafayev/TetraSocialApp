@@ -9,6 +9,7 @@ import Notifications from './pages/Notifications';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import Archived from './pages/Archived';
+import UserProfile from './pages/UserProfile';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
@@ -36,6 +37,7 @@ function App() {
                         <Route path="messages" element={<Messages />} />
                         <Route path="notifications" element={<Notifications />} />
                         <Route path="profile" element={<Profile />} />
+                        <Route path="profile/:userId" element={<UserProfile />} />
                         <Route path="archived" element={<Archived />} />
                     </Route>
 

@@ -68,3 +68,27 @@ export const updateProfileInformation = async (data) => {
         body: JSON.stringify(data),
     });
 };
+
+export const getPrivacyInformation = async () => {
+    return fetchClient('/api/Profile/settings/privacy-information', {
+        method: 'GET',
+    });
+};
+
+export const updatePrivacySetting = async () => {
+    return fetchClient('/api/Profile/privacy', {
+        method: 'PUT',
+    });
+};
+
+export const searchProfiles = async (query) => {
+    return fetchClient(`/api/Profile/search?query=${encodeURIComponent(query)}`, {
+        method: 'GET',
+    });
+};
+
+export const getUserProfile = async (userId) => {
+    return fetchClient(`/api/Profile/${userId}`, {
+        method: 'GET',
+    });
+};

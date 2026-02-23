@@ -1,51 +1,107 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { getPrivacyInformation, updatePrivacySetting } from '../../api/profile';
 
 const PrivacySettings = () => {
-    return (
-        <form className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                    <label className="block text-sm font-bold text-gray-700 ml-1">Who Can See Your Profile?</label>
-                    <select className="w-full h-[50px] px-4 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:border-[#3644D9] focus:ring-4 focus:ring-blue-50 outline-none transition-all appearance-none cursor-pointer">
-                        <option value="true">All</option>
-                        <option value="false">My followers</option>
-                        <option value="">No one</option>
-                    </select>
-                </div>
-                <div className="space-y-2">
-                    <label className="block text-sm font-bold text-gray-700 ml-1">Who Can Send You Follow Request?</label>
-                    <select className="w-full h-[50px] px-4 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:border-[#3644D9] focus:ring-4 focus:ring-blue-50 outline-none transition-all appearance-none cursor-pointer">
-                        <option value="true">All</option>
-                        <option value="false">My followers</option>
-                        <option value="">No one</option>
-                    </select>
-                </div>
-                <div className="space-y-2">
-                    <label className="block text-sm font-bold text-gray-700 ml-1">Who Can See Your Phone Number?</label>
-                    <select className="w-full h-[50px] px-4 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:border-[#3644D9] focus:ring-4 focus:ring-blue-50 outline-none transition-all appearance-none cursor-pointer">
-                        <option value="true">All</option>
-                        <option value="false">My followers</option>
-                        <option value="">No one</option>
-                    </select>
-                </div>
-                <div className="space-y-2">
-                    <label className="block text-sm font-bold text-gray-700 ml-1">Who Can See Your Birthday?</label>
-                    <select className="w-full h-[50px] px-4 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:border-[#3644D9] focus:ring-4 focus:ring-blue-50 outline-none transition-all appearance-none cursor-pointer">
-                        <option value="true">All</option>
-                        <option value="false">My followers</option>
-                        <option value="">No one</option>
-                    </select>
-                </div>
-                <div className="md:col-span-2 pt-4 flex justify-end">
-                    <button
-                        type="submit"
-                        className="px-10 py-3.5 bg-[#3644D9] text-white rounded-xl font-bold hover:bg-[#2E3AB8] hover:shadow-xl hover:shadow-blue-100 active:scale-[0.98] transition-all"
-                    >
-                        Save Changes
-                    </button>
-                </div>
+    const [privacyData, setPrivacyData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
+
+    useEffect(() => {
+        fetchPrivacyInfo();
+    }, []);
+
+    const fetchPrivacyInfo = async () => {
+        setIsLoading(true);
+        try {
+            const response = await getPrivacyInformation();
+            if (response.success) {
+                setPrivacyData(response.data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch privacy settings:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleTogglePrivacy = async () => {
+        setIsUpdating(true);
+        setShowConfirm(false);
+        try {
+            const response = await updatePrivacySetting();
+            if (response.success) {
+                // Refresh data after update
+                await fetchPrivacyInfo();
+            }
+        } catch (error) {
+            console.error('Failed to update privacy setting:', error);
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center py-20">
+                <div className="animate-spin rounded-full h-10 w-10 border-4 border-main border-t-transparent"></div>
             </div>
-        </form>
+        );
+    }
+
+    const accountTypeText = privacyData?.accountType === 0 ? 'Private Account' : 'Public Account';
+
+    return (
+        <div className="space-y-8">
+            <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 flex justify-between items-center">
+                <div>
+                    <h4 className="text-lg font-bold text-gray-800 mb-1">Account Visibility</h4>
+                    <p className="text-gray-500 text-sm">Your account is currently set to: <span className="font-bold text-main">{accountTypeText}</span></p>
+                </div>
+                <button
+                    onClick={() => setShowConfirm(true)}
+                    disabled={isUpdating}
+                    className="px-6 py-2.5 bg-main text-white rounded-xl font-bold hover:bg-optional transition-all disabled:opacity-50"
+                >
+                    {isUpdating ? 'Updating...' : 'Toggle privacy setting'}
+                </button>
+            </div>
+
+            {/* Existing hardcoded settings placeholder */}
+
+
+            {/* Custom Confirmation UI */}
+            {showConfirm && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-1001 p-4 animate-fade-in">
+                    <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl animate-fade-in-up">
+                        <div className="text-center">
+                            <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <i className="ri-shield-user-line text-4xl text-main"></i>
+                            </div>
+                            <h3 className="text-2xl font-bold text-gray-800 mb-3">Change Privacy?</h3>
+                            <p className="text-gray-600 mb-8 leading-relaxed">
+                                Are you sure you want to change your account to <strong>{privacyData?.accountType === 0 ? 'Public' : 'Private'}</strong>?
+                                This will change how others interact with your profile.
+                            </p>
+                            <div className="flex space-x-4">
+                                <button
+                                    onClick={() => setShowConfirm(false)}
+                                    className="flex-1 py-3.5 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleTogglePrivacy}
+                                    className="flex-1 py-3.5 bg-main text-white rounded-xl font-bold hover:bg-optional shadow-lg shadow-blue-100 transition-all"
+                                >
+                                    Confirm
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
     );
 };
 

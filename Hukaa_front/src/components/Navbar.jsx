@@ -1,11 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { IMAGE_BASE_URL, USER_AVATAR, LOGO } from '../api/client';
+import { searchProfiles } from '../api/profile';
 
 const Navbar = () => {
     const { user, logout } = useAuth();
+    const navigate = useNavigate();
     const [openDropdown, setOpenDropdown] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [showResults, setShowResults] = useState(false);
+    const searchRef = useRef(null);
+    const searchTimeout = useRef(null);
 
     const toggleDropdown = (name, e) => {
         if (e) {
@@ -22,17 +30,56 @@ const Navbar = () => {
     };
 
     useEffect(() => {
-        const handleClickOutside = () => setOpenDropdown(null);
+        const handleClickOutside = (e) => {
+            if (searchRef.current && !searchRef.current.contains(e.target)) {
+                setShowResults(false);
+            }
+            if (openDropdown) setOpenDropdown(null);
+        };
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
-    }, []);
+    }, [openDropdown]);
 
     const stopPropagation = (e) => e.stopPropagation();
 
-    console.log(user);
+    // Debounced search logic
+    useEffect(() => {
+        if (searchTimeout.current) clearTimeout(searchTimeout.current);
+
+        if (searchQuery.trim().length > 0) {
+            setIsSearching(true);
+            setShowResults(true);
+            searchTimeout.current = setTimeout(async () => {
+                try {
+                    const response = await searchProfiles(searchQuery);
+                    if (response.success) {
+                        setSearchResults(response.data);
+                    }
+                } catch (error) {
+                    console.error('Search failed:', error);
+                } finally {
+                    setIsSearching(false);
+                }
+            }, 1000); // 1-second delay
+        } else {
+            setSearchResults([]);
+            setShowResults(false);
+            setIsSearching(false);
+        }
+
+        return () => {
+            if (searchTimeout.current) clearTimeout(searchTimeout.current);
+        };
+    }, [searchQuery]);
+
+    const handleSearchResultClick = (userId) => {
+        setSearchQuery('');
+        setShowResults(false);
+        navigate(`/profile/${userId}`);
+    };
 
     return (
-        <nav className="fixed top-0 left-0 w-full h-[85px] bg-[#3644D9] shadow-lg z-1000 flex items-center px-4 lg:px-8">
+        <nav className="fixed top-0 left-0 w-full h-[85px] bg-main shadow-lg z-1000 flex items-center px-4 lg:px-8">
             <div className="flex items-center justify-between w-full max-w-[1920px] mx-auto">
                 {/* Logo Section */}
                 <div className="flex items-center gap-6">
@@ -41,17 +88,65 @@ const Navbar = () => {
                     </Link>
 
                     {/* Search Bar */}
-                    <div className="hidden md:block relative group">
-                        <form className="relative">
+                    <div className="hidden md:block relative group" ref={searchRef}>
+                        <div className="relative">
                             <input
                                 type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onFocus={() => searchQuery.trim() && setShowResults(true)}
                                 className="w-[300px] lg:w-[450px] h-[45px] bg-white/10 border border-white/20 rounded-full pl-12 pr-5 text-white placeholder-white/60 focus:bg-white focus:text-gray-800 focus:placeholder-gray-400 outline-none transition-all duration-300"
                                 placeholder="Search everything..."
                             />
-                            <button type="submit" className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60 group-focus-within:text-gray-400">
-                                <i className="ri-search-line text-xl"></i>
-                            </button>
-                        </form>
+                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60 group-focus-within:text-gray-400">
+                                {isSearching ? (
+                                    <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                ) : (
+                                    <i className="ri-search-line text-xl"></i>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Search Results Dropdown */}
+                        {showResults && (
+                            <div className="absolute top-full left-0 mt-3 w-full bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden animate-fade-in-up">
+                                <div className="p-3 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
+                                    <h3 className="font-bold text-gray-800 text-sm">Search Results</h3>
+                                    {isSearching && <span className="text-xs text-main animate-pulse font-medium">Searching...</span>}
+                                </div>
+                                <div className="max-h-[350px] overflow-y-auto custom-scrollbar p-2">
+                                    {searchResults.length > 0 ? (
+                                        searchResults.map((result) => (
+                                            <div
+                                                key={result.id}
+                                                onClick={() => handleSearchResultClick(result.id)}
+                                                className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer group"
+                                            >
+                                                <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-sm shrink-0">
+                                                    <img
+                                                        src={result.profileImageUrl ? `${IMAGE_BASE_URL}/${result.profileImageUrl}` : USER_AVATAR}
+                                                        alt={result.userName}
+                                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                                    />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <h4 className="text-sm font-bold text-gray-800 truncate group-hover:text-main transition-colors">{result.userName}</h4>
+                                                    <p className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider">View Profile</p>
+                                                </div>
+                                                <i className="ri-arrow-right-s-line text-gray-300 group-hover:text-main transition-colors text-xl"></i>
+                                            </div>
+                                        ))
+                                    ) : !isSearching ? (
+                                        <div className="p-8 text-center">
+                                            <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-300">
+                                                <i className="ri-search-line text-2xl"></i>
+                                            </div>
+                                            <p className="text-sm text-gray-400 font-medium">No persons found for "{searchQuery}"</p>
+                                        </div>
+                                    ) : null}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -61,16 +156,16 @@ const Navbar = () => {
                     <div className="relative" onClick={stopPropagation}>
                         <button
                             onClick={(e) => toggleDropdown('inbox', e)}
-                            className="w-[45px] h-[45px] flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white hover:text-[#3644D9] transition-all relative"
+                            className="w-[45px] h-[45px] flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white hover:text-main transition-all relative"
                         >
                             <i className="ri-mail-line text-[22px]"></i>
-                            <span className="absolute -top-[2px] -right-[2px] w-5 h-5 flex items-center justify-center rounded-full bg-[#1CCD16] text-white text-[10px] font-bold border-2 border-[#3644D9]">2</span>
+                            <span className="absolute -top-[2px] -right-[2px] w-5 h-5 flex items-center justify-center rounded-full bg-[#1CCD16] text-white text-[10px] font-bold border-2 border-main">2</span>
                         </button>
 
                         <div className={`absolute right-0 top-full mt-4 w-[320px] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 transform origin-top ${openDropdown === 'inbox' ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-4'}`}>
                             <div className="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
                                 <h3 className="font-bold text-gray-800">Messages</h3>
-                                <Link to="/messages" className="text-xs text-[#3644D9] font-bold hover:underline">View All</Link>
+                                <Link to="/messages" className="text-xs text-main font-bold hover:underline">View All</Link>
                             </div>
                             <div className="p-2 max-h-[400px] overflow-y-auto">
                                 <div className="p-3 flex items-center gap-3 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer">
@@ -79,7 +174,7 @@ const Navbar = () => {
                                         <h4 className="text-sm font-bold text-gray-800 truncate">James Vanwin</h4>
                                         <p className="text-xs text-gray-500 truncate">Hello Dear I Want Talk To You</p>
                                     </div>
-                                    <span className="w-2 h-2 bg-[#3644D9] rounded-full"></span>
+                                    <span className="w-2 h-2 bg-main rounded-full"></span>
                                 </div>
                             </div>
                         </div>
@@ -89,16 +184,16 @@ const Navbar = () => {
                     <div className="relative" onClick={stopPropagation}>
                         <button
                             onClick={(e) => toggleDropdown('requests', e)}
-                            className="w-[45px] h-[45px] flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white hover:text-[#3644D9] transition-all relative"
+                            className="w-[45px] h-[45px] flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white hover:text-main transition-all relative"
                         >
                             <i className="ri-user-follow-line text-[22px]"></i>
-                            <span className="absolute -top-[2px] -right-[2px] w-5 h-5 flex items-center justify-center rounded-full bg-[#3ED7FF] text-white text-[10px] font-bold border-2 border-[#3644D9]">3</span>
+                            <span className="absolute -top-[2px] -right-[2px] w-5 h-5 flex items-center justify-center rounded-full bg-[#3ED7FF] text-white text-[10px] font-bold border-2 border-main">3</span>
                         </button>
 
                         <div className={`absolute right-0 top-full mt-4 w-[320px] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 transform origin-top ${openDropdown === 'requests' ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-4'}`}>
                             <div className="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
                                 <h3 className="font-bold text-gray-800">Friend Requests</h3>
-                                <Link to="/friends" className="text-xs text-[#3644D9] font-bold hover:underline">View All</Link>
+                                <Link to="/friends" className="text-xs text-main font-bold hover:underline">View All</Link>
                             </div>
                             <div className="p-4 space-y-4">
                                 <div className="flex items-center gap-3">
@@ -109,7 +204,7 @@ const Navbar = () => {
                                     </div>
                                     <div className="flex gap-2">
                                         <button className="w-7 h-7 flex items-center justify-center rounded-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all"><i className="ri-close-line text-sm"></i></button>
-                                        <button className="w-7 h-7 flex items-center justify-center rounded-full bg-blue-50 text-[#3644D9] hover:bg-[#3644D9] hover:text-white transition-all"><i className="ri-check-line text-sm"></i></button>
+                                        <button className="w-7 h-7 flex items-center justify-center rounded-full bg-blue-50 text-main hover:bg-main hover:text-white transition-all"><i className="ri-check-line text-sm"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -120,26 +215,26 @@ const Navbar = () => {
                     <div className="relative" onClick={stopPropagation}>
                         <button
                             onClick={(e) => toggleDropdown('notifications', e)}
-                            className="w-[45px] h-[45px] flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white hover:text-[#3644D9] transition-all relative"
+                            className="w-[45px] h-[45px] flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white hover:text-main transition-all relative"
                         >
                             <i className="ri-notification-3-line text-[22px]"></i>
-                            <span className="absolute -top-[2px] -right-[2px] w-5 h-5 flex items-center justify-center rounded-full bg-[#FF3E3E] text-white text-[10px] font-bold border-2 border-[#3644D9]">1</span>
+                            <span className="absolute -top-[2px] -right-[2px] w-5 h-5 flex items-center justify-center rounded-full bg-[#FF3E3E] text-white text-[10px] font-bold border-2 border-main">1</span>
                         </button>
 
                         <div className={`absolute right-0 top-full mt-4 w-[320px] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 transform origin-top ${openDropdown === 'notifications' ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-4'}`}>
                             <div className="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
                                 <h3 className="font-bold text-gray-800">Notifications</h3>
-                                <Link to="/notifications" className="text-xs text-[#3644D9] font-bold hover:underline">View All</Link>
+                                <Link to="/notifications" className="text-xs text-main font-bold hover:underline">View All</Link>
                             </div>
                             <div className="p-2">
                                 <Link to="/notifications" className="p-3 flex items-start gap-3 hover:bg-gray-50 rounded-xl transition-colors group">
-                                    <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-[#3644D9] shrink-0">
+                                    <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-main shrink-0">
                                         <i className="ri-chat-3-line"></i>
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <h4 className="text-sm font-bold text-gray-800">James Vanwin</h4>
                                         <p className="text-xs text-gray-500">Posted A Comment On Your Status</p>
-                                        <span className="text-[10px] font-bold text-[#3644D9] uppercase mt-1 block">20 Minutes Ago</span>
+                                        <span className="text-[10px] font-bold text-main uppercase mt-1 block">20 Minutes Ago</span>
                                     </div>
                                 </Link>
                             </div>
@@ -171,6 +266,12 @@ const Navbar = () => {
                             </div>
 
                             <div className="border-t border-gray-50 mt-2 pt-2">
+                                <Link to="/profile" className="flex items-center px-5 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-main transition-all group">
+                                    <i className="ri-user-line mr-3 text-lg text-gray-400 group-hover:text-main"></i> My Profile
+                                </Link>
+                                <Link to="/settings" className="flex items-center px-5 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-main transition-all group">
+                                    <i className="ri-settings-3-line mr-3 text-lg text-gray-400 group-hover:text-main"></i> Settings
+                                </Link>
                                 <button onClick={handleLogout} className="w-full flex items-center px-5 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-all group">
                                     <i className="ri-logout-box-line mr-3 text-lg text-red-400 group-hover:text-red-500"></i> Sign Out
                                 </button>

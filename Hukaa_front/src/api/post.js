@@ -58,3 +58,9 @@ export const getSavedPosts = async (page) => {
     });
 };
 
+export const getUserPosts = async (userId, page) => {
+    return fetchClient(`/api/Post/${userId}/posts/${page}`, {
+        method: 'GET',
+    });
+};
+
