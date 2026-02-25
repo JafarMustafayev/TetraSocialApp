@@ -5,7 +5,7 @@ import { getMyPosts } from '../api/post';
 import { IMAGE_BASE_URL, USER_AVATAR, COVER_IMAGE } from '../api/client';
 import PostWidget from '../components/PostWidget';
 import CreatePostWidget from '../components/CreatePostWidget';
-import ConnectionsPopup from '../components/ConnectionsPopup';
+import ConnectionsPopup from '../components/Popups/ConnectionsPopup';
 
 const Profile = () => {
     const [activeTab, setActiveTab] = useState('timeline');
@@ -136,6 +136,13 @@ const Profile = () => {
     const handlePostArchived = (postId) => {
         // For timeline, we hide archived posts
         setPosts(prev => prev.filter(p => p.id !== postId));
+    };
+
+    const handleConnectionsChange = (counts) => {
+        setProfileData(prev => ({
+            ...prev,
+            ...counts
+        }));
     };
 
     const openConnections = (tab) => {
@@ -313,79 +320,123 @@ const Profile = () => {
 
                 {activeTab === 'about' && (
                     <div className="tab-pane fade show active" id="about" role="tabpanel">
-                        <div className="flex flex-wrap -mx-3">
+                        <div className="flex flex-wrap -mx-3 items-stretch">
                             <div className="w-full lg:w-1/3 px-3">
-                                <div className="about-personal-information p-4 bg-white rounded-lg shadow-sm">
-                                    <div className="about-header flex justify-between items-center border-b pb-3 mb-3">
-                                        <div className="title font-bold text-lg">Personal Information</div>
+                                <div className="p-8 bg-white rounded-3xl shadow-sm border border-gray-100 ">
+                                    <h4 className="font-bold text-lg mb-8 text-gray-800 border-b pb-4 border-gray-50 flex items-center">
+                                        <i className="ri-contacts-line mr-3 text-main"></i>
+                                        Personal Details
+                                    </h4>
+                                    <div className="space-y-6">
+                                        <div className="flex items-start">
+                                            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 mr-4">
+                                                <i className="ri-user-smile-line text-main"></i>
+                                            </div>
+                                            <div>
+                                                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1">Full Name</p>
+                                                <p className="font-semibold text-gray-800">{profileData.firstName} {profileData.lastName}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start">
+                                            <div className="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center shrink-0 mr-4">
+                                                <i className="ri-men-line text-pink-500"></i>
+                                            </div>
+                                            <div>
+                                                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1">Gender</p>
+                                                <p className="font-semibold text-gray-800">{getGenderText(profileData.gender)}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start">
+                                            <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0 mr-4">
+                                                <i className="ri-mail-line text-amber-500"></i>
+                                            </div>
+                                            <div className="min-w-0">
+                                                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1">Email</p>
+                                                <p className="font-semibold text-gray-800 truncate">{profileData.email || 'N/A'}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start">
+                                            <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center shrink-0 mr-4">
+                                                <i className="ri-phone-line text-green-500"></i>
+                                            </div>
+                                            <div>
+                                                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1">Phone</p>
+                                                <p className="font-semibold text-gray-800">{profileData.myNumber || 'N/A'}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start">
+                                            <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center shrink-0 mr-4">
+                                                <i className="ri-cake-2-line text-purple-500"></i>
+                                            </div>
+                                            <div>
+                                                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1">Birthday</p>
+                                                <p className="font-semibold text-gray-800">{profileData.birthDay ? new Date(profileData.birthDay).toLocaleDateString() : 'N/A'}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start">
+                                            <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center shrink-0 mr-4">
+                                                <i className="ri-user-heart-line text-red-500"></i>
+                                            </div>
+                                            <div>
+                                                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1">Relationship</p>
+                                                <p className="font-semibold text-gray-800">{getRelationshipStatusText(profileData.relationshipStatus)}</p>
+                                            </div>
+                                        </div>
                                     </div>
-
-                                    <ul className="information-list space-y-3">
-                                        <li className="flex justify-between">
-                                            <span className="font-bold text-gray-500">Name:</span>
-                                            <span>{profileData?.firstName ? profileData.firstName : 'N/A'}</span>
-                                        </li>
-                                        <li className="flex justify-between">
-                                            <span className="font-bold text-gray-500">Surname:</span>
-                                            <span>{profileData?.lastName ? profileData.lastName : 'N/A'}</span>
-                                        </li>
-                                        <li className="flex justify-between">
-                                            <span className="font-bold text-gray-500">Birthday:</span>
-                                            <span>{profileData?.birthDay ? new Date(profileData.birthDay).toLocaleDateString() : 'N/A'}</span>
-                                        </li>
-                                        <li className="flex justify-between">
-                                            <span className="font-bold text-gray-500">Phone:</span>
-                                            <span>{profileData?.myNumber || 'N/A'}</span>
-                                        </li>
-                                        <li className="flex justify-between">
-                                            <span className="font-bold text-gray-500">Email:</span>
-                                            <span>{profileData?.email ? profileData.email : 'N/A'}</span>
-                                        </li>
-                                        <li className="flex justify-between">
-                                            <span className="font-bold text-gray-500">Gender:</span>
-                                            <span>{getGenderText(profileData?.gender)}</span>
-                                        </li>
-                                        <li className="flex justify-between">
-                                            <span className="font-bold text-gray-500">Relationship:</span>
-                                            <span>{getRelationshipStatusText(profileData?.relationshipStatus)}</span>
-                                        </li>
-                                    </ul>
                                 </div>
                             </div>
 
-                            <div className="w-full lg:w-2/3 px-3">
-                                <div className="about-details-information space-y-4">
-                                    <div className="information-box-content p-4 bg-white rounded-lg shadow-sm">
-                                        <div className="information-header flex justify-between items-center border-b pb-3 mb-3">
-                                            <div className="title font-bold text-lg">About Me!</div>
-                                        </div>
-                                        <div className="content">
-                                            <p className="text-gray-600 leading-relaxed">{profileData?.bio || "No bio information provided yet."}</p>
+                            <div className="w-full lg:w-2/3 px-3 mt-6 lg:mt-0">
+                                <div className="space-y-6 flex flex-col h-full">
+                                    <div className="p-8 bg-white rounded-3xl shadow-sm border border-gray-100">
+                                        <h4 className="font-bold text-lg mb-6 text-gray-800 border-b pb-4 border-gray-50 flex items-center">
+                                            <i className="ri-information-line mr-3 text-main"></i>
+                                            About Me
+                                        </h4>
+                                        <div className="bg-gray-50/30 p-6 rounded-2xl border border-gray-50/50">
+                                            <p className="text-gray-600 leading-relaxed italic text-lg line-height-relaxed">
+                                                "{profileData.bio || "No bio information provided yet."}"
+                                            </p>
                                         </div>
                                     </div>
 
-                                    <div className="information-box-content p-4 bg-white rounded-lg shadow-sm">
-                                        <div className="information-header flex justify-between items-center border-b pb-3 mb-3">
-                                            <div className="title font-bold text-lg">Experience</div>
-                                        </div>
-
-                                        <div className="space-y-6">
-                                            {profileData?.experiences && profileData.experiences.length > 0 ? (
-                                                profileData.experiences.map((exp) => (
-                                                    <div key={exp.id} className="box-content border-l-2 border-blue-100 pl-4 py-1 relative">
-                                                        <div className="absolute w-3 h-3 bg-blue-500 rounded-full -left-[7px] top-2 border-2 border-white shadow-sm"></div>
-                                                        <p className="designation font-bold text-[16px] text-main flex items-center">
-                                                            {exp.position}
-                                                            <span className="ml-2 px-2 py-0.5 bg-blue-50 text-[11px] font-semibold text-blue-600 rounded uppercase">
-                                                                {exp.startAt && !exp.startAt.startsWith('0001') ? new Date(exp.startAt).getFullYear() : 'N/A'} — {exp.isCurrent || !exp.endAt ? 'Present' : new Date(exp.endAt).getFullYear()}
-                                                            </span>
-                                                        </p>
-                                                        <span className="title block font-semibold text-gray-600 mt-1">{exp.company}</span>
-                                                        {exp.description && <p className="text-gray-500 text-sm mt-2 italic">{exp.description}</p>}
-                                                    </div>
-                                                ))
+                                    <div className="p-8 bg-white rounded-3xl shadow-sm border border-gray-100 grow">
+                                        <h4 className="font-bold text-lg mb-8 text-gray-800 border-b pb-4 border-gray-50 flex items-center">
+                                            <i className="ri-briefcase-line mr-3 text-main"></i>
+                                            Work Experience
+                                        </h4>
+                                        <div className="space-y-8 relative">
+                                            {profileData.experiences && profileData.experiences.length > 0 ? (
+                                                <>
+                                                    <div className="absolute left-[19px] top-2 bottom-4 w-0.5 bg-linear-to-b from-blue-50 via-blue-100 to-transparent"></div>
+                                                    {profileData.experiences.map(exp => (
+                                                        <div key={exp.id} className="relative pl-12 group">
+                                                            <div className="absolute left-0 top-1.5 w-10 h-10 bg-white rounded-xl border border-blue-50 flex items-center justify-center z-10 shadow-sm group-hover:border-main transition-colors">
+                                                                <div className="w-2.5 h-2.5 bg-main rounded-full animate-pulse-slow"></div>
+                                                            </div>
+                                                            <div className="bg-gray-50/30 p-5 rounded-2xl group-hover:bg-gray-50/70 transition-colors border border-transparent group-hover:border-gray-100">
+                                                                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
+                                                                    <h5 className="font-bold text-gray-800 text-lg">{exp.position}</h5>
+                                                                    <span className="text-[11px] font-bold px-3 py-1 bg-white rounded-full text-main shadow-sm border border-blue-50 mt-2 md:mt-0 self-start md:self-center">
+                                                                        {exp.startAt && !exp.startAt.startsWith('0001') ? new Date(exp.startAt).getFullYear() : 'N/A'} — {exp.isCurrent ? 'Present' : (exp.endAt ? new Date(exp.endAt).getFullYear() : 'Present')}
+                                                                    </span>
+                                                                </div>
+                                                                <p className="text-main font-bold text-sm mb-3 flex items-center">
+                                                                    <i className="ri-building-line mr-2"></i>
+                                                                    {exp.company}
+                                                                </p>
+                                                                <p className="text-gray-600 leading-relaxed text-[15px]">{exp.description}</p>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </>
                                             ) : (
-                                                <p className="text-gray-400 italic">No work experience mentioned.</p>
+                                                <div className="text-center py-16 bg-gray-50/50 rounded-3xl border border-dashed border-gray-200">
+                                                    <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+                                                        <i className="ri-briefcase-line text-3xl text-gray-300"></i>
+                                                    </div>
+                                                    <p className="text-gray-400 font-medium">No work experience shared yet.</p>
+                                                </div>
                                             )}
                                         </div>
                                     </div>
@@ -400,6 +451,8 @@ const Profile = () => {
                 isOpen={isConnectionsPopupOpen}
                 onClose={() => setIsConnectionsPopupOpen(false)}
                 initialTab={connectionsPopupTab}
+                userId={null}
+                onCountChange={handleConnectionsChange}
             />
         </div >
     );

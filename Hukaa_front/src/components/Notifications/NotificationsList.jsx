@@ -17,7 +17,7 @@ const NotificationsList = () => {
     ];
 
     return (
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden h-[800px] flex flex-col">
+        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden h-[750px] flex flex-col">
             <div className="p-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/30 shrink-0">
                 <h3 className="text-lg font-bold text-gray-800 m-0">Notifications</h3>
                 <div className="relative group">
@@ -47,7 +47,7 @@ const NotificationsList = () => {
                             <p className="text-[12px] text-gray-500 mt-0.5 line-clamp-1">{notif.text}</p>
                             <span className="text-[10px] font-bold text-main uppercase mt-1 block">{notif.time}</span>
                         </div>
-                        <button className="w-7 h-7 flex items-center justify-center rounded-full text-gray-300 hover:bg-red-50 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100">
+                        <button className="w-7 h-7 flex items-center justify-center rounded-full text-red-500 bg-red-50 hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100">
                             <i className="ri-close-line text-xs font-bold"></i>
                         </button>
                     </div>

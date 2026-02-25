@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { getPostComments, createComment, deleteComment, updateComment } from '../api/comment';
-import { IMAGE_BASE_URL } from '../api/client';
+import { getPostComments, createComment, deleteComment, updateComment } from '../../api/comment';
+import { IMAGE_BASE_URL } from '../../api/client';
+import { useToast } from '../../context/ToastContext';
 
 const CommentPopup = ({ isOpen, onClose, postId, onCommentCountChange }) => {
     const [comments, setComments] = useState([]);
@@ -9,6 +10,7 @@ const CommentPopup = ({ isOpen, onClose, postId, onCommentCountChange }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [editingComment, setEditingComment] = useState(null);
     const [activeDropdownId, setActiveDropdownId] = useState(null);
+    const { showToast, showConfirm } = useToast();
     const dropdownRef = useRef(null);
     const textareaRef = useRef(null);
 
@@ -84,18 +86,29 @@ const CommentPopup = ({ isOpen, onClose, postId, onCommentCountChange }) => {
         }
     };
 
-    const handleDeleteComment = async (commentId) => {
-        try {
-            const response = await deleteComment(commentId);
-            if (response === null || response.success) {
-                const updatedComments = comments.filter(c => c.id !== commentId);
-                setComments(updatedComments);
-                if (onCommentCountChange) onCommentCountChange(updatedComments.length);
-                setActiveDropdownId(null);
+    const handleDeleteComment = (commentId) => {
+        showConfirm(
+            'Delete Comment',
+            'Are you sure you want to delete this comment?',
+            async () => {
+                try {
+                    const response = await deleteComment(commentId);
+                    if (response === null || response.success) {
+                        const updatedComments = comments.filter(c => c.id !== commentId);
+                        setComments(updatedComments);
+                        if (onCommentCountChange) onCommentCountChange(updatedComments.length);
+                        showToast('Comment deleted successfully');
+                    } else {
+                        showToast(response.message || 'Failed to delete comment', 'error');
+                    }
+                } catch (error) {
+                    console.error('Failed to delete comment:', error);
+                    showToast('An error occurred while deleting comment', 'error');
+                } finally {
+                    setActiveDropdownId(null);
+                }
             }
-        } catch (error) {
-            console.error('Failed to delete comment:', error);
-        }
+        );
     };
 
     const handleEditStart = (comment) => {

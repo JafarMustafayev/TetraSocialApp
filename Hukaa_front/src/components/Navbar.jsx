@@ -60,7 +60,7 @@ const Navbar = () => {
                 } finally {
                     setIsSearching(false);
                 }
-            }, 1000); // 1-second delay
+            }, 500); // 0.5-second delay
         } else {
             setSearchResults([]);
             setShowResults(false);
@@ -193,7 +193,7 @@ const Navbar = () => {
                         <div className={`absolute right-0 top-full mt-4 w-[320px] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 transform origin-top ${openDropdown === 'requests' ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-4'}`}>
                             <div className="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
                                 <h3 className="font-bold text-gray-800">Friend Requests</h3>
-                                <Link to="/friends" className="text-xs text-main font-bold hover:underline">View All</Link>
+                                <Link to="/notifications" className="text-xs text-main font-bold hover:underline">View All</Link>
                             </div>
                             <div className="p-4 space-y-4">
                                 <div className="flex items-center gap-3">

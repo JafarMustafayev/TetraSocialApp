@@ -3,10 +3,10 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getUserProfile } from '../api/profile';
 import { getUserPosts } from '../api/post';
-import { followUser, unfollowUser } from '../api/follow';
+import { followUser, unfollowUser, cancelFollowRequest } from '../api/follow';
 import { IMAGE_BASE_URL, USER_AVATAR, COVER_IMAGE } from '../api/client';
 import PostWidget from '../components/PostWidget';
-import ConnectionsPopup from '../components/ConnectionsPopup';
+import ConnectionsPopup from '../components/Popups/ConnectionsPopup';
 
 const UserProfile = () => {
     const { userId } = useParams();
@@ -40,7 +40,11 @@ const UserProfile = () => {
             try {
                 const response = await getUserProfile(userId);
                 if (response && response.success) {
-                    setProfileData(response.data);
+                    const data = response.data;
+                    setProfileData({
+                        ...data,
+                        isFollowing: data.followStatus === 1
+                    });
                     // Reset posts when user changes
                     setPosts([]);
                     setPostsPage(1);
@@ -111,16 +115,28 @@ const UserProfile = () => {
     const handleFollowToggle = async () => {
         setIsActionLoading(true);
         try {
-            if (profileData.isFollowing) {
+            if (profileData.followStatus === 1) {
                 // Unfollow requires confirmation
                 setShowUnfollowConfirm(true);
-            } else {
-                const response = await followUser(userId);
+            } else if (profileData.followStatus === 0) {
+                // Cancel pending follow request
+                const response = await cancelFollowRequest(userId);
                 if (response.success) {
                     setProfileData(prev => ({
                         ...prev,
-                        isFollowing: true,
-                        followersCount: (prev.followersCount || 0) + 1
+                        followStatus: 2,
+                        isFollowing: false
+                    }));
+                }
+            } else {
+                const response = await followUser(userId);
+                if (response.success) {
+                    const followStatus = response.data?.followStatus;
+                    setProfileData(prev => ({
+                        ...prev,
+                        followStatus: followStatus,
+                        isFollowing: followStatus === 1,
+                        followersCount: followStatus === 1 ? (prev.followersCount || 0) + 1 : prev.followersCount
                     }));
                 }
             }
@@ -140,6 +156,7 @@ const UserProfile = () => {
                 setProfileData(prev => ({
                     ...prev,
                     isFollowing: false,
+                    followStatus: 2,
                     followersCount: Math.max(0, (prev.followersCount || 0) - 1)
                 }));
                 // If it was private, clear posts
@@ -153,6 +170,13 @@ const UserProfile = () => {
         } finally {
             setIsActionLoading(false);
         }
+    };
+
+    const handleConnectionsChange = (counts) => {
+        setProfileData(prev => ({
+            ...prev,
+            ...counts
+        }));
     };
 
     const getGenderText = (gender) => {
@@ -211,12 +235,20 @@ const UserProfile = () => {
                                 <button
                                     onClick={handleFollowToggle}
                                     disabled={isActionLoading}
-                                    className={`mt-4 px-8 py-2.5 rounded-xl font-bold transition-all shadow-lg ${profileData.isFollowing
+                                    className={`mt-4 px-8 py-2.5 rounded-xl font-bold transition-all shadow-lg ${profileData.followStatus === 1
                                         ? 'bg-gray-100 text-gray-700 hover:bg-red-50 hover:text-red-500'
-                                        : 'bg-main text-white hover:bg-blue-700 shadow-blue-100'
+                                        : profileData.followStatus === 0
+                                            ? 'bg-amber-50 text-amber-600 hover:bg-amber-100 shadow-amber-50'
+                                            : 'bg-main text-white hover:bg-blue-700 shadow-blue-100'
                                         }`}
                                 >
-                                    {isActionLoading ? '...' : (profileData.isFollowing ? 'Unfollow' : 'Follow')}
+                                    {isActionLoading ? '...' : (
+                                        profileData.followStatus === 1
+                                            ? 'Unfollow'
+                                            : profileData.followStatus === 0
+                                                ? 'Cancel Request'
+                                                : 'Follow'
+                                    )}
                                 </button>
                             </div>
                             <ul className="flex items-center space-x-6 lg:space-x-12 mt-6 md:mt-0">
@@ -225,15 +257,31 @@ const UserProfile = () => {
                                     <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1 block">Posts</span>
                                 </li>
                                 <li className="text-center">
-                                    <button onClick={() => setIsConnectionsPopupOpen(true)} className="block group">
-                                        <span className="block text-lg font-bold text-gray-800 leading-none group-hover:text-main transition-colors uppercase tracking-tight">{profileData.followersCount || 0}</span>
-                                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1 block group-hover:text-gray-500 transition-colors">Followers</span>
+                                    <button
+                                        onClick={() => {
+                                            if (canSeeContent) {
+                                                setConnectionsPopupTab('followers');
+                                                setIsConnectionsPopupOpen(true);
+                                            }
+                                        }}
+                                        className={`block ${canSeeContent ? 'group' : 'cursor-not-allowed opacity-75'}`}
+                                    >
+                                        <span className={`block text-lg font-bold text-gray-800 leading-none ${canSeeContent ? 'group-hover:text-main' : ''} transition-colors uppercase tracking-tight`}>{profileData.followersCount || 0}</span>
+                                        <span className={`text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1 block ${canSeeContent ? 'group-hover:text-gray-500' : ''} transition-colors`}>Followers</span>
                                     </button>
                                 </li>
                                 <li className="text-center relative after:content-[''] after:absolute after:right-[-12px] lg:after:right-[-24px] after:top-1/4 after:h-1/2 after:w-px after:bg-gray-200 last:after:hidden">
-                                    <button onClick={() => setIsConnectionsPopupOpen(true)} className="block group">
-                                        <span className="block text-lg font-bold text-gray-800 leading-none group-hover:text-main transition-colors uppercase tracking-tight">{profileData.followingCount || 0}</span>
-                                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1 block group-hover:text-gray-500 transition-colors">Following</span>
+                                    <button
+                                        onClick={() => {
+                                            if (canSeeContent) {
+                                                setConnectionsPopupTab('following');
+                                                setIsConnectionsPopupOpen(true);
+                                            }
+                                        }}
+                                        className={`block ${canSeeContent ? 'group' : 'cursor-not-allowed opacity-75'}`}
+                                    >
+                                        <span className={`block text-lg font-bold text-gray-800 leading-none ${canSeeContent ? 'group-hover:text-main' : ''} transition-colors uppercase tracking-tight`}>{profileData.followingCount || 0}</span>
+                                        <span className={`text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1 block ${canSeeContent ? 'group-hover:text-gray-500' : ''} transition-colors`}>Following</span>
                                     </button>
                                 </li>
                             </ul>
@@ -295,19 +343,34 @@ const UserProfile = () => {
                                     </div>
                                 </div>
                                 <div className="w-full lg:w-1/4 px-3">
-                                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                                        <h3 className="text-lg font-bold text-gray-800 mb-6 pb-4 border-b border-gray-50">About {profileData.firstName}</h3>
-                                        <p className="text-gray-600 text-sm leading-relaxed mb-6 italic">
-                                            "{profileData.bio || "No bio information provided yet."}"
-                                        </p>
+                                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                                        <h3 className="text-lg font-bold text-gray-800 mb-6 pb-4 border-b border-gray-50 flex items-center">
+                                            <i className="ri-information-line mr-2 text-main"></i>
+                                            About {profileData.firstName}
+                                        </h3>
+                                        <div className="bg-gray-50/50 p-4 rounded-2xl mb-6">
+                                            <p className="text-gray-600 text-sm leading-relaxed italic">
+                                                "{profileData.bio || "No bio information provided yet."}"
+                                            </p>
+                                        </div>
                                         <div className="space-y-4">
-                                            <div className="flex items-center text-sm">
-                                                <i className="ri-user-heart-line mr-3 text-main"></i>
-                                                <span className="text-gray-500">{getRelationshipStatusText(profileData.relationshipStatus)}</span>
+                                            <div className="flex items-center p-3 rounded-xl bg-blue-50/30 transition-colors hover:bg-blue-50/50">
+                                                <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm mr-3">
+                                                    <i className="ri-user-heart-line text-main text-sm"></i>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider leading-none mb-1">Status</p>
+                                                    <p className="text-gray-700 text-sm font-semibold">{getRelationshipStatusText(profileData.relationshipStatus)}</p>
+                                                </div>
                                             </div>
-                                            <div className="flex items-center text-sm">
-                                                <i className="ri-cake-2-line mr-3 text-main"></i>
-                                                <span className="text-gray-500">{profileData.birthDay ? new Date(profileData.birthDay).toLocaleDateString() : 'N/A'}</span>
+                                            <div className="flex items-center p-3 rounded-xl bg-purple-50/30 transition-colors hover:bg-purple-50/50">
+                                                <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm mr-3">
+                                                    <i className="ri-cake-2-line text-purple-500 text-sm"></i>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider leading-none mb-1">Birthday</p>
+                                                    <p className="text-gray-700 text-sm font-semibold">{profileData.birthDay ? new Date(profileData.birthDay).toLocaleDateString() : 'N/A'}</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -316,44 +379,82 @@ const UserProfile = () => {
                         )}
 
                         {activeTab === 'about' && (
-                            <div className="flex flex-wrap -mx-3">
+                            <div className="flex flex-wrap -mx-3 items-stretch">
                                 <div className="w-full lg:w-1/3 px-3">
-                                    <div className="p-6 bg-white rounded-3xl shadow-sm border border-gray-100">
-                                        <h4 className="font-bold text-lg mb-6 text-gray-800 border-b pb-4 border-gray-50">Personal Details</h4>
-                                        <ul className="space-y-4">
-                                            <li className="flex justify-between text-sm">
-                                                <span className="font-bold text-gray-400 uppercase tracking-wider text-[11px]">Full Name</span>
-                                                <span className="font-semibold text-gray-700">{profileData.firstName} {profileData.lastName}</span>
-                                            </li>
-                                            <li className="flex justify-between text-sm">
-                                                <span className="font-bold text-gray-400 uppercase tracking-wider text-[11px]">Gender</span>
-                                                <span className="font-semibold text-gray-700">{getGenderText(profileData.gender)}</span>
-                                            </li>
-                                            <li className="flex justify-between text-sm">
-                                                <span className="font-bold text-gray-400 uppercase tracking-wider text-[11px]">Email</span>
-                                                <span className="font-semibold text-gray-700 truncate ml-4">{profileData.email || 'N/A'}</span>
-                                            </li>
-                                        </ul>
+                                    <div className="p-8 bg-white rounded-3xl shadow-sm border border-gray-100 h-full">
+                                        <h4 className="font-bold text-lg mb-8 text-gray-800 border-b pb-4 border-gray-50 flex items-center">
+                                            <i className="ri-contacts-line mr-3 text-main"></i>
+                                            Personal Details
+                                        </h4>
+                                        <div className="space-y-6">
+                                            <div className="flex items-start">
+                                                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 mr-4">
+                                                    <i className="ri-user-smile-line text-main"></i>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1">Full Name</p>
+                                                    <p className="font-semibold text-gray-800">{profileData.firstName} {profileData.lastName}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-start">
+                                                <div className="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center shrink-0 mr-4">
+                                                    <i className="ri-men-line text-pink-500"></i>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1">Gender</p>
+                                                    <p className="font-semibold text-gray-800">{getGenderText(profileData.gender)}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-start">
+                                                <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0 mr-4">
+                                                    <i className="ri-mail-line text-amber-500"></i>
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1">Email</p>
+                                                    <p className="font-semibold text-gray-800 truncate">{profileData.email || 'N/A'}</p>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="w-full lg:w-2/3 px-3 mt-6 lg:mt-0">
-                                    <div className="p-6 bg-white rounded-3xl shadow-sm border border-gray-100">
-                                        <h4 className="font-bold text-lg mb-6 text-gray-800 border-b pb-4 border-gray-50">Work Experience</h4>
-                                        <div className="space-y-8">
+                                    <div className="p-8 bg-white rounded-3xl shadow-sm border border-gray-100 h-full">
+                                        <h4 className="font-bold text-lg mb-8 text-gray-800 border-b pb-4 border-gray-50 flex items-center">
+                                            <i className="ri-briefcase-line mr-3 text-main"></i>
+                                            Work Experience
+                                        </h4>
+                                        <div className="space-y-8 relative">
                                             {profileData.experiences && profileData.experiences.length > 0 ? (
-                                                profileData.experiences.map(exp => (
-                                                    <div key={exp.id} className="relative pl-8 border-l-2 border-blue-50 py-2">
-                                                        <div className="absolute left-[-9px] top-4 w-4 h-4 bg-white border-4 border-main rounded-full"></div>
-                                                        <h5 className="font-bold text-gray-800 text-lg">{exp.position}</h5>
-                                                        <p className="text-main font-bold text-sm mb-2">{exp.company}</p>
-                                                        <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">
-                                                            {new Date(exp.startAt).getFullYear()} — {exp.isCurrent ? 'Present' : new Date(exp.endAt).getFullYear()}
-                                                        </p>
-                                                        <p className="text-gray-600 leading-relaxed text-[15px]">{exp.description}</p>
-                                                    </div>
-                                                ))
+                                                <>
+                                                    <div className="absolute left-[19px] top-2 bottom-4 w-0.5 bg-linear-to-b from-blue-50 via-blue-100 to-transparent"></div>
+                                                    {profileData.experiences.map(exp => (
+                                                        <div key={exp.id} className="relative pl-12 group">
+                                                            <div className="absolute left-0 top-1.5 w-10 h-10 bg-white rounded-xl border border-blue-50 flex items-center justify-center z-10 shadow-sm group-hover:border-main transition-colors">
+                                                                <div className="w-2.5 h-2.5 bg-main rounded-full animate-pulse-slow"></div>
+                                                            </div>
+                                                            <div className="bg-gray-50/30 p-5 rounded-2xl group-hover:bg-gray-50/70 transition-colors border border-transparent group-hover:border-gray-100">
+                                                                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
+                                                                    <h5 className="font-bold text-gray-800 text-lg">{exp.position}</h5>
+                                                                    <span className="text-[11px] font-bold px-3 py-1 bg-white rounded-full text-main shadow-sm border border-blue-50 mt-2 md:mt-0 self-start md:self-center">
+                                                                        {new Date(exp.startAt).getFullYear()} — {exp.isCurrent ? 'Present' : new Date(exp.endAt).getFullYear()}
+                                                                    </span>
+                                                                </div>
+                                                                <p className="text-main font-bold text-sm mb-3 flex items-center">
+                                                                    <i className="ri-building-line mr-2"></i>
+                                                                    {exp.company}
+                                                                </p>
+                                                                <p className="text-gray-600 leading-relaxed text-[15px]">{exp.description}</p>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </>
                                             ) : (
-                                                <p className="text-gray-400 italic py-10 text-center">No work experience shared yet.</p>
+                                                <div className="text-center py-16 bg-gray-50/50 rounded-3xl border border-dashed border-gray-200">
+                                                    <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+                                                        <i className="ri-briefcase-line text-3xl text-gray-300"></i>
+                                                    </div>
+                                                    <p className="text-gray-400 font-medium">No work experience shared yet.</p>
+                                                </div>
                                             )}
                                         </div>
                                     </div>
@@ -398,6 +499,8 @@ const UserProfile = () => {
                 isOpen={isConnectionsPopupOpen}
                 onClose={() => setIsConnectionsPopupOpen(false)}
                 initialTab={connectionsPopupTab}
+                userId={userId}
+                onCountChange={handleConnectionsChange}
             />
         </div>
     );

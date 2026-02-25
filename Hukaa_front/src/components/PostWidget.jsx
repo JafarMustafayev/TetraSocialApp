@@ -2,13 +2,14 @@ import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { IMAGE_BASE_URL, POST_SHARE_URL, FRONT_URL, USER_AVATAR } from '../api/client';
 import { updatePost, deletePost, toggleArchivePost, reactToPost } from '../api/post';
-import CommentPopup from './CommentPopup';
+import CommentPopup from './Popups/CommentPopup';
 import SharePopup from './SharePopup';
-import ImageGalleryPopup from './ImageGalleryPopup';
+import ImageGalleryPopup from './Popups/ImageGalleryPopup';
+import { useToast } from '../context/ToastContext';
 
 const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
     const [myReaction, setMyReaction] = useState(post.myReaction);
-    const [reactionCount, setReactionCount] = useState(post.totalReactionCount || 0);
+    const [reactionCount, setReactionCount] = useState(post.reactionCount || post.totalReactionCount || 0);
     const [commentCount, setCommentCount] = useState(post.commentCount || 0);
     const [showReactions, setShowReactions] = useState(false);
     const [showComments, setShowComments] = useState(false);
@@ -24,8 +25,8 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
     const [isUpdating, setIsUpdating] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isArchiving, setIsArchiving] = useState(false);
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
+    const { showToast, showConfirm } = useToast();
     const maxChars = 1000;
     const SUMMARY_LIMIT = 250;
 
@@ -118,34 +119,53 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
         }
     };
 
-    const handleDeleteClick = async () => {
-        setIsDeleting(true);
-        try {
-            const response = await deletePost(post.id);
-            if (response.success) {
-                if (onDelete) onDelete(post.id);
+    const handleDeletePost = () => {
+        showConfirm(
+            'Delete Post',
+            'This action is permanent and cannot be undone. Are you sure you want to delete this post?',
+            async () => {
+                setIsDeleting(true);
+                try {
+                    const response = await deletePost(post.id);
+                    if (response.success) {
+                        showToast('Post deleted successfully');
+                        if (onDelete) onDelete(post.id);
+                    } else {
+                        showToast(response.message || 'Failed to delete post', 'error');
+                    }
+                } catch (error) {
+                    console.error('Failed to delete post:', error);
+                    showToast('An error occurred while deleting post', 'error');
+                } finally {
+                    setIsDeleting(false);
+                }
             }
-        } catch (error) {
-            console.error('Failed to delete post:', error);
-            setShowDeleteConfirm(false);
-        } finally {
-            setIsDeleting(false);
-        }
+        );
     };
 
-    const handleToggleArchiveClick = async () => {
-        setIsArchiving(true);
-        try {
-            const newArchiveStatus = !post.isArchived;
-            const response = await toggleArchivePost(post.id, newArchiveStatus);
-            if (response.success) {
-                if (onArchive) onArchive(post.id, newArchiveStatus);
+    const handleToggleArchiveClick = () => {
+        const isArchivingAction = !post.isArchived;
+        showConfirm(
+            isArchivingAction ? 'Archive Post' : 'Unarchive Post',
+            `Are you sure you want to ${isArchivingAction ? 'archive' : 'unarchive'} this post?`,
+            async () => {
+                setIsArchiving(true);
+                try {
+                    const response = await toggleArchivePost(post.id, isArchivingAction);
+                    if (response.success) {
+                        showToast(`Post ${isArchivingAction ? 'archived' : 'unarchived'} successfully`);
+                        if (onArchive) onArchive(post.id, isArchivingAction);
+                    } else {
+                        showToast(response.message || 'Operation failed', 'error');
+                    }
+                } catch (error) {
+                    console.error('Failed to archive post:', error);
+                    showToast('An error occurred during archival', 'error');
+                } finally {
+                    setIsArchiving(false);
+                }
             }
-        } catch (error) {
-            console.error('Failed to archive post:', error);
-        } finally {
-            setIsArchiving(false);
-        }
+        );
     };
 
     const renderMedia = () => {
@@ -189,37 +209,7 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
         : post.content;
 
     return (
-        <div className={`bg-white rounded-3xl shadow-sm mb-6 border border-gray-100 overflow-visible relative group/widget transition-all hover:shadow-xl hover:shadow-gray-100/50 ${showDeleteConfirm ? "min-h-[300px]" : ""}`}  >
-            {showDeleteConfirm && (
-                <div className="absolute inset-0 z-50 bg-white/95 backdrop-blur-sm rounded-3xl flex flex-col items-center justify-center p-8 text-center animate-fade-in">
-                    <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-6 shadow-inner ring-4 ring-red-50/50">
-                        <i className="ri-delete-bin-line text-4xl"></i>
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-800 mb-3">Delete Post?</h3>
-                    <p className="text-gray-500 mb-8 max-w-[280px] leading-relaxed">This action is permanent and cannot be undone. Are you sure?</p>
-                    <div className="flex space-x-4 w-full max-w-[320px]">
-                        <button
-                            onClick={() => setShowDeleteConfirm(false)}
-                            className="flex-1 py-4 px-6 bg-gray-100 text-gray-600 font-bold rounded-2xl hover:bg-gray-200 transition-all active:scale-95"
-                            disabled={isDeleting}
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={handleDeleteClick}
-                            className="flex-1 py-4 px-6 bg-red-500 text-white font-bold rounded-2xl hover:bg-red-600 shadow-xl shadow-red-200 transition-all active:scale-95"
-                            disabled={isDeleting}
-                        >
-                            {isDeleting ? (
-                                <span className="flex items-center justify-center">
-                                    <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                    Deleting
-                                </span>
-                            ) : 'Delete Now'}
-                        </button>
-                    </div>
-                </div>
-            )}
+        <div className="bg-white rounded-3xl shadow-sm mb-6 border border-gray-100 overflow-visible relative group/widget transition-all hover:shadow-xl hover:shadow-gray-100/50">
 
             <div className="p-5 flex justify-between items-center">
                 <div className="flex items-center space-x-3">
@@ -288,7 +278,7 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
                                 <div className="h-px bg-gray-50 my-2 mx-2"></div>
 
                                 <button
-                                    onClick={() => { setShowDeleteConfirm(true); setShowOptions(false); }}
+                                    onClick={() => { handleDeletePost(); setShowOptions(false); }}
                                     className="w-full text-left px-4 py-3 text-sm text-red-500 hover:bg-red-50 flex items-center rounded-xl transition-all group"
                                 >
                                     <div className="w-9 h-9 rounded-lg bg-red-50 text-red-400 flex items-center justify-center mr-3 group-hover:bg-red-500 group-hover:text-white transition-all shadow-sm">
