@@ -6,15 +6,11 @@ public class ReactionService(
 {
     public int GetReactionCount(string postId)
     {
-        var userId = currentUserService.UserId;
-
         var query = context.Reactions
             .AsQueryable().AsNoTracking()
-            .Where(x=>x.PostId == postId && x.AppUserId == userId)
+            .Where(x=>x.PostId == postId )
             .Select(x=>x.Id);
-
         return query.Count();
-
     }
 
     public async Task<ReactionType?> GetMyReaction(string postId)

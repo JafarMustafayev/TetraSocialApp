@@ -121,6 +121,7 @@ public class ProfileService(
     {
         var user = await dbContext.Users
             .Include(user => user.Followers)
+            .Include(user => user.Following)
             .Include(user => user.WorkExperiences)
             .Include(user => user.Posts.Where(post => !post.IsArchived && !post.IsDeleted))
             .FirstOrDefaultAsync(user => user.Id == targetUserId);
@@ -130,13 +131,11 @@ public class ProfileService(
             throw new NotFoundException("User", targetUserId);
         }
 
-        ProfileSummaryDto profileSummaryDetail  = new();
-        profileSummaryDetail.IsFollowing = user.Followers
-            .Any(f => f.Status == FollowStatus.Accepted
-                      && f.FollowerId == currentUser.UserId);
+        ProfileSummaryDto profileSummaryDetail;
+        var followStatus = user.Followers
+            .FirstOrDefault(follow => follow.FollowerId == currentUser.UserId)?.Status?? FollowStatus.None;
 
-
-        if (user.AccountType == AccountType.PublicAccount || profileSummaryDetail.IsFollowing)
+        if (user.AccountType == AccountType.PublicAccount || followStatus == FollowStatus.Accepted)
         {
             profileSummaryDetail = mapper.Map<ProfileDetailsDto>(user);
         }
@@ -144,6 +143,10 @@ public class ProfileService(
         {
             profileSummaryDetail = mapper.Map<ProfileSummaryDto>(user);
         }
+
+        profileSummaryDetail.FollowStatus = followStatus;
+        profileSummaryDetail.FollowersCount  = user.Followers.Count(follow => follow.Status == FollowStatus.Accepted);
+        profileSummaryDetail.FollowingCount  = user.Following.Count(follow => follow.Status == FollowStatus.Accepted);
 
         return new ResponseDto
         {

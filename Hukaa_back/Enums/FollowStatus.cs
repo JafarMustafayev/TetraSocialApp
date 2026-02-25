@@ -3,5 +3,6 @@
 public enum FollowStatus
 {
     Pending,
-    Accepted
+    Accepted,
+    None
 }

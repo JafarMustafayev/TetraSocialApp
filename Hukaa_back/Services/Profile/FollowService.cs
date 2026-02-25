@@ -45,7 +45,11 @@ public class FollowService(
             Message = user.AccountType == AccountType.PublicAccount
             ? "User followed successfully."
             : "Follow request sent successfully.",
-            Data = null
+            Data = new
+            {
+                FollowStatus = user.AccountType == AccountType.PublicAccount ?
+                    FollowStatus.Accepted : FollowStatus.Pending
+            }
         };
     }
     public async Task<ResponseDto> UnfollowAsync(string followingId)
@@ -183,41 +187,36 @@ public class FollowService(
             Data = null
         };
     }
-    public async Task<ResponseDto> GetMyFollowersAsync()
+    public async Task<ResponseDto> GetMyConnectionsAsync()
     {
         var followers = await context.Follows
             .Include(x => x.Follower)
-            .Where(x => x.FollowingId == currentUserService.UserId && x.Status == FollowStatus.Accepted)
+            .Where(x => x.FollowingId == currentUserService.UserId 
+                        && x.Status == FollowStatus.Accepted)
             .ToListAsync();
-
-        var map = mapper.Map<List<FollowerPreviewDto>>(followers);
-
-        return new()
-        {
-            Success = true,
-            StatusCode = StatusCodes.Status200OK,
-            Message = "Followers retrieved successfully.",
-            Data = map
-        };
-    }
-    public async Task<ResponseDto> GetFollowingsAsync()
-    {
+        
         var following = await context.Follows
             .Include(x => x.Following)
-            .Where(x => x.FollowerId == currentUserService.UserId && x.Status == FollowStatus.Accepted)
+            .Where(x => x.FollowerId == currentUserService.UserId 
+                        && x.Status == FollowStatus.Accepted)
             .ToListAsync();
 
-        var map = mapper.Map<List<FollowingPreviewDto>>(following);
+        var followersMap = mapper.Map<List<FollowerPreviewDto>>(followers);
+        var followingsMap = mapper.Map<List<FollowingPreviewDto>>(following);
 
         return new()
         {
             Success = true,
             StatusCode = StatusCodes.Status200OK,
-            Message = "Followings retrieved successfully",
-            Data = map
+            Message = "Your connections retrieved successfully",
+            Data = new
+            {
+                followers = followersMap,
+                followings = followingsMap
+            }
         };
     }
-    public async Task<ResponseDto> GetFollowingUsersAsync(string userId)
+    public async Task<ResponseDto>  GetUserConnectionsAsync(string userId)
     {
         var canYouRead = await context.Follows.AnyAsync(
             x => x.FollowingId == userId
@@ -226,7 +225,7 @@ public class FollowService(
 
         if (!canYouRead)
         {
-            throw new ForbiddenException("You cannot view this user's followings because you are not following them.");
+            throw new ForbiddenException("You cannot view this user's connections because you are not following them.");
         }
 
         var following = await context.Follows
@@ -234,43 +233,25 @@ public class FollowService(
            .Where(x => x.FollowerId == userId && x.Status == FollowStatus.Accepted)
            .ToListAsync();
 
-        var map = mapper.Map<List<FollowingPreviewDto>>(following);
-
-        return new()
-        {
-            Success = true,
-            StatusCode = StatusCodes.Status200OK,
-            Message = "User's followings retrieved successfully",
-            Data = map
-        };
-    }
-    public async Task<ResponseDto> GetFollowerUsersAsync(string userId)
-    {
-        var canYouRead = await context.Follows.AnyAsync(
-            x => x.FollowingId == userId
-            && x.FollowerId == currentUserService.UserId
-            && x.Status == FollowStatus.Accepted);
-
-        if (!canYouRead)
-        {
-            throw new ForbiddenException("You cannot view this user's followers because you are not following them.");
-        }
-
+        var followingsMap = mapper.Map<List<FollowingPreviewDto>>(following);
+        
         var followers = await context.Follows
             .Include(x => x.Follower)
             .Where(x => x.FollowingId == userId && x.Status == FollowStatus.Accepted)
             .ToListAsync();
 
-        var map = mapper.Map<List<FollowerPreviewDto>>(followers);
-
+        var followersMap = mapper.Map<List<FollowerPreviewDto>>(followers);
+        
         return new()
         {
             Success = true,
             StatusCode = StatusCodes.Status200OK,
-            Message = "User's followers retrieved successfully.",
-            Data = map
+            Message = "User connections retrieved successfully",
+            Data = new
+            {
+                followers = followersMap,
+                followings = followingsMap
+            }
         };
     }
-
-   
 }

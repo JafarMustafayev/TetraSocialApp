@@ -9,8 +9,6 @@ public interface IFollowService
     Task<ResponseDto> AcceptFollowRequestAsync(string requesterId);
     Task<ResponseDto> RejectFollowRequestAsync(string requesterId);
     Task<ResponseDto> RemoveFollower(string userId);
-    Task<ResponseDto> GetMyFollowersAsync();
-    Task<ResponseDto> GetFollowingsAsync();
-    Task<ResponseDto> GetFollowingUsersAsync(string userId);
-    Task<ResponseDto> GetFollowerUsersAsync(string userId);
+    Task<ResponseDto> GetMyConnectionsAsync();
+    Task<ResponseDto> GetUserConnectionsAsync(string userId);
 }

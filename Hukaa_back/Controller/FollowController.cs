@@ -55,31 +55,17 @@ public class FollowController(
         return StatusCode(res.StatusCode, res);
     }
 
-    [HttpGet("my-followers")]
-    public async Task<IActionResult> GetMyFollowers()
+    [HttpGet("my-connections")]
+    public async Task<IActionResult> GetMyConnections()
     {
-        var res = await followService.GetMyFollowersAsync();
+        var res = await followService.GetMyConnectionsAsync();
         return StatusCode(res.StatusCode, res);
     }
-
-    [HttpGet("my-followings")]
-    public async Task<IActionResult> GetFollowings()
+    
+    [HttpGet("{userId}/connections")]
+    public async Task<IActionResult> GetUserConnections(string userId )
     {
-        var res = await followService.GetFollowingsAsync();
-        return StatusCode(res.StatusCode, res);
-    }
-
-    [HttpGet("{userId}/followings")]
-    public async Task<IActionResult> GetFollowingUsers(string userId )
-    {
-        var res = await followService.GetFollowingUsersAsync(userId);
-        return StatusCode(res.StatusCode, res);
-    }
-
-    [HttpGet("{userId}/followers")]
-    public async Task<IActionResult> GetFollowerUsers(string userId )
-    {
-        var res = await followService.GetFollowerUsersAsync(userId);
+        var res = await followService.GetUserConnectionsAsync(userId);
         return StatusCode(res.StatusCode, res);
     }
 }
