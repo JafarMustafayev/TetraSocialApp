@@ -131,4 +131,17 @@ public class CommentService(
             Data = dtos
         };
     }
+
+    public async Task<Dictionary<string, int>> GetCommentCountAsync(List<string> postIds)
+    {
+        return await context.Comments
+            .Where(r => postIds.Contains(r.PostId))
+            .GroupBy(r => r.PostId)
+            .Select(g => new
+            {
+                PostId = g.Key,
+                Count = g.Count()
+            })
+            .ToDictionaryAsync(x => x.PostId, x => x.Count);
+    }
 }

@@ -1,11 +1,15 @@
-﻿namespace Hukaa_back.Services.Post;
+﻿using Microsoft.VisualBasic.CompilerServices;
 
-public class PostService(IFileService fileService,
+namespace Hukaa_back.Services.Post;
+
+public class PostService(
+    IFileService fileService,
     ICurrentUserService currentUserService,
     AppDbContext context,
     UserManager<AppUser> userManager,
     IMapper mapper,
-    IReactionService reactionService) : IPostService
+    IReactionService reactionService,
+    ICommentService commentService) : IPostService
 {
     private readonly string[] _allowedVideoExtensions = { ".mp4", ".mov", ".avi", ".mkv" };
     private readonly string[] _allowedImageExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
@@ -16,10 +20,9 @@ public class PostService(IFileService fileService,
         if (take < 1) take = 10;
         var userId = currentUserService.UserId;
         var posts = await context.Posts
-            .Where(x => x.AppUserId == userId && !x.IsArchived)
-            .Include(x => x.PostFiles)
-            .Include(x=>x.Comments)
-            .OrderByDescending(x => x.CreatedAt)
+            .Where(post => post.AppUserId == userId && !post.IsArchived)
+            .Include(post => post.PostFiles)
+            .OrderByDescending(post => post.CreatedAt)
             .Skip((page - 1) * take)
             .Take(take)
             .ToListAsync();
@@ -28,6 +31,7 @@ public class PostService(IFileService fileService,
 
         var postIds = map.Select(x => x.Id).ToList();
 
+        var commentsCounts = await commentService.GetCommentCountAsync(postIds);
         var reactionCounts = await reactionService.GetReactionCountsAsync(postIds);
         var myReactions = await reactionService.GetMyReactionsAsync(postIds);
 
@@ -40,11 +44,67 @@ public class PostService(IFileService fileService,
             post.MyReaction = myReactions.ContainsKey(post.Id)
                 ? myReactions[post.Id]
                 : null;
+
+            post.CommentCount = commentsCounts.ContainsKey(post.Id)
+                ? commentsCounts[post.Id]
+                : 0;
         }
 
         SetPostPermissions(map, userId);
 
-        return new()
+        return new ResponseDto
+        {
+            Success = true,
+            Message = "",
+            StatusCode = StatusCodes.Status200OK,
+            Data = map
+        };
+    }
+
+    public async Task<ResponseDto> GetMyFeeds(int page, int take)
+    {
+        if (page < 1) page = 1;
+        if (take < 1) take = 10;
+        var userId = currentUserService.UserId;
+
+        var posts = await context.Posts
+            .Where(post =>
+                !post.IsArchived &&
+                post.AppUserId != userId &&
+                context.Follows.Any(f =>
+                    f.FollowerId == userId &&
+                    f.FollowingId == post.AppUserId &&
+                    f.Status == FollowStatus.Accepted))
+            .Include(post => post.PostFiles)
+            .Include(post => post.AppUser)
+            .ToListAsync();
+
+        var map = mapper.Map<List<SinglePostDto>>(posts);
+
+        var postIds = map.Select(x => x.Id).ToList();
+
+        var commentsCounts = await commentService.GetCommentCountAsync(postIds);
+        var reactionCounts = await reactionService.GetReactionCountsAsync(postIds);
+        var myReactions = await reactionService.GetMyReactionsAsync(postIds);
+
+        foreach (var post in map)
+        {
+            post.TotalReactionCount = reactionCounts.ContainsKey(post.Id)
+                ? reactionCounts[post.Id]
+                : 0;
+
+            post.MyReaction = myReactions.ContainsKey(post.Id)
+                ? myReactions[post.Id]
+                : null;
+
+            post.CommentCount = commentsCounts.ContainsKey(post.Id)
+                ? commentsCounts[post.Id]
+                : 0;
+        }
+
+        SetPostPermissions(map, userId);
+
+        return new ResponseDto
         {
             Success = true,
             Message = "",
@@ -95,7 +155,6 @@ public class PostService(IFileService fileService,
 
     public async Task<ResponseDto> GetMyArchivedPosts(int page, int take)
     {
-
         var userId = currentUserService.UserId;
 
         var posts = await context.Posts
@@ -109,7 +168,7 @@ public class PostService(IFileService fileService,
 
         SetPostPermissions(map, userId);
 
-        return new()
+        return new ResponseDto
         {
             Success = true,
             Message = "",
@@ -140,7 +199,6 @@ public class PostService(IFileService fileService,
         {
             var postFiles = new List<PostFile>();
             foreach (var file in request.Files)
-            {
                 postFiles.Add(new PostFile
                 {
                     Post = post,
@@ -150,7 +208,6 @@ public class PostService(IFileService fileService,
                     FileType = GetFileType(file.FileName),
                     DeletedAt = null
                 });
-            }
             await context.PostFiles.AddRangeAsync(postFiles);
         }
 
@@ -216,15 +273,13 @@ public class PostService(IFileService fileService,
         post.IsDeleted = true;
 
 
-        if (post.PostFiles.Count > 0) {
-
+        if (post.PostFiles.Count > 0)
             foreach (var file in post.PostFiles)
             {
                 await fileService.DeleteFileAsync(file.FilePath);
                 file.IsDeleted = true;
                 file.DeletedAt = DateTime.UtcNow;
             }
-        }
 
 
         await context.SaveChangesAsync();
@@ -251,7 +306,9 @@ public class PostService(IFileService fileService,
         return new ResponseDto
         {
             Success = true,
-            Message = request.IsArchive ? "Post archived successfully" : "Post unarchived successfully",
+            Message = request.IsArchive
+                ? "Post archived successfully"
+                : "Post unarchived successfully",
             StatusCode = StatusCodes.Status200OK
         };
     }
@@ -283,7 +340,9 @@ public class PostService(IFileService fileService,
     private FileType GetFileType(string fileName)
     {
         var ext = Path.GetExtension(fileName).ToLower();
-        return _allowedImageExtensions.Contains(ext) ? FileType.Image : FileType.Video;
+        return _allowedImageExtensions.Contains(ext)
+            ? FileType.Image
+            : FileType.Video;
     }
 
     private void SetPostPermissions(SinglePostDto dto, string currentUserId)
@@ -293,9 +352,6 @@ public class PostService(IFileService fileService,
 
     private void SetPostPermissions(List<SinglePostDto> list, string currentUserId)
     {
-        foreach (var dto in list) 
-        {
-            dto.IsOwner = dto.UserId == currentUserId;
-        }
+        foreach (var dto in list) dto.IsOwner = dto.UserId == currentUserId;
     }
 }
