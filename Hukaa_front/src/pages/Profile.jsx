@@ -162,43 +162,47 @@ const Profile = () => {
                         />
                     </div>
 
-                    <div className="px-6 md:px-12 pb-6 md:pb-0 relative">
-                        <div className="flex flex-col md:flex-row justify-between items-center">
-                            <div className="mt-[-80px] md:mt-[-100px] relative w-[200px] md:w-[250px] lg:w-[300px] shrink-0">
-                                <img
-                                    src={profileData.profileImagePath ? `${IMAGE_BASE_URL}/${profileData.profileImagePath}` : USER_AVATAR}
-                                    alt="profile"
-                                    className="w-full h-full object-cover border-4 border-white shadow-md rounded-4xl"
-                                />
+                    <div className="px-4 md:px-8 lg:px-12 pb-6 lg:pb-0 relative">
+                        <div className="flex flex-col lg:flex-row justify-between items-center lg:items-end">
+                            <div className="flex flex-col md:flex-row items-center w-full lg:w-auto">
+                                <div className="mt-[-60px] md:mt-[-80px] lg:mt-[-100px] relative w-[130px] md:w-[180px] lg:w-[260px] shrink-0">
+                                    <img
+                                        src={profileData.profileImagePath ? `${IMAGE_BASE_URL}/${profileData.profileImagePath}` : USER_AVATAR}
+                                        alt="profile"
+                                        className="w-full h-full aspect-square object-cover border-4 border-white shadow-xl rounded-4xl bg-white"
+                                    />
+                                </div>
+                                <div className="mt-4 md:mt-0 md:ml-6 text-center md:text-left grow max-w-full overflow-hidden">
+                                    <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 leading-tight truncate">{profileData.profileName}</h2>
+                                    <h5 className="text-sm md:text-base text-gray-400 font-medium truncate">{profileData.firstName + " " + profileData.lastName}</h5>
+                                </div>
                             </div>
-                            <div className="mt-4 md:mt-2 text-center md:text-left grow md:ml-8">
-                                <h2 className="text-2xl font-bold text-gray-800">{profileData.profileName}</h2>
-                                <h5 className="text-gray-500 font-medium">{profileData.firstName + " " + profileData.lastName}</h5>
-                            </div>
-                            <ul className="flex items-center space-x-6 lg:space-x-12 mt-6 md:mt-0">
-                                <li className="text-center relative after:content-[''] after:absolute after:right-[-12px] lg:after:right-[-24px] after:top-1/4 after:h-1/2 after:w-px after:bg-gray-200 last:after:hidden">
-                                    <span className="block text-lg font-bold text-gray-800 leading-none">{profileData.postCount || 0}</span>
-                                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1 block">Posts</span>
+
+                            <ul className="flex flex-wrap items-center justify-center gap-x-6 md:gap-x-10 lg:gap-x-12 mt-8 lg:mt-0 bg-gray-50/50 md:bg-transparent p-4 md:p-0 rounded-2xl w-full lg:w-auto">
+                                <li className="text-center relative">
+                                    <span className="block text-lg md:text-xl font-bold text-gray-800 leading-none">{profileData.postCount || 0}</span>
+                                    <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest mt-1.5 block">Posts</span>
                                 </li>
+                                <li className="h-8 w-px bg-gray-200 hidden sm:block"></li>
                                 <li className="text-center">
                                     <button
                                         onClick={() => openConnections('followers')}
                                         className="block group"
                                     >
-                                        <span className="block text-lg font-bold text-gray-800 leading-none group-hover:text-blue-600 transition-colors uppercase tracking-tight">{profileData.followersCount || 0}</span>
-                                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1 block group-hover:text-gray-500 transition-colors">Followers</span>
+                                        <span className="block text-lg md:text-xl font-bold text-gray-800 leading-none group-hover:text-main transition-colors uppercase tracking-tight">{profileData.followersCount || 0}</span>
+                                        <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest mt-1.5 block group-hover:text-gray-500 transition-colors">Followers</span>
                                     </button>
                                 </li>
-                                <li className="text-center relative after:content-[''] after:absolute after:right-[-12px] lg:after:right-[-24px] after:top-1/4 after:h-1/2 after:w-px after:bg-gray-200 last:after:hidden">
+                                <li className="h-8 w-px bg-gray-200 hidden sm:block"></li>
+                                <li className="text-center">
                                     <button
                                         onClick={() => openConnections('following')}
                                         className="block group"
                                     >
-                                        <span className="block text-lg font-bold text-gray-800 leading-none group-hover:text-blue-600 transition-colors uppercase tracking-tight">{profileData.followingCount || 0}</span>
-                                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1 block group-hover:text-gray-500 transition-colors">Following</span>
+                                        <span className="block text-lg md:text-xl font-bold text-gray-800 leading-none group-hover:text-main transition-colors uppercase tracking-tight">{profileData.followingCount || 0}</span>
+                                        <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest mt-1.5 block group-hover:text-gray-500 transition-colors">Following</span>
                                     </button>
                                 </li>
-
                             </ul>
                         </div>
 

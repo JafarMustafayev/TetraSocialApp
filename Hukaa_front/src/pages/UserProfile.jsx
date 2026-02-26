@@ -219,43 +219,47 @@ const UserProfile = () => {
                         />
                     </div>
 
-                    <div className="px-6 md:px-12 pb-6 md:pb-0 relative">
-                        <div className="flex flex-col md:flex-row justify-between items-center mb-4">
-                            <div className="mt-[-80px] md:mt-[-100px] relative w-[200px] md:w-[250px] lg:w-[300px] shrink-0 ">
-                                <img
-                                    src={profileData.profileImagePath ? `${IMAGE_BASE_URL}/${profileData.profileImagePath}` : USER_AVATAR}
-                                    alt="profile"
-                                    className="w-full h-full object-cover border-4 border-white shadow-md rounded-4xl"
-                                />
-                            </div>
-                            <div className="mt-4 md:mt-2 text-center md:text-left grow md:ml-8">
-                                <h2 className="text-2xl font-bold text-gray-800">{profileData.profileName}</h2>
-                                <h5 className="text-gray-500 font-medium">{profileData.firstName + " " + profileData.lastName}</h5>
+                    <div className="px-4 md:px-8 lg:px-12 pb-6 lg:pb-0 relative">
+                        <div className="flex flex-col lg:flex-row justify-between items-center lg:items-end mb-4">
+                            <div className="flex flex-col md:flex-row items-center w-full lg:w-auto">
+                                <div className="mt-[-60px] md:mt-[-80px] lg:mt-[-100px] relative w-[130px] md:w-[180px] lg:w-[260px] shrink-0">
+                                    <img
+                                        src={profileData.profileImagePath ? `${IMAGE_BASE_URL}/${profileData.profileImagePath}` : USER_AVATAR}
+                                        alt="profile"
+                                        className="w-full h-full aspect-square object-cover border-4 border-white shadow-xl rounded-4xl bg-white"
+                                    />
+                                </div>
+                                <div className="mt-4 md:mt-0 md:ml-6 text-center md:text-left grow max-w-full overflow-hidden">
+                                    <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 leading-tight truncate">{profileData.profileName}</h2>
+                                    <h5 className="text-sm md:text-base text-gray-400 font-medium truncate mb-4 md:mb-2">{profileData.firstName + " " + profileData.lastName}</h5>
 
-                                <button
-                                    onClick={handleFollowToggle}
-                                    disabled={isActionLoading}
-                                    className={`mt-4 px-8 py-2.5 rounded-xl font-bold transition-all shadow-lg ${profileData.followStatus === 1
-                                        ? 'bg-gray-100 text-gray-700 hover:bg-red-50 hover:text-red-500'
-                                        : profileData.followStatus === 0
-                                            ? 'bg-amber-50 text-amber-600 hover:bg-amber-100 shadow-amber-50'
-                                            : 'bg-main text-white hover:bg-blue-700 shadow-blue-100'
-                                        }`}
-                                >
-                                    {isActionLoading ? '...' : (
-                                        profileData.followStatus === 1
-                                            ? 'Unfollow'
+                                    <button
+                                        onClick={handleFollowToggle}
+                                        disabled={isActionLoading}
+                                        className={`px-6 md:px-8 py-2 md:py-2.5 rounded-xl font-bold transition-all shadow-lg text-sm md:text-base ${profileData.followStatus === 1
+                                            ? 'bg-gray-100 text-gray-700 hover:bg-red-50 hover:text-red-500'
                                             : profileData.followStatus === 0
-                                                ? 'Cancel Request'
-                                                : 'Follow'
-                                    )}
-                                </button>
+                                                ? 'bg-amber-50 text-amber-600 hover:bg-amber-100 shadow-amber-50'
+                                                : 'bg-main text-white hover:bg-blue-700 shadow-blue-100'
+                                            }`}
+                                    >
+                                        {isActionLoading ? '...' : (
+                                            profileData.followStatus === 1
+                                                ? 'Unfollow'
+                                                : profileData.followStatus === 0
+                                                    ? 'Cancel Request'
+                                                    : 'Follow'
+                                        )}
+                                    </button>
+                                </div>
                             </div>
-                            <ul className="flex items-center space-x-6 lg:space-x-12 mt-6 md:mt-0">
-                                <li className="text-center relative after:content-[''] after:absolute after:right-[-12px] lg:after:right-[-24px] after:top-1/4 after:h-1/2 after:w-px after:bg-gray-200 last:after:hidden">
-                                    <span className="block text-lg font-bold text-gray-800 leading-none">{profileData.postCount || 0}</span>
-                                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1 block">Posts</span>
+
+                            <ul className="flex flex-wrap items-center justify-center gap-x-6 md:gap-x-10 lg:gap-x-12 mt-8 lg:mt-0 bg-gray-50/50 md:bg-transparent p-4 md:p-0 rounded-2xl w-full lg:w-auto">
+                                <li className="text-center relative">
+                                    <span className="block text-lg md:text-xl font-bold text-gray-800 leading-none">{profileData.postCount || 0}</span>
+                                    <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest mt-1.5 block">Posts</span>
                                 </li>
+                                <li className="h-8 w-px bg-gray-200 hidden sm:block"></li>
                                 <li className="text-center">
                                     <button
                                         onClick={() => {
@@ -266,11 +270,12 @@ const UserProfile = () => {
                                         }}
                                         className={`block ${canSeeContent ? 'group' : 'cursor-not-allowed opacity-75'}`}
                                     >
-                                        <span className={`block text-lg font-bold text-gray-800 leading-none ${canSeeContent ? 'group-hover:text-main' : ''} transition-colors uppercase tracking-tight`}>{profileData.followersCount || 0}</span>
-                                        <span className={`text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1 block ${canSeeContent ? 'group-hover:text-gray-500' : ''} transition-colors`}>Followers</span>
+                                        <span className={`block text-lg md:text-xl font-bold text-gray-800 leading-none ${canSeeContent ? 'group-hover:text-main' : ''} transition-colors uppercase tracking-tight`}>{profileData.followersCount || 0}</span>
+                                        <span className={`text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest mt-1.5 block ${canSeeContent ? 'group-hover:text-gray-500' : ''} transition-colors`}>Followers</span>
                                     </button>
                                 </li>
-                                <li className="text-center relative after:content-[''] after:absolute after:right-[-12px] lg:after:right-[-24px] after:top-1/4 after:h-1/2 after:w-px after:bg-gray-200 last:after:hidden">
+                                <li className="h-8 w-px bg-gray-200 hidden sm:block"></li>
+                                <li className="text-center">
                                     <button
                                         onClick={() => {
                                             if (canSeeContent) {
@@ -280,8 +285,8 @@ const UserProfile = () => {
                                         }}
                                         className={`block ${canSeeContent ? 'group' : 'cursor-not-allowed opacity-75'}`}
                                     >
-                                        <span className={`block text-lg font-bold text-gray-800 leading-none ${canSeeContent ? 'group-hover:text-main' : ''} transition-colors uppercase tracking-tight`}>{profileData.followingCount || 0}</span>
-                                        <span className={`text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1 block ${canSeeContent ? 'group-hover:text-gray-500' : ''} transition-colors`}>Following</span>
+                                        <span className={`block text-lg md:text-xl font-bold text-gray-800 leading-none ${canSeeContent ? 'group-hover:text-main' : ''} transition-colors uppercase tracking-tight`}>{profileData.followingCount || 0}</span>
+                                        <span className={`text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest mt-1.5 block ${canSeeContent ? 'group-hover:text-gray-500' : ''} transition-colors`}>Following</span>
                                     </button>
                                 </li>
                             </ul>
