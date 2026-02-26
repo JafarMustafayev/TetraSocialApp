@@ -16,7 +16,7 @@ const Sidebar = () => {
     const settingsItem = { path: '/settings', label: 'Settings', icon: 'ri-settings-3-line' };
 
     return (
-        <div className="fixed left-0 top-[85px] h-[calc(100vh-85px)] w-[165px] bg-white shadow-[0_8px_10px_0_rgba(183,192,206,0.1)] z-100 transform transition-all duration-300 md:translate-x-0 -translate-x-full overflow-y-auto custom-scrollbar flex flex-col">
+        <div className="fixed left-0 top-[85px] h-[calc(100vh-100px)] rounded-2xl border border-gray-100  w-[155px] mt-1.5 ml-1.5 bg-white  z-100 transform transition-all duration-300 md:translate-x-0 -translate-x-full overflow-y-auto custom-scrollbar flex flex-col">
             <div className="p-4 pt-6 grow">
                 <ul className="space-y-4">
                     {menuItems.map((item) => (

@@ -28,7 +28,7 @@ const ActivitiesSidebar = () => {
 
     const menuItems = isActivities ? activityItems : (isSettings ? settingItems : []);
     const paramKey = isActivities ? 'tab' : 'section';
-    const activeId = isActivities ? (currentTab || 'liked') : (currentSection || null);
+    const activeId = isActivities ? (currentTab || 'liked') : (currentSection || 'profile-information');
 
     if (!isSettings && !isActivities) return null;
 
@@ -60,7 +60,9 @@ const ActivitiesSidebar = () => {
                                             <i className={`${item.icon} text-base`}></i>
                                         </div>
                                         <span>{item.label}</span>
-                                        <div className="absolute right-2 w-1.5 h-1.5 rounded-full bg-main shadow-[0_0_10px_rgba(54,68,217,0.5)]"></div>
+                                        {activeId === item.id && (
+                                            <div className="absolute right-2 w-1.5 h-1.5 rounded-full bg-main shadow-[0_0_10px_rgba(54,68,217,0.5)]"></div>
+                                        )}
                                     </Link>
                                 </li>
                             ))}

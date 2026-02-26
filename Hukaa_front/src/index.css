@@ -89,6 +89,41 @@
   textarea::-webkit-scrollbar {
     display: none;
   }
+
+  /* Custom Scrollbar Styles */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    transition: scrollbar-color 0.3s ease;
+  }
+
+  *:hover {
+    scrollbar-color: #cbd5e121 transparent;
+  }
+
+  /* Webkit browsers (Chrome, Safari, newer Edge) */
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 20px;
+    transition: background 0.3s ease;
+  }
+
+  *:hover::-webkit-scrollbar-thumb {
+    background: #cbd5e100;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b82f !important;
+  }
 }
 
 .profile-authentication-area {
@@ -119,6 +154,18 @@ html.dark .bg-white {
 
 html.dark .bg-gray-50 {
   background-color: #0b0f1a !important;
+}
+
+html.dark .bg-gray-50\/20 {
+  background-color: oklch(0.2214 0.0301 272.29) !important;
+}
+
+html.dark .bg-gray-50\/30 {
+  background-color: oklch(27.9% 0.041 260.031) !important;
+}
+
+html.dark .bg-gray-50\/50 {
+  background-color: oklch(21% 0.034 264.665) !important;
 }
 
 html.dark .bg-gray-100 {

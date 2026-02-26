@@ -111,7 +111,7 @@ const CreatePostWidget = ({ profileData, onPostCreated }) => {
                 </div>
 
                 {previews.length > 0 && (
-                    <div className="mt-4 flex flex-wrap gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 border-dashed">
+                    <div className="mt-4 flex flex-wrap gap-5 p-4 bg-gray-50 rounded-2xl border border-gray-100 border-dashed">
                         {previews.map((preview, index) => (
                             <div key={index} className="relative w-24 h-24 group">
                                 {preview.type === 'video' ? (
@@ -132,7 +132,7 @@ const CreatePostWidget = ({ profileData, onPostCreated }) => {
                     </div>
                 )}
 
-                <div className="mt-6 border-t border-gray-50 flex items-center justify-between">
+                <div className="mt-6 flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                         <button
                             onClick={() => fileInputRef.current.click()}

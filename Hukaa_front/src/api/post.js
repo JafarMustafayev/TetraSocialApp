@@ -64,3 +64,9 @@ export const getUserPosts = async (userId, page) => {
     });
 };
 
+export const getFeeds = async (page) => {
+    return fetchClient(`/api/Post/feeds/${page}`, {
+        method: 'GET',
+    });
+};
+
