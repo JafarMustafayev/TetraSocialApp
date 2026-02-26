@@ -28,8 +28,8 @@ public class PostCreateRequestDtoValidator
                 return hasContent || hasFiles;
             })
             .WithMessage("Either Content or at least 1 file must be sent for the post.");
-        
-        RuleFor(x=>x.Content)
+
+        RuleFor(x => x.Content)
             .MaximumLength(1000)
             .WithMessage("Content must not exceed 1000 characters.");
 

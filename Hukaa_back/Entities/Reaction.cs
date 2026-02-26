@@ -1,6 +1,6 @@
 ﻿namespace Hukaa_back.Entities;
 
-public class Reaction:BaseEntity
+public class Reaction : BaseEntity
 {
     public string AppUserId { get; set; }
     public string PostId { get; set; }
@@ -9,4 +9,3 @@ public class Reaction:BaseEntity
     public AppUser AppUser { get; set; }
     public Post Post { get; set; }
 }
-    

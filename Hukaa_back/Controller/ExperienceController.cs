@@ -3,7 +3,6 @@
 [Route("api/profile/[controller]")]
 [ApiController]
 [Authorize]
-
 public class ExperienceController(
     IExperienceService experienceService) : ControllerBase
 {

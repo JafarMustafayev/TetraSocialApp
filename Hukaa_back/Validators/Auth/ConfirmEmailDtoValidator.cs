@@ -11,7 +11,7 @@ public class ConfirmEmailDtoValidator : AbstractValidator<ConfirmEmailDto>
         RuleFor(request => request.Id)
             .NotNull().WithMessage("Id is required")
             .NotEmpty().WithMessage("Id is required");
-        
+
         RuleFor(request => request.Email)
             .NotNull().WithMessage("Email is required")
             .NotEmpty().WithMessage("Email is required");

@@ -23,7 +23,7 @@ public class CommentController(
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(string id, [FromBody] UpdateCommentDto dto)
     {
-        var res = await commentService.UpdateCommentAsync(id,dto);
+        var res = await commentService.UpdateCommentAsync(id, dto);
         return StatusCode(res.StatusCode, res);
     }
 

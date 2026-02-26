@@ -1,6 +1,6 @@
 ﻿namespace Hukaa_back.Validators.Auth;
 
-public class ForgotPasswordRequestDtoValidator: AbstractValidator<ForgotPasswordRequestDto>
+public class ForgotPasswordRequestDtoValidator : AbstractValidator<ForgotPasswordRequestDto>
 {
     public ForgotPasswordRequestDtoValidator()
     {

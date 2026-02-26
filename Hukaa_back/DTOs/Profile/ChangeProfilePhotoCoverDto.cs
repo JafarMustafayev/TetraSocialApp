@@ -2,5 +2,5 @@
 
 public class ChangeProfilePhotoCoverDto
 {
-    public IFormFile File { get; set; } 
+    public IFormFile File { get; set; }
 }

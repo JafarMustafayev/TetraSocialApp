@@ -28,34 +28,32 @@ public class AuthController(
         var res = await registrationService.ConfirmEmailAsync(request);
         return StatusCode(res.StatusCode, res);
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequestDto request)
     {
         var res = await recoveryService.ForgotPasswordAsync(request);
         return StatusCode(res.StatusCode, res);
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDto request)
     {
         var res = await recoveryService.ResetPasswordAsync(request);
         return StatusCode(res.StatusCode, res);
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto request)
     {
         var res = await accountManagementService.ChangePasswordAsync(request);
         return StatusCode(res.StatusCode, res);
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> ChangeUsername([FromBody] ChangeUsernameDto request)
     {
         var res = await accountManagementService.ChangeUsernameAsync(request);
         return StatusCode(res.StatusCode, res);
     }
-    
-    
 }

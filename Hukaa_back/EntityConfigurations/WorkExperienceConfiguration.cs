@@ -9,26 +9,26 @@ public class WorkExperienceConfiguration : IEntityTypeConfiguration<WorkExperien
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Title)
-               .IsRequired()
-               .HasMaxLength(150);
+            .IsRequired()
+            .HasMaxLength(150);
 
         builder.Property(x => x.Company)
-               .IsRequired()
-               .HasMaxLength(150);
+            .IsRequired()
+            .HasMaxLength(150);
 
         builder.Property(x => x.Description)
-               .HasMaxLength(1000);
+            .HasMaxLength(1000);
 
         builder.Property(x => x.IsCurrent)
-               .HasDefaultValue(true);
+            .HasDefaultValue(true);
 
         builder.Property(x => x.IsDeleted)
-               .HasDefaultValue(false);
+            .HasDefaultValue(false);
 
         // AppUser → WorkExperience (One-to-Many)
         builder.HasOne(x => x.AppUser)
-               .WithMany(x => x.WorkExperiences)
-               .HasForeignKey(x => x.AppUserId)
-               .OnDelete(DeleteBehavior.Cascade);
+            .WithMany(x => x.WorkExperiences)
+            .HasForeignKey(x => x.AppUserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

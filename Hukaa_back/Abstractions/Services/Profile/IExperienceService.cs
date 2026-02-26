@@ -8,8 +8,7 @@ public interface IExperienceService
 
     Task<ResponseDto> AddExperienceAsync(CreateExperienceDto dto);
 
-    Task<ResponseDto> UpdateExperienceAsync( string expId, UpdateExperienceDto dto);
+    Task<ResponseDto> UpdateExperienceAsync(string expId, UpdateExperienceDto dto);
 
     Task<ResponseDto> DeleteExperienceAsync(string expId);
 }
-

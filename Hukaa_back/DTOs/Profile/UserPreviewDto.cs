@@ -7,8 +7,8 @@ public class UserPreviewDto
     public string? ProfileImageUrl { get; set; }
 }
 
-public class FollowerPreviewDto :UserPreviewDto
-{ 
+public class FollowerPreviewDto : UserPreviewDto
+{
 }
 
 public class FollowingPreviewDto : UserPreviewDto

@@ -8,8 +8,8 @@ public class ReactionService(
     {
         var query = context.Reactions
             .AsQueryable().AsNoTracking()
-            .Where(x=>x.PostId == postId )
-            .Select(x=>x.Id);
+            .Where(x => x.PostId == postId)
+            .Select(x => x.Id);
         return query.Count();
     }
 
@@ -54,7 +54,7 @@ public class ReactionService(
             .AnyAsync(x => x.Id == postId && !x.IsDeleted);
 
         if (!postExists)
-            throw new NotFoundException("Post",postId);
+            throw new NotFoundException("Post", postId);
 
         var existingReaction = await context.Reactions
             .FirstOrDefaultAsync(x =>
@@ -87,7 +87,7 @@ public class ReactionService(
 
         await context.SaveChangesAsync();
 
-        return new()
+        return new ResponseDto
         {
             StatusCode = StatusCodes.Status200OK,
             Success = true,

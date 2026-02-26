@@ -40,7 +40,6 @@ public static class ServiceRegistration
         services.AddScoped<IReactionService, ReactionService>();
         services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<IFollowService, FollowService>();
-
     }
 
     private static void ConfigureIdentity(this IServiceCollection services)
@@ -68,7 +67,7 @@ public static class ServiceRegistration
             .AddSignInManager<SignInManager<AppUser>>()
             .AddDefaultTokenProviders();
     }
-    
+
     private static void AddFluentValidator(this IServiceCollection services)
     {
         services.AddFluentValidationAutoValidation();
@@ -79,12 +78,14 @@ public static class ServiceRegistration
         {
             options.InvalidModelStateResponseFactory = context =>
             {
-                var problemDetails = new ValidationProblemDetails(context.ModelState) {
+                var problemDetails = new ValidationProblemDetails(context.ModelState)
+                {
                     Status = StatusCodes.Status400BadRequest,
                     Title = "Validation failed" // default title əvəzinə
                 };
 
-                var response = new {
+                var response = new
+                {
                     success = false,
                     statusCode = problemDetails.Status,
                     message = problemDetails.Title,
@@ -96,13 +97,13 @@ public static class ServiceRegistration
         });
     }
 
-    private static void AddAuthhorization(this IServiceCollection services) 
+    private static void AddAuthhorization(this IServiceCollection services)
     {
         services.AddAuthorization(opt =>
         {
             opt.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
-            .RequireAuthenticatedUser()
-            .Build();
+                .RequireAuthenticatedUser()
+                .Build();
         });
     }
 
@@ -111,35 +112,36 @@ public static class ServiceRegistration
         var tokenParameters = config.GetSection("TokenParameters").Get<TokenParameters>();
 
         services.AddAuthentication(opt =>
-        {
-            opt.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-           .AddJwtBearer(opt =>
-           {
-               opt.SaveToken = true;
-               opt.RequireHttpsMetadata = false;
+            {
+                opt.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(opt =>
+            {
+                opt.SaveToken = true;
+                opt.RequireHttpsMetadata = false;
 
-               opt.TokenValidationParameters = new TokenValidationParameters
-               {
-                   ValidateAudience = true,
-                   ValidateIssuer = true,
-                   ValidateLifetime = true,
-                   ValidateIssuerSigningKey = true,
+                opt.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = true,
+                    ValidateIssuer = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
 
-                   IssuerSigningKey =
-                       new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenParameters?.Signing?.Key ?? "SymmetricSecurityKey")),
-                   ValidIssuer = tokenParameters?.Jwt?.Issuer ?? "ValidIssuer",
-                   ValidAudience = tokenParameters?.Jwt?.Audience ?? "ValidAudience",
+                    IssuerSigningKey =
+                        new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(tokenParameters?.Signing?.Key ?? "SymmetricSecurityKey")),
+                    ValidIssuer = tokenParameters?.Jwt?.Issuer ?? "ValidIssuer",
+                    ValidAudience = tokenParameters?.Jwt?.Audience ?? "ValidAudience",
 
-                   LifetimeValidator = (before, expires, token, param) =>
-                   {
-                       var now = DateTime.UtcNow;
-                       var timeValidationResult = expires > now;
-                       return timeValidationResult;
-                   }
-               };
-           });
+                    LifetimeValidator = (before, expires, token, param) =>
+                    {
+                        var now = DateTime.UtcNow;
+                        var timeValidationResult = expires > now;
+                        return timeValidationResult;
+                    }
+                };
+            });
     }
 }

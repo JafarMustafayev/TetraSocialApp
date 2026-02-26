@@ -6,11 +6,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(opt =>
 {
-    opt.AddDefaultPolicy( policy =>
+    opt.AddDefaultPolicy(policy =>
     {
         policy.AllowAnyOrigin()
-        .AllowAnyHeader()
-        .AllowAnyMethod();
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
 

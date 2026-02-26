@@ -21,7 +21,7 @@ public class UpdateProfileInformationValidatorDto : AbstractValidator<UpdateProf
         // BirthDay
         RuleFor(x => x.BirthDay)
             .Must(BeAValidAge).WithMessage("User must be at least 18 years old.")
-            .When(x=>x.BirthDay !=null);
+            .When(x => x.BirthDay != null);
 
         // Gender
         RuleFor(x => x.Gender)

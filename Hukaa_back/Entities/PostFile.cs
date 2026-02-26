@@ -1,6 +1,6 @@
 ﻿namespace Hukaa_back.Entities;
 
-public class PostFile:BaseEntity
+public class PostFile : BaseEntity
 {
     public string PostId { get; set; }
     public string FileName { get; set; }
@@ -9,7 +9,7 @@ public class PostFile:BaseEntity
     public FileType FileType { get; set; }
     public bool IsDeleted { get; set; }
     public DateTime? DeletedAt { get; set; }
-    
+
     public Post Post { get; set; }
 
     public PostFile()

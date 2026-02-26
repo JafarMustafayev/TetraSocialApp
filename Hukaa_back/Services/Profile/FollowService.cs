@@ -7,30 +7,22 @@ public class FollowService(
 {
     public async Task<ResponseDto> FollowAsync(string followingId)
     {
-        var follow = await context.Follows.FirstOrDefaultAsync(
-            x => x.FollowingId == followingId
-            && x.FollowerId == currentUserService.UserId);
+        var follow = await context.Follows.FirstOrDefaultAsync(x => x.FollowingId == followingId
+                                                                    && x.FollowerId == currentUserService.UserId);
 
         if (follow != null)
         {
-            if(follow.Status == FollowStatus.Accepted)
-            {
+            if (follow.Status == FollowStatus.Accepted)
                 throw new BadHttpRequestException("You are already following this user.");
-            }
             else
-            {
                 throw new BadRequestException("A follow request to this user is already pending.");
-            }
         }
 
         var user = await context.Users.FirstOrDefaultAsync(x => x.Id == followingId);
 
-        if (user == null)
-        {
-            throw new NotFoundException("User", followingId);
-        }
+        if (user == null) throw new NotFoundException("User", followingId);
 
-        await context.Follows.AddAsync(new()
+        await context.Follows.AddAsync(new Follow
         {
             FollowerId = currentUserService.UserId,
             Following = user,
@@ -38,36 +30,34 @@ public class FollowService(
         });
         await context.SaveChangesAsync();
 
-        return new()
+        return new ResponseDto
         {
             Success = true,
             StatusCode = StatusCodes.Status200OK,
             Message = user.AccountType == AccountType.PublicAccount
-            ? "User followed successfully."
-            : "Follow request sent successfully.",
+                ? "User followed successfully."
+                : "Follow request sent successfully.",
             Data = new
             {
-                FollowStatus = user.AccountType == AccountType.PublicAccount ?
-                    FollowStatus.Accepted : FollowStatus.Pending
+                FollowStatus = user.AccountType == AccountType.PublicAccount
+                    ? FollowStatus.Accepted
+                    : FollowStatus.Pending
             }
         };
     }
+
     public async Task<ResponseDto> UnfollowAsync(string followingId)
     {
-        var follow = await context.Follows.FirstOrDefaultAsync(
-            x => x.FollowingId == followingId
-            && x.FollowerId == currentUserService.UserId
-            && x.Status == FollowStatus.Accepted);
+        var follow = await context.Follows.FirstOrDefaultAsync(x => x.FollowingId == followingId
+                                                                    && x.FollowerId == currentUserService.UserId
+                                                                    && x.Status == FollowStatus.Accepted);
 
-        if (follow == null)
-        {
-            throw new BadRequestException("Cannot unfollow a user you are not following.");
-        }
+        if (follow == null) throw new BadRequestException("Cannot unfollow a user you are not following.");
 
         context.Follows.Remove(follow);
         await context.SaveChangesAsync();
 
-        return new()
+        return new ResponseDto
         {
             Success = true,
             StatusCode = StatusCodes.Status200OK,
@@ -75,23 +65,20 @@ public class FollowService(
             Data = null
         };
     }
+
     public async Task<ResponseDto> CancelFollowRequestAsync(string followingId)
     {
-        var follow = await context.Follows.FirstOrDefaultAsync(
-            x => x.FollowingId == followingId
-            && x.FollowerId == currentUserService.UserId
-            && x.Status == FollowStatus.Pending);
+        var follow = await context.Follows.FirstOrDefaultAsync(x => x.FollowingId == followingId
+                                                                    && x.FollowerId == currentUserService.UserId
+                                                                    && x.Status == FollowStatus.Pending);
 
-        if (follow == null)
-        {
-            throw new BadRequestException("Pending follow request not found.");
-        }
+        if (follow == null) throw new BadRequestException("Pending follow request not found.");
 
         context.Follows.Remove(follow);
         await context.SaveChangesAsync();
 
 
-        return new()
+        return new ResponseDto
         {
             Success = true,
             StatusCode = StatusCodes.Status200OK,
@@ -99,18 +86,18 @@ public class FollowService(
             Data = null
         };
     }
+
     public async Task<ResponseDto> PendingFollowRequestsAsync()
     {
         var follow = await context.Follows
             .Include(x => x.Follower)
-            .Where(
-                x => x.FollowingId == currentUserService.UserId
-                && x.Status == FollowStatus.Pending)
+            .Where(x => x.FollowingId == currentUserService.UserId
+                        && x.Status == FollowStatus.Pending)
             .ToListAsync();
 
         var map = mapper.Map<List<FollowerPreviewDto>>(follow);
 
-        return new()
+        return new ResponseDto
         {
             Success = true,
             StatusCode = StatusCodes.Status200OK,
@@ -118,22 +105,19 @@ public class FollowService(
             Data = map
         };
     }
+
     public async Task<ResponseDto> AcceptFollowRequestAsync(string requesterId)
     {
-        var follow = await context.Follows.FirstOrDefaultAsync(
-            x => x.FollowerId == requesterId
-            && x.FollowingId == currentUserService.UserId
-            && x.Status == FollowStatus.Pending);
+        var follow = await context.Follows.FirstOrDefaultAsync(x => x.FollowerId == requesterId
+                                                                    && x.FollowingId == currentUserService.UserId
+                                                                    && x.Status == FollowStatus.Pending);
 
-        if (follow == null)
-        {
-            throw new BadRequestException("No pending follow request found from this user.");
-        }
+        if (follow == null) throw new BadRequestException("No pending follow request found from this user.");
 
         follow.Status = FollowStatus.Accepted;
         await context.SaveChangesAsync();
 
-        return new()
+        return new ResponseDto
         {
             Success = true,
             StatusCode = StatusCodes.Status200OK,
@@ -141,22 +125,19 @@ public class FollowService(
             Data = null
         };
     }
+
     public async Task<ResponseDto> RejectFollowRequestAsync(string requesterId)
     {
-        var follow = await context.Follows.FirstOrDefaultAsync(
-            x => x.FollowerId == requesterId
-            && x.FollowingId == currentUserService.UserId
-            && x.Status == FollowStatus.Pending);
+        var follow = await context.Follows.FirstOrDefaultAsync(x => x.FollowerId == requesterId
+                                                                    && x.FollowingId == currentUserService.UserId
+                                                                    && x.Status == FollowStatus.Pending);
 
-        if (follow == null)
-        {
-            throw new BadRequestException("No pending follow request found from this user.");
-        }
+        if (follow == null) throw new BadRequestException("No pending follow request found from this user.");
 
         context.Follows.Remove(follow);
         await context.SaveChangesAsync();
 
-        return new()
+        return new ResponseDto
         {
             Success = true,
             StatusCode = StatusCodes.Status200OK,
@@ -164,22 +145,19 @@ public class FollowService(
             Data = null
         };
     }
+
     public async Task<ResponseDto> RemoveFollower(string userId)
     {
-        var follow = await context.Follows.FirstOrDefaultAsync(
-            x => x.FollowerId == userId
-            && x.FollowingId == currentUserService.UserId
-            && x.Status == FollowStatus.Accepted);
+        var follow = await context.Follows.FirstOrDefaultAsync(x => x.FollowerId == userId
+                                                                    && x.FollowingId == currentUserService.UserId
+                                                                    && x.Status == FollowStatus.Accepted);
 
-        if (follow == null)
-        {
-            throw new BadRequestException("This user is not your follower.");
-        }
+        if (follow == null) throw new BadRequestException("This user is not your follower.");
 
         context.Follows.Remove(follow);
         await context.SaveChangesAsync();
 
-        return new()
+        return new ResponseDto
         {
             Success = true,
             StatusCode = StatusCodes.Status200OK,
@@ -187,24 +165,25 @@ public class FollowService(
             Data = null
         };
     }
+
     public async Task<ResponseDto> GetMyConnectionsAsync()
     {
         var followers = await context.Follows
             .Include(x => x.Follower)
-            .Where(x => x.FollowingId == currentUserService.UserId 
+            .Where(x => x.FollowingId == currentUserService.UserId
                         && x.Status == FollowStatus.Accepted)
             .ToListAsync();
-        
+
         var following = await context.Follows
             .Include(x => x.Following)
-            .Where(x => x.FollowerId == currentUserService.UserId 
+            .Where(x => x.FollowerId == currentUserService.UserId
                         && x.Status == FollowStatus.Accepted)
             .ToListAsync();
 
         var followersMap = mapper.Map<List<FollowerPreviewDto>>(followers);
         var followingsMap = mapper.Map<List<FollowingPreviewDto>>(following);
 
-        return new()
+        return new ResponseDto
         {
             Success = true,
             StatusCode = StatusCodes.Status200OK,
@@ -216,33 +195,31 @@ public class FollowService(
             }
         };
     }
-    public async Task<ResponseDto>  GetUserConnectionsAsync(string userId)
+
+    public async Task<ResponseDto> GetUserConnectionsAsync(string userId)
     {
-        var canYouRead = await context.Follows.AnyAsync(
-            x => x.FollowingId == userId
-            && x.FollowerId == currentUserService.UserId
-            && x.Status == FollowStatus.Accepted);
+        var canYouRead = await context.Follows.AnyAsync(x => x.FollowingId == userId
+                                                             && x.FollowerId == currentUserService.UserId
+                                                             && x.Status == FollowStatus.Accepted);
 
         if (!canYouRead)
-        {
             throw new ForbiddenException("You cannot view this user's connections because you are not following them.");
-        }
 
         var following = await context.Follows
-           .Include(x => x.Following)
-           .Where(x => x.FollowerId == userId && x.Status == FollowStatus.Accepted)
-           .ToListAsync();
+            .Include(x => x.Following)
+            .Where(x => x.FollowerId == userId && x.Status == FollowStatus.Accepted)
+            .ToListAsync();
 
         var followingsMap = mapper.Map<List<FollowingPreviewDto>>(following);
-        
+
         var followers = await context.Follows
             .Include(x => x.Follower)
             .Where(x => x.FollowingId == userId && x.Status == FollowStatus.Accepted)
             .ToListAsync();
 
         var followersMap = mapper.Map<List<FollowerPreviewDto>>(followers);
-        
-        return new()
+
+        return new ResponseDto
         {
             Success = true,
             StatusCode = StatusCodes.Status200OK,

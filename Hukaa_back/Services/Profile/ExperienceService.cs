@@ -17,7 +17,7 @@ public class ExperienceService(
 
         var map = mapper.Map<List<ExperienceDataDto>>(experiences);
 
-        return new()
+        return new ResponseDto
         {
             Success = true,
             StatusCode = StatusCodes.Status200OK,
@@ -29,13 +29,13 @@ public class ExperienceService(
     public async Task<ResponseDto> GetUserExperiencesAsync(string userId)
     {
         var experiences = await context.WorkExperiences
-                    .Where(x => x.AppUserId == userId && !x.IsDeleted)
-                    .OrderByDescending(x => x.StartAt)
-                    .ToListAsync();
+            .Where(x => x.AppUserId == userId && !x.IsDeleted)
+            .OrderByDescending(x => x.StartAt)
+            .ToListAsync();
 
         var map = mapper.Map<List<ExperienceDataDto>>(experiences);
 
-        return new()
+        return new ResponseDto
         {
             Success = true,
             StatusCode = StatusCodes.Status200OK,
@@ -46,13 +46,10 @@ public class ExperienceService(
 
     public async Task<ResponseDto> AddExperienceAsync(CreateExperienceDto dto)
     {
-        var user =  await userManager.FindByIdAsync(currentUser.UserId);
+        var user = await userManager.FindByIdAsync(currentUser.UserId);
 
-        if (user == null)
-        {
-            throw new NotFoundException("User", currentUser.UserId);
-        }
-        
+        if (user == null) throw new NotFoundException("User", currentUser.UserId);
+
         var experience = mapper.Map<WorkExperience>(dto);
         experience.AppUser = user;
         await context.WorkExperiences.AddAsync(experience);
@@ -60,7 +57,7 @@ public class ExperienceService(
 
         var map = mapper.Map<ExperienceDataDto>(experience);
 
-        return new()
+        return new ResponseDto
         {
             Success = true,
             StatusCode = StatusCodes.Status201Created,
@@ -74,20 +71,20 @@ public class ExperienceService(
         var userId = currentUser.UserId;
 
         var experience = await context.WorkExperiences
-           .FirstOrDefaultAsync(x => x.Id == expId && x.AppUserId == userId && !x.IsDeleted);
+            .FirstOrDefaultAsync(x => x.Id == expId && x.AppUserId == userId && !x.IsDeleted);
 
         if (experience == null)
-            throw new NotFoundException("Experience",expId);
+            throw new NotFoundException("Experience", expId);
 
         mapper.Map(dto, experience);
 
         await context.SaveChangesAsync();
 
-        return new()
+        return new ResponseDto
         {
             Success = true,
             StatusCode = StatusCodes.Status204NoContent,
-            Message = "Successfully updated",
+            Message = "Successfully updated"
         };
     }
 
@@ -96,7 +93,7 @@ public class ExperienceService(
         var userId = currentUser.UserId;
 
         var experience = await context.WorkExperiences
-           .FirstOrDefaultAsync(x => x.Id == expId && x.AppUserId == userId && !x.IsDeleted);
+            .FirstOrDefaultAsync(x => x.Id == expId && x.AppUserId == userId && !x.IsDeleted);
 
         if (experience == null)
             throw new NotFoundException("Experience", expId);
@@ -106,11 +103,11 @@ public class ExperienceService(
 
         await context.SaveChangesAsync();
 
-        return new()
+        return new ResponseDto
         {
             Success = true,
             StatusCode = StatusCodes.Status204NoContent,
-            Message = "Successfully deleted",
+            Message = "Successfully deleted"
         };
     }
 }

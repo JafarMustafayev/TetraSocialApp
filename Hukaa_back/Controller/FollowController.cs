@@ -61,9 +61,9 @@ public class FollowController(
         var res = await followService.GetMyConnectionsAsync();
         return StatusCode(res.StatusCode, res);
     }
-    
+
     [HttpGet("{userId}/connections")]
-    public async Task<IActionResult> GetUserConnections(string userId )
+    public async Task<IActionResult> GetUserConnections(string userId)
     {
         var res = await followService.GetUserConnectionsAsync(userId);
         return StatusCode(res.StatusCode, res);

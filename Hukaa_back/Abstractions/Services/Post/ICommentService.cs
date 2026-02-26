@@ -6,5 +6,5 @@ public interface ICommentService
     Task<ResponseDto> UpdateCommentAsync(string commentId, UpdateCommentDto dto);
     Task<ResponseDto> DeleteCommentAsync(string commentId);
     Task<ResponseDto> GetPostCommentsAsync(string postId);
-    Task<Dictionary<string, int>> GetCommentCountAsync(List<string> postIds);   
+    Task<Dictionary<string, int>> GetCommentCountAsync(List<string> postIds);
 }

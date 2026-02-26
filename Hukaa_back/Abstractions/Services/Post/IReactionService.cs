@@ -6,5 +6,5 @@ public interface IReactionService
     Task<ReactionType?> GetMyReaction(string postId);
     Task<Dictionary<string, int>> GetReactionCountsAsync(List<string> postIds);
     Task<Dictionary<string, ReactionType?>> GetMyReactionsAsync(List<string> postIds);
-    Task<ResponseDto> ToggleReactionAsync(TogglePostReactionDto request,string postId);
+    Task<ResponseDto> ToggleReactionAsync(TogglePostReactionDto request, string postId);
 }

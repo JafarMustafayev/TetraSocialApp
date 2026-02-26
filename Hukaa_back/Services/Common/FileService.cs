@@ -1,17 +1,16 @@
 ﻿namespace Hukaa_back.Services.Common;
 
-public class FileService
-    (IWebHostEnvironment env) : IFileService
+public class FileService(IWebHostEnvironment env) : IFileService
 {
     private readonly string[] _allowedVideoExtensions =
-        {
-            ".mp4", ".mov", ".avi", ".mkv" ,   // video
-        };
+    {
+        ".mp4", ".mov", ".avi", ".mkv" // video
+    };
 
     private readonly string[] _allowedImageExtensions =
-        {
-            ".jpg", ".jpeg", ".png", ".webp",   // images
-        };
+    {
+        ".jpg", ".jpeg", ".png", ".webp" // images
+    };
 
 
     public async Task<string> UploadProfilImageAsync(IFormFile file)
@@ -20,16 +19,12 @@ public class FileService
             throw new Exception("File is empty");
 
         var folderName = string.Empty;
-        string extension = Path.GetExtension(file.FileName).ToLower();
+        var extension = Path.GetExtension(file.FileName).ToLower();
 
         if (_allowedImageExtensions.Contains(extension))
-        {
             folderName = "profile/photo";
-        }
         else
-        {
             throw new Exception("File format not supported");
-        }
 
         var filePath = await UploadAsync(file, folderName, extension);
 
@@ -42,16 +37,12 @@ public class FileService
             throw new BadRequestException("File is empty");
 
         var folderName = string.Empty;
-        string extension = Path.GetExtension(file.FileName).ToLower();
+        var extension = Path.GetExtension(file.FileName).ToLower();
 
         if (_allowedImageExtensions.Contains(extension))
-        {
             folderName = "profile/cover";
-        }
         else
-        {
             throw new BadRequestException("File format not supported");
-        }
 
         var filePath = await UploadAsync(file, folderName, extension);
 
@@ -64,23 +55,16 @@ public class FileService
             throw new Exception("File is empty");
 
         var folderName = string.Empty;
-        string extension = Path.GetExtension(file.FileName).ToLower();
+        var extension = Path.GetExtension(file.FileName).ToLower();
 
         if (_allowedImageExtensions.Contains(extension))
-        {
-             folderName = "posts/images";
-
-        }
+            folderName = "posts/images";
         else if (_allowedVideoExtensions.Contains(extension))
-        {
             folderName = "posts/videos";
-        }
         else
-        {
             throw new BadRequestException("File format not supported");
-        }
 
-        var filePath = await UploadAsync(file,folderName,extension);
+        var filePath = await UploadAsync(file, folderName, extension);
 
         return filePath;
     }
@@ -103,25 +87,25 @@ public class FileService
 
     public bool IsExist(string path)
     {
-        string filePath = Path.Combine(env.WebRootPath, path);
+        var filePath = Path.Combine(env.WebRootPath, path);
         return File.Exists(filePath);
-    } 
+    }
 
 
     private async Task<string> UploadAsync(IFormFile file, string folderName, string extension)
     {
-      // Folder path
-            string folderPath = Path.Combine(env.WebRootPath, folderName);
+        // Folder path
+        var folderPath = Path.Combine(env.WebRootPath, folderName);
 
         if (!Directory.Exists(folderPath))
             Directory.CreateDirectory(folderPath);
 
         // GUID + extension
-        string fileName = Guid.NewGuid().ToString() + extension;
+        var fileName = Guid.NewGuid().ToString() + extension;
 
-        string filePath = Path.Combine(folderPath, fileName);
+        var filePath = Path.Combine(folderPath, fileName);
 
-        using (FileStream stream = new FileStream(filePath, FileMode.Create))
+        using (var stream = new FileStream(filePath, FileMode.Create))
         {
             await file.CopyToAsync(stream);
         }

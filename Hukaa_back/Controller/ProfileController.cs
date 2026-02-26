@@ -4,13 +4,13 @@
 [Route("/api/[controller]")]
 [Authorize]
 public class ProfileController(
-    IProfileService profileService):ControllerBase
+    IProfileService profileService) : ControllerBase
 {
     [HttpGet("Me")]
     public async Task<IActionResult> GetMyProfileHeader()
     {
         var res = await profileService.GetMyProfileHeaderAsync();
-        return StatusCode(res.StatusCode,res);
+        return StatusCode(res.StatusCode, res);
     }
 
     [HttpGet("MyProfile")]
@@ -26,7 +26,7 @@ public class ProfileController(
         var res = await profileService.GetProfileInformationSettingsDataAsync();
         return StatusCode(res.StatusCode, res);
     }
-    
+
     [HttpGet("settings/privacy-information")]
     public async Task<IActionResult> GetPrivacySettingData()
     {
@@ -40,9 +40,9 @@ public class ProfileController(
         var res = await profileService.GetUserProfileAsync(userId);
         return StatusCode(res.StatusCode, res);
     }
-    
+
     [HttpGet("search")]
-    public async Task<IActionResult> SearchUserProfile([FromQuery]string query)
+    public async Task<IActionResult> SearchUserProfile([FromQuery] string query)
     {
         var res = await profileService.SearchUserProfileAsync(query);
         return StatusCode(res.StatusCode, res);
@@ -74,6 +74,5 @@ public class ProfileController(
     {
         var res = await profileService.TogglePrivacyAsync();
         return StatusCode(res.StatusCode, res);
-    }   
-
+    }
 }

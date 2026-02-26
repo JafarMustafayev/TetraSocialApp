@@ -11,15 +11,9 @@ public class CommentService(
         var user = await userManager.FindByIdAsync(currentUserService.UserId);
         var post = await context.Posts.FirstOrDefaultAsync(x => x.Id == dto.PostId);
 
-        if (user == null)
-        {
-            throw new NotFoundException("User", currentUserService.UserId);
-        }
+        if (user == null) throw new NotFoundException("User", currentUserService.UserId);
 
-        if (post == null)
-        {
-            throw new NotFoundException("Post", dto.PostId);
-        }
+        if (post == null) throw new NotFoundException("Post", dto.PostId);
 
         var comment = new Comment
         {
@@ -43,20 +37,14 @@ public class CommentService(
         };
     }
 
-    public async Task<ResponseDto> UpdateCommentAsync(string commentId,UpdateCommentDto dto)
+    public async Task<ResponseDto> UpdateCommentAsync(string commentId, UpdateCommentDto dto)
     {
         var user = await userManager.FindByIdAsync(currentUserService.UserId);
 
-        if (user == null)
-        {
-            throw new NotFoundException("User", currentUserService.UserId);
-        }
+        if (user == null) throw new NotFoundException("User", currentUserService.UserId);
 
         var comment = await context.Comments.FirstOrDefaultAsync(x => x.Id == commentId && x.AppUserId == user.Id);
-        if(comment == null)
-        {
-            throw new NotFoundException("Comment", commentId);
-        }
+        if (comment == null) throw new NotFoundException("Comment", commentId);
 
         mapper.Map(dto, comment);
 
@@ -98,7 +86,6 @@ public class CommentService(
 
     public async Task<ResponseDto> GetPostCommentsAsync(string postId)
     {
-
         var comments = await context.Comments
             .Where(c => c.PostId == postId && !c.IsDeleted)
             .Select(c => new CommentDto
@@ -112,7 +99,6 @@ public class CommentService(
                 UserId = c.AppUser.Id,
                 UserImage = c.AppUser.ProfilePhotoPath,
                 UserName = c.AppUser.UserName
-
             })
             .ToListAsync();
 

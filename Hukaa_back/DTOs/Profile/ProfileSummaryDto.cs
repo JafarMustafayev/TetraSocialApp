@@ -12,10 +12,10 @@ public class ProfileSummaryDto
     public string CoverImagePath { get; set; } = string.Empty;
     public string ProfileImagePath { get; set; } = string.Empty;
     public bool IsPrivateProfile { get; set; } = true;
-    public FollowStatus FollowStatus { get; set; } 
+    public FollowStatus FollowStatus { get; set; }
 }
 
-public class ProfileDetailsDto:ProfileSummaryDto
+public class ProfileDetailsDto : ProfileSummaryDto
 {
     public string Email { get; set; } = null!;
     public string? PhoneNumber { get; set; }

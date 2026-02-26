@@ -10,8 +10,8 @@ public class AppUser : IdentityUser<string>
     public RelationshipStatus RelationshipStatus { get; set; }
     public string ProfilePhotoPath { get; set; }
     public string CoverPhotoPath { get; set; }
-    public string? Bio {  get; set; }
-    public UserStatus UserStatus { get; set; } 
+    public string? Bio { get; set; }
+    public UserStatus UserStatus { get; set; }
 
     public ICollection<Post> Posts { get; set; }
     public ICollection<WorkExperience> WorkExperiences { get; set; }

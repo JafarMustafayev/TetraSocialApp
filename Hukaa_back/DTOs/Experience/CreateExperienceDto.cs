@@ -14,6 +14,5 @@ public class CreateExperienceDto
         Position = string.Empty;
         Description = string.Empty;
         StartDate = DateTime.MinValue;
-
     }
 }

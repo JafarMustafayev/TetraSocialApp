@@ -15,10 +15,8 @@ public class RegistrationService(
 
         var result = await userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded)
-        {
             throw new ConflictException("Registering user failed",
                 result.Errors.Select(error => error.Description).ToList());
-        }
 
         await roleManager.CreateAsync(new IdentityRole(UserRoles.User));
         result = await userManager.AddToRoleAsync(user, UserRoles.User);
@@ -50,23 +48,15 @@ public class RegistrationService(
         var token = WebUtility.UrlDecode(request.Token);
 
         var user = await userManager.FindByIdAsync(id);
-        if (user == null)
-        {
-            throw new NotFoundException("User", id);
-        }
+        if (user == null) throw new NotFoundException("User", id);
 
-        if (user.EmailConfirmed)
-        {
-            throw new ConflictException("Email already confirmed");
-        }
+        if (user.EmailConfirmed) throw new ConflictException("Email already confirmed");
 
         var res = await userManager.ConfirmEmailAsync(user, token);
 
         if (!res.Succeeded)
-        {
             throw new Exceptions.ValidationException("Invalid or expired email confirmation token",
                 res.Errors.Select(err => err.Description).ToList());
-        }
 
         user.UserStatus = UserStatus.Active;
         await userManager.UpdateAsync(user);

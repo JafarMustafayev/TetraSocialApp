@@ -1,6 +1,6 @@
 ﻿namespace Hukaa_back.Mappings;
 
-public class FollowMapping:Profile
+public class FollowMapping : Profile
 {
     public FollowMapping()
     {
@@ -16,5 +16,4 @@ public class FollowMapping:Profile
             .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Following.UserName))
             .ForMember(dest => dest.ProfileImageUrl, opt => opt.MapFrom(src => src.Following.ProfilePhotoPath));
     }
-
 }

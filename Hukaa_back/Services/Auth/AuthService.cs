@@ -12,20 +12,13 @@ public class AuthService(
         var user = Regex.IsMatch(identifier, @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")
             ? await userManager.FindByEmailAsync(identifier)
             : await userManager.FindByNameAsync(identifier);
-        if (user == null)
-        {
-            throw new UnauthorizedException(errors: ["Username(Email) or  password is incorrect "]);
-        }
+        if (user == null) throw new UnauthorizedException(errors: ["Username(Email) or  password is incorrect "]);
 
         var signInResult = await signInManager.CheckPasswordSignInAsync(user, request.Password, true);
         if (!signInResult.Succeeded)
-        {
             HandleFailedSignIn(signInResult);
-        }
         else if (user.UserStatus == UserStatus.Banned)
-        {
             throw new UnauthorizedException(errors: ["Account is banned to sign in"]);
-        }
 
         var accessToken = tokenService.GenerateAccessToken(user.Id);
 
@@ -43,20 +36,12 @@ public class AuthService(
 
     private static void HandleFailedSignIn(Microsoft.AspNetCore.Identity.SignInResult result)
     {
-        if (result.IsLockedOut)
-        {
-            throw new UnauthorizedException(errors: ["Account is temporarily locked"]);
-        }
+        if (result.IsLockedOut) throw new UnauthorizedException(errors: ["Account is temporarily locked"]);
 
-        if (result.IsNotAllowed)
-        {
-            throw new UnauthorizedException(errors: ["Account is not allowed to sign in"]);
-        }
+        if (result.IsNotAllowed) throw new UnauthorizedException(errors: ["Account is not allowed to sign in"]);
 
         if (result.RequiresTwoFactor)
-        {
             throw new UnauthorizedException(errors: ["Two-factor authentication is required"]);
-        }
 
         throw new UnauthorizedException(errors: ["Username(Email) or password is incorrect"]);
     }

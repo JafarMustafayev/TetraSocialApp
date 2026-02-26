@@ -1,10 +1,10 @@
 ﻿namespace Hukaa_back.Entities;
 
-public class WorkExperience:BaseEntity
+public class WorkExperience : BaseEntity
 {
     public string AppUserId { get; set; }
     public string Title { get; set; }
-    public string Company {  get; set; }
+    public string Company { get; set; }
     public string? Description { get; set; }
     public DateTime StartAt { get; set; }
     public DateTime? EndAt { get; set; }
@@ -22,5 +22,4 @@ public class WorkExperience:BaseEntity
         StartAt = DateTime.MinValue;
         IsCurrent = true;
     }
-
 }

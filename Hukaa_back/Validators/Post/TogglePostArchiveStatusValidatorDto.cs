@@ -1,6 +1,6 @@
 ﻿namespace Hukaa_back.Validators.Post;
 
-public class TogglePostArchiveStatusValidatorDto:AbstractValidator<TogglePostArchiveStatusDto>
+public class TogglePostArchiveStatusValidatorDto : AbstractValidator<TogglePostArchiveStatusDto>
 {
     public TogglePostArchiveStatusValidatorDto()
     {

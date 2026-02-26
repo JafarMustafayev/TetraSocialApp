@@ -2,6 +2,6 @@
 
 public enum FileType
 {
-    Image =1,
-    Video,
+    Image = 1,
+    Video
 }
