@@ -20,52 +20,55 @@ import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
 import SecondaryLayout from './layouts/SecondaryLayout';
 import MyActivities from './pages/MyActivities';
+import { ThemeProvider } from './context/ThemeContext';
 
 function App() {
     return (
-        <ToastProvider>
-            <AuthProvider>
-                <BrowserRouter>
-                    <Routes>
-                        {/* Main Layout Routes */}
-                        <Route path="/" element={
-                            <ProtectedRoute>
-                                <MainLayout />
-                            </ProtectedRoute>
-                        }>
-                            <Route index element={<Home />} />
-                            <Route path="messages" element={<Messages />} />
-                            <Route path="notifications" element={<Notifications />} />
-                            <Route path="profile" element={<Profile />} />
-                            <Route path="profile/:userId" element={<UserProfile />} />
-                            <Route path="archived" element={<Archived />} />
-                        </Route>
-
-                        {/* Secondary Layout Routes (Dual Sidebar) */}
-                        <Route element={
-                            <ProtectedRoute>
-                                <SecondaryLayout />
-                            </ProtectedRoute>
-                        }>
-                            <Route path="/settings" element={<Settings />} />
-                            <Route path="/my-activities" element={<MyActivities />} />
-                        </Route>
-
-                        <Route element={<PublicRoute />}>
-                            <Route element={<AuthLayout />}>
-                                <Route path="/login" element={<Login />} />
-                                <Route path="/register" element={<Register />} />
-                                <Route path="/forgot-password" element={<ForgotPassword />} />
+        <ThemeProvider>
+            <ToastProvider>
+                <AuthProvider>
+                    <BrowserRouter>
+                        <Routes>
+                            {/* Main Layout Routes */}
+                            <Route path="/" element={
+                                <ProtectedRoute>
+                                    <MainLayout />
+                                </ProtectedRoute>
+                            }>
+                                <Route index element={<Home />} />
+                                <Route path="messages" element={<Messages />} />
+                                <Route path="notifications" element={<Notifications />} />
+                                <Route path="profile" element={<Profile />} />
+                                <Route path="profile/:userId" element={<UserProfile />} />
+                                <Route path="archived" element={<Archived />} />
                             </Route>
-                        </Route>
-                        <Route element={<AuthLayout />}>
-                            <Route path="/reset-password" element={<ResetPassword />} />
-                            <Route path="/email-confirmation" element={<EmailConfirmation />} />
-                        </Route>
-                    </Routes>
-                </BrowserRouter>
-            </AuthProvider>
-        </ToastProvider>
+
+                            {/* Secondary Layout Routes (Dual Sidebar) */}
+                            <Route element={
+                                <ProtectedRoute>
+                                    <SecondaryLayout />
+                                </ProtectedRoute>
+                            }>
+                                <Route path="/settings" element={<Settings />} />
+                                <Route path="/my-activities" element={<MyActivities />} />
+                            </Route>
+
+                            <Route element={<PublicRoute />}>
+                                <Route element={<AuthLayout />}>
+                                    <Route path="/login" element={<Login />} />
+                                    <Route path="/register" element={<Register />} />
+                                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                                </Route>
+                            </Route>
+                            <Route element={<AuthLayout />}>
+                                <Route path="/reset-password" element={<ResetPassword />} />
+                                <Route path="/email-confirmation" element={<EmailConfirmation />} />
+                            </Route>
+                        </Routes>
+                    </BrowserRouter>
+                </AuthProvider>
+            </ToastProvider>
+        </ThemeProvider>
     );
 }
 

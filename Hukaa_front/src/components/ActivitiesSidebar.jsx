@@ -33,10 +33,10 @@ const ActivitiesSidebar = () => {
     if (!isSettings && !isActivities) return null;
 
     return (
-        <div className="fixed left-[165px] top-[85px] h-[calc(100vh-85px)] w-[240px] z-50 transition-all duration-300 hidden lg:block border-l border-gray-100 bg-white shadow-sm overflow-hidden">
+        <div className="fixed left-[165px] top-[85px] h-[calc(100vh-100px)] w-[240px] z-50 transition-all duration-300 hidden lg:block border-l border-gray-100 bg-white shadow-sm overflow-hidden rounded-2xl mt-1.5 ml-1.5">
             <div className="h-full flex flex-col">
-                <div className="px-6 py-5 border-b border-gray-50 bg-gray-50/30">
-                    <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">
+                <div className="px-6 py-5 border-b border-gray-50 bg-gray-800">
+                    <h3 className="text-sm font-bold text-white uppercase tracking-widest">
                         {isSettings ? 'Settings' : 'Activities'}
                     </h3>
                 </div>

@@ -3,9 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { IMAGE_BASE_URL, USER_AVATAR, LOGO } from '../api/client';
 import { searchProfiles } from '../api/profile';
+import { useTheme } from '../context/ThemeContext';
 
 const Navbar = () => {
     const { user, logout } = useAuth();
+    const { theme, setTheme } = useTheme();
     const navigate = useNavigate();
     const [openDropdown, setOpenDropdown] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
@@ -76,6 +78,18 @@ const Navbar = () => {
         setSearchQuery('');
         setShowResults(false);
         navigate(`/profile/${userId}`);
+    };
+
+    const getThemeIcon = () => {
+        if (theme === 'light') return 'ri-sun-line';
+        if (theme === 'dark') return 'ri-moon-line';
+        return 'ri-contrast-line'; // auto
+    };
+
+    const handleThemeToggle = () => {
+        if (theme === 'light') setTheme('dark');
+        else if (theme === 'dark') setTheme('auto');
+        else setTheme('light');
     };
 
     return (
@@ -152,6 +166,15 @@ const Navbar = () => {
 
                 {/* Right Side Icons & Profile */}
                 <div className="flex items-center gap-2 lg:gap-4">
+                    {/* Theme Toggle */}
+                    <button
+                        onClick={handleThemeToggle}
+                        className="w-[45px] h-[45px] flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white hover:text-main transition-all"
+                        title={`Theme: ${theme}`}
+                    >
+                        <i className={`${getThemeIcon()} text-[22px]`}></i>
+                    </button>
+
                     {/* Inbox Dropdown */}
                     <div className="relative" onClick={stopPropagation}>
                         <button
@@ -260,7 +283,7 @@ const Navbar = () => {
 
                         {/* Dropdown Menu */}
                         <div className={`absolute right-0 top-full mt-4 w-[240px] bg-white rounded-2xl shadow-2xl border border-gray-100 py-3 transition-all duration-300 transform origin-top ${openDropdown === 'profile' ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-4'}`}>
-                            <div className="px-5 py-3 border-b border-gray-50 mb-2">
+                            <div className="px-5 py-3">
                                 <span className="block text-sm font-bold text-gray-800">{user?.firstName} {user?.lastName}</span>
                                 <span className="text-xs text-gray-400 truncate block">@{user?.username}</span>
                             </div>
