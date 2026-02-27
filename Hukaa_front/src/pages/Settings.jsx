@@ -36,7 +36,7 @@ const Settings = () => {
     };
 
     return (
-        <div className="animate-fade-in-up ml-10">
+        <div className="animate-fade-in-up md:ml-10 ml-0">
             <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="border-b border-gray-50 px-8 py-5 bg-gray-50/30 flex justify-between items-center">
                     <h3 className="text-lg font-bold text-gray-800 m-0">{getSectionTitle()}</h3>

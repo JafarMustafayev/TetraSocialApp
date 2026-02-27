@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
 import { getProfileSettings, updateProfileInformation } from '../../api/profile';
+import FormSkeleton from '../Skeleton/FormSkeleton';
+import { useState, useEffect } from 'react';
 
 const ProfileInformation = () => {
     const [formData, setFormData] = useState({
@@ -77,7 +78,7 @@ const ProfileInformation = () => {
     };
 
     if (loading) {
-        return <div className="p-3 text-center">Loading settings...</div>;
+        return <FormSkeleton rows={3} />;
     }
 
     return (

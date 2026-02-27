@@ -1,6 +1,7 @@
 import { getLikedPosts, getSavedPosts, getArchivedPosts } from '../api/post';
 import { getMyProfile } from '../api/profile';
 import PostWidget from '../components/PostWidget';
+import PostSkeleton from '../components/Skeleton/PostSkeleton';
 import { useSearchParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
@@ -116,10 +117,14 @@ const MyActivities = () => {
         setPosts(prev => prev.filter(p => p.id !== postId));
     };
 
-    if (loading) return <div className="p-5 text-center">Loading...</div>;
+    if (loading) return (
+        <div className="max-w-4xl mx-auto px-4 mt-6">
+            <PostSkeleton count={3} />
+        </div>
+    );
 
     return (
-        <div className="animate-fade-in-up">
+        <div className="animate-fade-in-up px-0 sm:px-4">
             <div className="max-w-4xl mx-auto">
                 {posts.length === 0 && !isPostsLoading ? (
                     <div className="bg-white rounded-3xl p-16 text-center shadow-sm border border-gray-100">
@@ -144,12 +149,7 @@ const MyActivities = () => {
                             />
                         ))}
 
-                        {isPostsLoading && (
-                            <div className="p-8 text-center text-gray-400 font-medium">
-                                <div className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-[#3644D9] rounded-full mr-3" role="status"></div>
-                                <span>Loading posts...</span>
-                            </div>
-                        )}
+                        {isPostsLoading && <PostSkeleton count={2} />}
                     </div>
                 )}
             </div>

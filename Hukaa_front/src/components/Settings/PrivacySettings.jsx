@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
 import { getPrivacyInformation, updatePrivacySetting } from '../../api/profile';
+import FormSkeleton from '../Skeleton/FormSkeleton';
+import { useState, useEffect } from 'react';
 
 const PrivacySettings = () => {
     const [privacyData, setPrivacyData] = useState(null);
@@ -42,11 +43,7 @@ const PrivacySettings = () => {
     };
 
     if (isLoading) {
-        return (
-            <div className="flex justify-center items-center py-20">
-                <div className="animate-spin rounded-full h-10 w-10 border-4 border-main border-t-transparent"></div>
-            </div>
-        );
+        return <FormSkeleton rows={1} />;
     }
 
     const accountTypeText = privacyData?.accountType === 0 ? 'Private Account' : 'Public Account';

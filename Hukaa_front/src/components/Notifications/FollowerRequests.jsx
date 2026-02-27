@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { IMAGE_BASE_URL, USER_AVATAR } from '../../api/client';
 import { getPendingFollowRequests, acceptFollowRequest, rejectFollowRequest } from '../../api/follow';
 import { useToast } from '../../context/ToastContext';
+import ListSkeleton from '../Skeleton/ListSkeleton';
 
 const FollowerRequests = () => {
     const [requests, setRequests] = useState([]);
@@ -69,7 +70,7 @@ const FollowerRequests = () => {
     };
 
     return (
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden h-[750px] flex flex-col">
+        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden h-[70%] lg:h-[750px] flex flex-col">
             <div className="p-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/30 shrink-0">
                 <h3 className="text-lg font-bold text-gray-800 m-0">Follower Requests {requests.length > 0 ? `(${requests.length})` : ''}</h3>
                 <button
@@ -82,12 +83,9 @@ const FollowerRequests = () => {
                 </button>
             </div>
 
-            <div className="divide-y divide-gray-50 overflow-y-auto custom-scrollbar h-[735px]">
+            <div className="divide-y divide-gray-50 overflow-y-auto custom-scrollbar flex-1">
                 {loading && requests.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-full space-y-3 opacity-50 p-10">
-                        <div className="animate-spin rounded-full h-8 w-8 border-2 border-main border-t-transparent"></div>
-                        <p className="text-sm font-medium">Checking for requests...</p>
-                    </div>
+                    <ListSkeleton count={4} />
                 ) : requests.length > 0 ? (
                     requests.map((req) => (
                         <div key={req.id} className="p-4 flex flex-col hover:bg-gray-50/50 transition-colors group">

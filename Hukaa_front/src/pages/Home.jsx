@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PostWidget from '../components/PostWidget';
 import CreatePostWidget from '../components/CreatePostWidget';
+import PostSkeleton from '../components/Skeleton/PostSkeleton';
 import { getFeeds } from '../api/post';
 
 const Home = () => {
@@ -79,25 +80,7 @@ const Home = () => {
                         />
                     ))}
 
-                    {loading && (
-                        <div className="space-y-6">
-                            <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 animate-pulse">
-                                <div className="flex items-center space-x-3 mb-4">
-                                    <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
-                                    <div className="space-y-2">
-                                        <div className="h-4 w-32 bg-gray-200 rounded"></div>
-                                        <div className="h-3 w-20 bg-gray-100 rounded"></div>
-                                    </div>
-                                </div>
-                                <div className="h-20 bg-gray-50 rounded-lg mb-4"></div>
-                                <div className="flex space-x-4 justify-between">
-                                    <div className="h-8 w-24 bg-gray-100 rounded"></div>
-                                    <div className="h-8 w-24 bg-gray-100 rounded"></div>
-                                    <div className="h-8 w-24 bg-gray-100 rounded"></div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    {loading && <PostSkeleton count={2} />}
 
                     {!hasMore && posts.length > 0 && (
                         <div className="py-10 text-center text-gray-400 font-medium">

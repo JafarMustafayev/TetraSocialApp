@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { IMAGE_BASE_URL, USER_AVATAR } from '../../api/client';
 import { getMyConnections, getUserConnections, removeFollower, unfollowUser } from '../../api/follow';
+import ListSkeleton from '../Skeleton/ListSkeleton';
 import { useToast } from '../../context/ToastContext';
 
 const ConnectionsPopup = ({ isOpen, onClose, initialTab = 'followers', userId = null, onCountChange }) => {
@@ -174,10 +175,7 @@ const ConnectionsPopup = ({ isOpen, onClose, initialTab = 'followers', userId = 
                 {/* Content */}
                 <div className="overflow-y-auto grow p-6 custom-scrollbar">
                     {loading ? (
-                        <div className="flex flex-col items-center justify-center h-full space-y-4">
-                            <div className="animate-spin rounded-full h-10 w-10 border-4 border-main border-t-transparent"></div>
-                            <p className="text-gray-400 font-medium">Loading connections...</p>
-                        </div>
+                        <ListSkeleton count={6} />
                     ) : error ? (
                         <div className="flex flex-col items-center justify-center h-full text-center px-10">
                             <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4">
@@ -251,10 +249,7 @@ const ConnectionsPopup = ({ isOpen, onClose, initialTab = 'followers', userId = 
                     )}
                 </div>
 
-                {/* Footer */}
-                <div className="p-4 bg-gray-50/50 border-t border-gray-50 text-center">
-                    <p className="text-xs text-gray-400 font-medium">To see more details, visit your friends page</p>
-                </div>
+
             </div>
         </div>
     );

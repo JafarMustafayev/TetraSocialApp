@@ -64,7 +64,32 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
         }
     };
 
-    const handleLikeClick = () => {
+    const longPressTimeoutRef = useRef(null);
+    const isLongPressActive = useRef(false);
+
+    const handleTouchStart = (e) => {
+        // Prevent default only if we want to block scroll, but here we just want to start a timer
+        isLongPressActive.current = false;
+        longPressTimeoutRef.current = setTimeout(() => {
+            isLongPressActive.current = true;
+            setShowReactions(true);
+        }, 500); // 500ms for long press
+    };
+
+    const handleTouchEnd = (e) => {
+        if (longPressTimeoutRef.current) {
+            clearTimeout(longPressTimeoutRef.current);
+        }
+    };
+
+
+    const handleLikeClick = (e) => {
+        // If it was a long press that triggered reactions, don't execute normal click
+        if (isLongPressActive.current) {
+            isLongPressActive.current = false;
+            return;
+        }
+
         if (myReaction !== null) {
             selectReaction(myReaction);
         } else {
@@ -209,7 +234,7 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
         : post.content;
 
     return (
-        <div className="bg-white rounded-3xl shadow-sm mb-6 border border-gray-100 overflow-visible relative group/widget transition-all hover:shadow-xl hover:shadow-gray-100/50">
+        <div className="bg-white rounded-3xl shadow-sm mb-4 md:mb-6 border border-gray-100 overflow-visible relative group/widget transition-all hover:shadow-xl hover:shadow-gray-100/50">
 
             <div className="p-5 flex justify-between items-center">
                 <div className="flex items-center space-x-3">
@@ -223,7 +248,7 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
                         </Link>
                     </div>
                     <div>
-                        <Link to={`/profile/${post.userId}`} className="font-bold text-[15px] text-gray-800 hover:text-[#3644D9] block leading-tight transition-colors">
+                        <Link to={`/profile/${post.userId}`} className="font-bold text-[15px] text-gray-800 hover:text-main block leading-tight transition-colors">
                             {post.userName || profileData?.profileName || 'Julie R. Morley'}
                         </Link>
                         <span className="text-[11px] text-gray-400 font-bold flex items-center mt-0.5">
@@ -242,7 +267,7 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
                     {post.isOwner && (
                         <button
                             onClick={() => setShowOptions(!showOptions)}
-                            className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all ${showOptions ? 'bg-[#3644D9] text-white shadow-lg shadow-blue-100' : 'text-gray-400 hover:bg-gray-50 hover:text-gray-600'}`}
+                            className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all ${showOptions ? 'bg-main text-white shadow-lg shadow-blue-100' : 'text-gray-400 hover:bg-gray-50 hover:text-gray-600'}`}
                             disabled={isDeleting || isArchiving}
                         >
                             <i className="ri-more-2-line text-xl"></i>
@@ -298,7 +323,7 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
                         <textarea
                             value={editContent}
                             onChange={(e) => setEditContent(e.target.value.substring(0, maxChars))}
-                            className="w-full bg-gray-50 border-2 border-gray-100 text-gray-700 resize-none rounded-2xl p-5 min-h-[140px] focus:ring-4 focus:ring-blue-50 focus:border-[#3644D9] focus:bg-white outline-none transition-all placeholder:text-gray-400 text-[15px] leading-relaxed font-medium"
+                            className="w-full bg-gray-50 border-2 border-gray-100 text-gray-700 resize-none rounded-2xl p-5 min-h-[140px] focus:ring-4 focus:ring-blue-50 focus:border-main focus:bg-white outline-none transition-all placeholder:text-gray-400 text-[15px] leading-relaxed font-medium"
                             autoFocus
                             placeholder="What's on your mind?"
                         ></textarea>
@@ -316,7 +341,7 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
                                 <button
                                     onClick={handleUpdateSubmit}
                                     disabled={isUpdating}
-                                    className="px-8 py-2.5 text-sm font-bold bg-[#3644D9] text-white rounded-xl hover:bg-[#2E3AB8] transition-all shadow-xl shadow-blue-100 active:scale-95 disabled:opacity-50"
+                                    className="px-8 py-2.5 text-sm font-bold bg-main text-white rounded-xl hover:bg-optional transition-all shadow-xl shadow-blue-100 active:scale-95 disabled:opacity-50"
                                 >
                                     {isUpdating ? 'Saving...' : 'Update Post'}
                                 </button>
@@ -331,7 +356,7 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
                         {needsReadMore && (
                             <button
                                 onClick={() => setIsExpanded(!isExpanded)}
-                                className="text-[#3644D9] font-bold hover:underline text-sm focus:outline-none mt-2 block active:scale-95 transition-all"
+                                className="text-main font-bold hover:underline text-sm focus:outline-none mt-2 block active:scale-95 transition-all"
                             >
                                 {isExpanded ? 'Show less' : 'Read full story'}
                             </button>
@@ -350,7 +375,9 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
                     >
                         <button
                             onClick={handleLikeClick}
-                            className={`flex items-center space-x-2 font-bold transition-all py-2 px-4 rounded-xl hover:bg-white hover:shadow-md group ${myReaction !== null ? reactions.find(r => (reactions.indexOf(r) + 1) === myReaction)?.color || 'text-[#3644D9]' : 'text-gray-500 hover:text-[#3644D9]'}`}
+                            onTouchStart={handleTouchStart}
+                            onTouchEnd={handleTouchEnd}
+                            className={`flex items-center space-x-2 font-bold transition-all py-2 px-4 rounded-xl hover:bg-white hover:shadow-md group ${myReaction !== null ? reactions.find(r => (reactions.indexOf(r) + 1) === myReaction)?.color || 'text-main' : 'text-gray-500 hover:text-main'}`}
                         >
                             <span className="text-xl transform group-hover:scale-125 transition-transform">
                                 {myReaction !== null ? (reactions.find(r => (reactions.indexOf(r) + 1) === myReaction)?.icon || reactions[0].icon) : <i className="ri-thumb-up-line"></i>}
@@ -385,7 +412,7 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
 
                     <button
                         onClick={() => setShowComments(true)}
-                        className="flex items-center space-x-2 text-gray-500 hover:text-[#3644D9] font-bold transition-all py-2 px-4 rounded-xl hover:bg-white hover:shadow-md group"
+                        className="flex items-center space-x-2 text-gray-500 hover:text-main font-bold transition-all py-2 px-4 rounded-xl hover:bg-white hover:shadow-md group"
                     >
                         <i className="ri-chat-3-line text-xl group-hover:scale-110 transition-transform"></i>
                         <span className="text-xs font-bold uppercase tracking-widest hidden sm:inline">Comment</span>

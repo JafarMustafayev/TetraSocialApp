@@ -6,6 +6,8 @@ import { IMAGE_BASE_URL, USER_AVATAR, COVER_IMAGE } from '../api/client';
 import PostWidget from '../components/PostWidget';
 import CreatePostWidget from '../components/CreatePostWidget';
 import ConnectionsPopup from '../components/Popups/ConnectionsPopup';
+import PostSkeleton from '../components/Skeleton/PostSkeleton';
+import ProfileHeaderSkeleton from '../components/Skeleton/ProfileHeaderSkeleton';
 
 const Profile = () => {
     const [activeTab, setActiveTab] = useState('timeline');
@@ -109,7 +111,7 @@ const Profile = () => {
         }
     };
 
-    if (loading) return <div className="p-5 text-center">Loading profile...</div>;
+    if (loading) return <ProfileHeaderSkeleton />;
     if (error) return <div className="p-5 text-center text-danger">{error}</div>;
     if (!profileData) return <div className="p-5 text-center">No profile data found.</div>;
 
@@ -154,7 +156,7 @@ const Profile = () => {
         <div className="content-page-box-area">
             <div className="mb-6">
                 <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div className="relative w-full h-[300px] overflow-hidden">
+                    <div className="relative w-full h-[200px] md:h-[300px] overflow-hidden">
                         <img
                             src={profileData.coverImagePath ? `${IMAGE_BASE_URL}/${profileData.coverImagePath}` : COVER_IMAGE}
                             alt="cover"
@@ -178,26 +180,26 @@ const Profile = () => {
                                 </div>
                             </div>
 
-                            <ul className="flex flex-wrap items-center justify-center gap-x-6 md:gap-x-10 lg:gap-x-12 mt-8 lg:mt-0 bg-gray-50/50 md:bg-transparent p-4 md:p-0 rounded-2xl w-full lg:w-auto">
-                                <li className="text-center relative">
+                            <ul className="flex flex-row items-center justify-between sm:justify-center gap-x-4 md:gap-x-10 lg:gap-x-12 mt-8 lg:mt-0 bg-gray-50/50 md:bg-transparent p-4 md:p-0 rounded-2xl w-full lg:w-auto">
+                                <li className="text-center relative flex-1 sm:flex-none">
                                     <span className="block text-lg md:text-xl font-bold text-gray-800 leading-none">{profileData.postCount || 0}</span>
                                     <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest mt-1.5 block">Posts</span>
                                 </li>
                                 <li className="h-8 w-px bg-gray-200 hidden sm:block"></li>
-                                <li className="text-center">
+                                <li className="text-center flex-1 sm:flex-none">
                                     <button
                                         onClick={() => openConnections('followers')}
-                                        className="block group"
+                                        className="block w-full group"
                                     >
                                         <span className="block text-lg md:text-xl font-bold text-gray-800 leading-none group-hover:text-main transition-colors uppercase tracking-tight">{profileData.followersCount || 0}</span>
                                         <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest mt-1.5 block group-hover:text-gray-500 transition-colors">Followers</span>
                                     </button>
                                 </li>
                                 <li className="h-8 w-px bg-gray-200 hidden sm:block"></li>
-                                <li className="text-center">
+                                <li className="text-center flex-1 sm:flex-none">
                                     <button
                                         onClick={() => openConnections('following')}
-                                        className="block group"
+                                        className="block w-full group"
                                     >
                                         <span className="block text-lg md:text-xl font-bold text-gray-800 leading-none group-hover:text-main transition-colors uppercase tracking-tight">{profileData.followingCount || 0}</span>
                                         <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest mt-1.5 block group-hover:text-gray-500 transition-colors">Following</span>
@@ -240,7 +242,7 @@ const Profile = () => {
             <div className="tab-content" id="myTabContent">
                 {activeTab === 'timeline' && (
                     <div className="tab-pane fade show active" id="timeline" role="tabpanel">
-                        <div className="flex flex-wrap -mx-3">
+                        <div className="flex flex-col-reverse lg:flex-row -mx-3">
                             <div className="w-full lg:w-3/4 px-3">
                                 <div className="news-feed-area">
                                     <CreatePostWidget profileData={profileData} onPostCreated={handlePostCreated} />
@@ -262,25 +264,7 @@ const Profile = () => {
                                         </div>
                                     )}
 
-                                    {isPostsLoading && (
-                                        <div className="space-y-6">
-                                            <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 animate-pulse">
-                                                <div className="flex items-center space-x-3 mb-4">
-                                                    <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
-                                                    <div className="space-y-2">
-                                                        <div className="h-4 w-32 bg-gray-200 rounded"></div>
-                                                        <div className="h-3 w-20 bg-gray-100 rounded"></div>
-                                                    </div>
-                                                </div>
-                                                <div className="h-20 bg-gray-50 rounded-lg mb-4"></div>
-                                                <div className="flex space-x-4 justify-between">
-                                                    <div className="h-8 w-24 bg-gray-100 rounded"></div>
-                                                    <div className="h-8 w-24 bg-gray-100 rounded"></div>
-                                                    <div className="h-8 w-24 bg-gray-100 rounded"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
+                                    {isPostsLoading && <PostSkeleton count={2} />}
                                 </div>
                             </div>
 

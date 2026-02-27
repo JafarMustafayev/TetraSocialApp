@@ -90,7 +90,7 @@ const CreatePostWidget = ({ profileData, onPostCreated }) => {
     };
 
     return (
-        <div className="bg-white rounded-3xl shadow-sm mb-6 border border-gray-100 overflow-hidden transition-all hover:shadow-xl hover:shadow-gray-100/50">
+        <div className="bg-white rounded-3xl shadow-sm mb-4 md:mb-6 border border-gray-100 overflow-hidden transition-all hover:shadow-xl hover:shadow-gray-100/50">
             <div className="p-6">
                 <div className="flex items-start space-x-4">
 
@@ -123,7 +123,7 @@ const CreatePostWidget = ({ profileData, onPostCreated }) => {
                                 )}
                                 <button
                                     onClick={() => removeFile(index)}
-                                    className="absolute -top-2 -right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 z-10 scale-0 group-hover:scale-100 transition-transform border-[3px] border-white active:scale-90"
+                                    className="absolute -top-2 -right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 z-10 md:scale-0 md:group-hover:scale-100 transition-transform border-[3px] border-white active:scale-95"
                                 >
                                     <i className="ri-close-line text-sm font-bold"></i>
                                 </button>
@@ -136,9 +136,9 @@ const CreatePostWidget = ({ profileData, onPostCreated }) => {
                     <div className="flex items-center space-x-2">
                         <button
                             onClick={() => fileInputRef.current.click()}
-                            className="flex items-center space-x-2 px-4 py-2.5 bg-gray-50 text-gray-500 rounded-xl font-bold text-sm hover:bg-blue-50 hover:text-[#3644D9] transition-all group"
+                            className="flex items-center space-x-2 px-4 py-2.5 bg-gray-50 text-gray-500 rounded-xl font-bold text-sm hover:bg-blue-50 hover:text-main transition-all group"
                         >
-                            <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center group-hover:bg-[#3644D9] group-hover:text-white transition-all">
+                            <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center group-hover:bg-main group-hover:text-white transition-all">
                                 <i className="ri-image-add-line text-lg"></i>
                             </div>
                             <span>Photo / Video</span>
@@ -156,7 +156,7 @@ const CreatePostWidget = ({ profileData, onPostCreated }) => {
                     <button
                         onClick={handlePost}
                         disabled={isLoading || (!content.trim() && selectedFiles.length === 0)}
-                        className={`px-10 py-3.5 rounded-2xl font-bold transition-all shadow-xl active:scale-95 flex items-center ${(isLoading || (!content.trim() && selectedFiles.length === 0)) ? 'bg-gray-100 text-gray-400 shadow-none' : 'bg-[#3644D9] text-white hover:bg-[#2E3AB8] shadow-blue-100'}`}
+                        className={`px-10 py-3.5 rounded-2xl font-bold transition-all shadow-xl active:scale-95 flex items-center ${(isLoading || (!content.trim() && selectedFiles.length === 0)) ? 'bg-gray-100 text-gray-400 shadow-none' : 'bg-main text-white hover:bg-optional shadow-blue-100'}`}
                     >
                         {isLoading ? (
                             <>

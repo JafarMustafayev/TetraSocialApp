@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
 import { getExperiences, addExperience, updateExperience, deleteExperience } from '../../api/profile';
+import FormSkeleton from '../Skeleton/FormSkeleton';
+import { useState, useEffect } from 'react';
 
 const WorkExperience = () => {
     const [experiences, setExperiences] = useState([]);
@@ -152,7 +153,7 @@ const WorkExperience = () => {
     };
 
     if (loading && experiences.length === 0) {
-        return <div className="p-4 text-center">Loading experiences...</div>;
+        return <FormSkeleton rows={2} />;
     }
 
     return (

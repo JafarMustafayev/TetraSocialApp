@@ -20,7 +20,7 @@ const PeopleMightKnow = () => {
     ];
 
     return (
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden h-[750px] flex flex-col">
+        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden h-[70%] lg:h-[750px] flex flex-col">
             <div className="p-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/30 shrink-0">
                 <h3 className="text-lg font-bold text-gray-800 m-0">Suggestions</h3>
                 <button className="text-main hover:rotate-180 transition-transform duration-500">
@@ -28,7 +28,7 @@ const PeopleMightKnow = () => {
                 </button>
             </div>
 
-            <div className="divide-y divide-gray-50 overflow-y-auto custom-scrollbar h-[735px]">
+            <div className="divide-y divide-gray-50 overflow-y-auto custom-scrollbar flex-1">
                 {suggestions.map((person) => (
                     <div key={person.id} className="p-4 flex items-center hover:bg-gray-50/50 transition-colors group">
                         <div className="shrink-0">

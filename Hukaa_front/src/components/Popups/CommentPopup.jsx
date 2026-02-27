@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { getPostComments, createComment, deleteComment, updateComment } from '../../api/comment';
 import { IMAGE_BASE_URL } from '../../api/client';
 import { useToast } from '../../context/ToastContext';
+import CommentSkeleton from '../Skeleton/CommentSkeleton';
 
 const CommentPopup = ({ isOpen, onClose, postId, onCommentCountChange }) => {
     const [comments, setComments] = useState([]);
@@ -141,9 +142,7 @@ const CommentPopup = ({ isOpen, onClose, postId, onCommentCountChange }) => {
                 {/* Body */}
                 <div className="grow overflow-y-auto p-6 space-y-6 min-h-[210px]">
                     {isLoading ? (
-                        <div className="h-full flex items-center justify-center py-20 text-gray-400">
-                            <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent"></div>
-                        </div>
+                        <CommentSkeleton count={3} />
                     ) : comments.length > 0 ? (
                         comments.map(comment => (
                             <div key={comment.id} className="flex space-x-4 group">

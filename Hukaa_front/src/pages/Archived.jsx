@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getArchivedPosts } from '../api/post';
 import { getMyProfile } from '../api/profile';
 import PostWidget from '../components/PostWidget';
+import PostSkeleton from '../components/Skeleton/PostSkeleton';
 
 const Archived = () => {
     const [posts, setPosts] = useState([]);
@@ -85,7 +86,11 @@ const Archived = () => {
         setPosts(prev => prev.filter(p => p.id !== postId));
     };
 
-    if (loading) return <div className="p-10 text-center text-gray-400 font-bold animate-pulse">Loading archived posts...</div>;
+    if (loading) return (
+        <div className="max-w-4xl mx-auto px-4 mt-10">
+            <PostSkeleton count={3} />
+        </div>
+    );
     if (error) return <div className="p-10 text-center text-red-500 font-bold bg-red-50 rounded-3xl border border-red-100 m-6">{error}</div>;
 
     return (
