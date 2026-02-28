@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import { IMAGE_BASE_URL, POST_SHARE_URL, FRONT_URL, USER_AVATAR } from '../api/client';
 import { updatePost, deletePost, toggleArchivePost, reactToPost, toggleSavePost } from '../api/post';
 import CommentPopup from './Popups/CommentPopup';
-import SharePopup from './SharePopup';
+import SharePopup from './Popups/SharePopup';
 import ImageGalleryPopup from './Popups/ImageGalleryPopup';
 import { useToast } from '../context/ToastContext';
 
-const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
+const PostWidget = ({ post, onDelete, onUpdate, onArchive, onSaveToggle }) => {
     const [myReaction, setMyReaction] = useState(post.myReaction);
     const [isSaved, setIsSaved] = useState(post.isSaved || post.saved || false);
     const [reactionCount, setReactionCount] = useState(post.reactionCount || post.totalReactionCount || 0);
@@ -263,7 +263,7 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
                     <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-md ring-1 ring-gray-100 transition-transform hover:scale-105">
                         <Link to="/profile">
                             <img
-                                src={post.userImage ? `${IMAGE_BASE_URL}/${post.userImage}` : (profileData?.profileImagePath ? `${IMAGE_BASE_URL}/${profileData.profileImagePath}` : USER_AVATAR)}
+                                src={post.userImage ? `${IMAGE_BASE_URL}/${post.userImage}` : USER_AVATAR}
                                 className="w-full h-full object-cover"
                                 alt="user"
                             />
@@ -271,7 +271,7 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
                     </div>
                     <div>
                         <Link to={`/profile/${post.userId}`} className="font-bold text-[15px] text-gray-800 hover:text-main block leading-tight transition-colors">
-                            {post.userName || profileData?.profileName || 'Julie R. Morley'}
+                            {post.userName || 'USER NAME'}
                         </Link>
                         <span className="text-[11px] text-gray-400 font-bold flex items-center mt-0.5">
                             {post.createdAt && !post.createdAt.startsWith('0001') ?
@@ -280,7 +280,7 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
                                     (typeof post.createAt === 'string' && post.createAt.includes('-') ? new Date(post.createAt).toLocaleDateString() : post.createAt) :
                                     'Recently')}
                             <span className="mx-1.5 opacity-30">•</span>
-                            <i className="ri-earth-line text-[12px] text-gray-400"></i>
+                            <i className={`text-[12px] text-gray-400 ${post.isArchived ? 'ri-lock-line' : 'ri-earth-line'}`}></i>
                         </span>
                     </div>
                 </div>
@@ -439,6 +439,17 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
                         <i className="ri-chat-3-line text-xl group-hover:scale-110 transition-transform"></i>
                         <span className="text-xs font-bold uppercase tracking-widest hidden sm:inline">Comment</span>
                         <span className="text-xs font-bold opacity-40">{commentCount > 0 ? commentCount : ''}</span>
+                    </button>
+
+                    <button
+                        onClick={handleToggleSave}
+                        className={`flex items-center space-x-2 font-bold transition-all py-2 px-4 rounded-xl hover:bg-white hover:shadow-md group ${isSaved ? 'text-yellow-500' : 'text-gray-500 hover:text-yellow-500'}`}
+                        title={isSaved ? 'Unsave Post' : 'Save Post'}
+                    >
+                        <i className={`${isSaved ? 'ri-star-fill' : 'ri-star-line'} text-xl group-hover:scale-110 transition-transform`}></i>
+                        <span className="text-xs font-bold uppercase tracking-widest hidden sm:inline">
+                            {isSaved ? 'Saved' : 'Save'}
+                        </span>
                     </button>
 
                     <button

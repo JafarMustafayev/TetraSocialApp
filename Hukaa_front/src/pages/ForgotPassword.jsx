@@ -1,30 +1,28 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { forgotPassword } from '../api/auth';
+import { useToast } from '../context/ToastContext';
 import { LOGO } from '../api/client';
 
 const ForgotPassword = () => {
+    const { showToast } = useToast();
     const [email, setEmail] = useState('');
-    const [error, setError] = useState('');
-    const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
-        setMessage('');
         setLoading(true);
 
         try {
             const response = await forgotPassword(email);
             if (response.success) {
-                setMessage(response.message || 'Password reset link sent to your email');
+                showToast(response.message || 'Password reset link sent to your email', 'success');
                 setEmail('');
             } else {
-                setError(response.Message || 'Failed to send reset link');
+                showToast(response.Message || 'Failed to send reset link', 'error');
             }
         } catch (err) {
-            setError(err.message || 'An error occurred');
+            showToast(err.message || 'An error occurred', 'error');
         } finally {
             setLoading(false);
         }
@@ -42,9 +40,6 @@ const ForgotPassword = () => {
                                 className="inline-block max-w-[240px] h-auto"
                             />
                         </div>
-
-                        {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">{error}</div>}
-                        {message && <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">{message}</div>}
 
                         <form onSubmit={handleSubmit}>
                             <div className="mb-6">

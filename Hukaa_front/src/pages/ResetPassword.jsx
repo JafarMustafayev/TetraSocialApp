@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { resetPassword } from '../api/auth';
+import { useToast } from '../context/ToastContext';
 import { LOGO } from '../api/client';
 
 const ResetPassword = () => {
+    const { showToast } = useToast();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
@@ -12,8 +14,7 @@ const ResetPassword = () => {
         confirmPassword: '',
         token: ''
     });
-    const [message, setMessage] = useState('');
-    const [error, setError] = useState('');
+    const [initialError, setInitialError] = useState('');
     const [isValidUrl, setIsValidUrl] = useState(true);
 
     useEffect(() => {
@@ -28,7 +29,7 @@ const ResetPassword = () => {
             setFormData(prev => ({ ...prev, email, token }));
         } else {
             setIsValidUrl(false);
-            setError('Invalid password reset link.');
+            setInitialError('Invalid password reset link.');
         }
     }, [searchParams]);
 
@@ -39,26 +40,24 @@ const ResetPassword = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setMessage('');
-        setError('');
 
         if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match');
+            showToast('Passwords do not match', 'error');
             return;
         }
 
         try {
             const response = await resetPassword(formData);
             if (response.success) {
-                setMessage('Password reset successfully. Redirecting to login...');
+                showToast('Password reset successfully. Redirecting to login...', 'success');
                 setTimeout(() => {
                     navigate('/login');
                 }, 3000);
             } else {
-                setError(response.Message || 'Failed to reset password');
+                showToast(response.Message || 'Failed to reset password', 'error');
             }
         } catch (err) {
-            setError(err.message || 'An error occurred');
+            showToast(err.message || 'An error occurred', 'error');
         }
     };
 
@@ -76,8 +75,8 @@ const ResetPassword = () => {
                         </div>
 
                         <h2 className="text-[22px] font-semibold text-[#515355] mb-[30px]">Reset Password</h2>
-                        {message && <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">{message}</div>}
-                        {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">{error}</div>}
+
+                        {!isValidUrl && initialError && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">{initialError}</div>}
 
                         {isValidUrl && (
                             <form onSubmit={handleSubmit}>

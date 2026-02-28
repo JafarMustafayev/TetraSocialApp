@@ -14,9 +14,9 @@ export const ToastProvider = ({ children }) => {
     const [toasts, setToasts] = useState([]);
     const [confirmDialog, setConfirmDialog] = useState(null);
 
-    const showToast = useCallback((message, type = 'success', duration = 3000) => {
+    const showToast = useCallback((message, type = 'success', duration = 3000, position = 'top-left') => {
         const id = Date.now();
-        setToasts(prev => [...prev, { id, message, type }]);
+        setToasts(prev => [...prev, { id, message, type, position }]);
         setTimeout(() => {
             setToasts(prev => prev.filter(toast => toast.id !== id));
         }, duration);
@@ -42,28 +42,36 @@ export const ToastProvider = ({ children }) => {
 const ToastContainer = ({ toasts, confirmDialog, closeConfirm }) => {
     return (
         <>
-            {/* Toasts */}
-            <div className="fixed top-6 right-6 z-[9999] flex flex-col gap-3">
+            {/* All Toasts Always Top-Right */}
+            <div className="fixed top-24 right-6 z-[10000] flex flex-col gap-3 pointer-events-none">
                 {toasts.map(toast => (
                     <div
                         key={toast.id}
-                        className={`min-w-[300px] p-4 rounded-2xl shadow-xl flex items-center space-x-3 animate-fade-in-right ${toast.type === 'error' ? 'bg-red-50 text-red-600 border border-red-100' :
-                            toast.type === 'info' ? 'bg-blue-50 text-blue-600 border border-blue-100' :
-                                'bg-green-50 text-green-600 border border-green-100'
+                        className={`min-w-[320px] p-4 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] flex items-center space-x-4 animate-fade-in-right pointer-events-auto backdrop-blur-md border ${toast.type === 'error' ? 'bg-red-50/90 text-red-600 border-red-100' :
+                            toast.type === 'info' ? 'bg-blue-50/90 text-blue-600 border-blue-100' :
+                                'bg-green-50/90 text-green-600 border-green-100'
                             }`}
                     >
-                        <i className={`text-xl ${toast.type === 'error' ? 'ri-error-warning-fill' :
-                            toast.type === 'info' ? 'ri-information-fill' :
-                                'ri-checkbox-circle-fill'
-                            }`}></i>
-                        <p className="font-bold text-[14px]">{toast.message}</p>
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${toast.type === 'error' ? 'bg-red-100' :
+                            toast.type === 'info' ? 'bg-blue-100' :
+                                'bg-green-100'
+                            }`}>
+                            <i className={`text-xl ${toast.type === 'error' ? 'ri-error-warning-fill' :
+                                toast.type === 'info' ? 'ri-information-fill' :
+                                    'ri-checkbox-circle-fill'
+                                }`}></i>
+                        </div>
+                        <div className="flex-1">
+                            <p className="font-bold text-[14px] leading-tight">{toast.message}</p>
+                            <p className="text-[10px] opacity-60 font-bold uppercase tracking-wider mt-0.5">{toast.type}</p>
+                        </div>
                     </div>
                 ))}
             </div>
 
             {/* Confirmation Dialog */}
             {confirmDialog && (
-                <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-10000 flex items-center justify-center p-4">
                     <div
                         className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-fade-in"
                         onClick={closeConfirm}

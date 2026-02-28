@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { getPostComments, createComment, deleteComment, updateComment } from '../../api/comment';
 import { IMAGE_BASE_URL } from '../../api/client';
 import { useToast } from '../../context/ToastContext';
@@ -34,11 +35,15 @@ const CommentPopup = ({ isOpen, onClose, postId, onCommentCountChange }) => {
         };
 
         if (isOpen) {
+            document.body.style.overflow = 'hidden';
             window.addEventListener('keydown', handleEsc);
             window.addEventListener('mousedown', handleClickOutside);
             fetchComments();
+        } else {
+            document.body.style.overflow = 'unset';
         }
         return () => {
+            document.body.style.overflow = 'unset';
             window.removeEventListener('keydown', handleEsc);
             window.removeEventListener('mousedown', handleClickOutside);
         };
@@ -125,7 +130,7 @@ const CommentPopup = ({ isOpen, onClose, postId, onCommentCountChange }) => {
 
     if (!isOpen) return null;
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-1000 p-4 transition-all duration-300">
             <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate-fade-in-up">
                 {/* Header */}
@@ -253,7 +258,8 @@ const CommentPopup = ({ isOpen, onClose, postId, onCommentCountChange }) => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

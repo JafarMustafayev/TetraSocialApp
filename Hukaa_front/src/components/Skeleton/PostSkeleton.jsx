@@ -17,6 +17,7 @@ const PostSkeleton = ({ count = 1 }) => {
                         <div className="h-8 w-24 bg-gray-100 rounded"></div>
                         <div className="h-8 w-24 bg-gray-100 rounded"></div>
                         <div className="h-8 w-24 bg-gray-100 rounded"></div>
+                        <div className="h-8 w-24 bg-gray-100 rounded"></div>
                     </div>
                 </div>
             ))}

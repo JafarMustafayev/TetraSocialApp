@@ -1,4 +1,4 @@
-import { getLikedPosts, getSavedPosts, getArchivedPosts } from '../api/post';
+import { getReactedPosts, getSavedPosts, getArchivedPosts } from '../api/post';
 import { getMyProfile } from '../api/profile';
 import PostWidget from '../components/PostWidget';
 import PostSkeleton from '../components/Skeleton/PostSkeleton';
@@ -7,10 +7,9 @@ import { useState, useEffect } from 'react';
 
 const MyActivities = () => {
     const [searchParams, setSearchParams] = useSearchParams();
-    const activeTab = searchParams.get('tab') || 'liked';
+    const activeTab = searchParams.get('tab') || 'reactions';
 
     const [posts, setPosts] = useState([]);
-    const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isPostsLoading, setIsPostsLoading] = useState(false);
     const [page, setPage] = useState(1);
@@ -18,7 +17,7 @@ const MyActivities = () => {
     const [error, setError] = useState(null);
 
     const tabs = [
-        { id: 'liked', label: 'Liked Posts', icon: 'ri-heart-3-line' },
+        { id: 'reactions', label: 'Reactions', icon: 'ri-emotion-line' },
         { id: 'saved', label: 'Saved Posts', icon: 'ri-bookmark-line' },
         { id: 'archived', label: 'Archived Posts', icon: 'ri-lock-line' },
     ];
@@ -28,22 +27,18 @@ const MyActivities = () => {
     };
 
     useEffect(() => {
-        const loadInitialData = async () => {
+        const fetchInitialData = async () => {
             try {
-                const profileResponse = await getMyProfile();
-                if (profileResponse.success) {
-                    setProfileData(profileResponse.data);
-                }
-                loadTabPosts(activeTab, 1, true);
+
+                await loadTabPosts(activeTab, 1, true);
             } catch (err) {
-                console.error('Error loading initial data:', err);
-                setError('Failed to load profile data');
+                console.error("Error fetching initial data:", err);
             } finally {
                 setLoading(false);
             }
         };
 
-        loadInitialData();
+        fetchInitialData();
     }, []);
 
     useEffect(() => {
@@ -64,7 +59,7 @@ const MyActivities = () => {
 
         try {
             let response;
-            if (tab === 'liked') response = await getLikedPosts(pageNum);
+            if (tab === 'reactions') response = await getReactedPosts(pageNum);
             else if (tab === 'saved') response = await getSavedPosts(pageNum);
             else if (tab === 'archived') response = await getArchivedPosts(pageNum);
 
@@ -142,10 +137,14 @@ const MyActivities = () => {
                             <PostWidget
                                 key={post.id}
                                 post={{ ...post, isArchived: activeTab === 'archived' }}
-                                profileData={profileData}
                                 onDelete={() => handlePostAction(post.id)}
                                 onUpdate={(updated) => setPosts(prev => prev.map(p => p.id === updated.id ? updated : p))}
                                 onArchive={() => activeTab === 'archived' && handlePostAction(post.id)}
+                                onSaveToggle={(postId, isSavedNow) => {
+                                    if (activeTab === 'saved' && !isSavedNow) {
+                                        handlePostAction(postId);
+                                    }
+                                }}
                             />
                         ))}
 

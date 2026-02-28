@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { changePassword } from '../../api/auth';
+import { useToast } from '../../context/ToastContext';
 
 const ChangePassword = () => {
     const [formData, setFormData] = useState({
@@ -8,7 +9,7 @@ const ChangePassword = () => {
         confirmPassword: '',
     });
     const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState({ type: '', text: '' });
+    const { showToast } = useToast();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -20,10 +21,9 @@ const ChangePassword = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setMessage({ type: '', text: '' });
 
         if (formData.newPassword !== formData.confirmPassword) {
-            setMessage({ type: 'error', text: "New passwords do not match." });
+            showToast("New passwords do not match.", "error", 3000, "top-left");
             return;
         }
 
@@ -36,19 +36,19 @@ const ChangePassword = () => {
             });
 
             if (response.success) {
-                setMessage({ type: 'success', text: "Password changed successfully." });
+                showToast("Password changed successfully.", "success", 3000, "top-left");
                 setFormData({
                     currentPassword: '',
                     newPassword: '',
                     confirmPassword: '',
                 });
             } else {
-                setMessage({ type: 'error', text: response.message || "Failed to change password." });
+                showToast(response.message || "Failed to change password.", "error", 3000, "top-left");
             }
         } catch (error) {
             console.error('Change password error:', error);
             const errorMessage = error.data?.Errors?.[0] || error.message || "An error occurred.";
-            setMessage({ type: 'error', text: errorMessage });
+            showToast(errorMessage, "error", 3000, "top-left");
         } finally {
             setLoading(false);
         }
@@ -56,11 +56,6 @@ const ChangePassword = () => {
 
     return (
         <form className="space-y-6 max-w-lg" onSubmit={handleSubmit}>
-            {message.text && (
-                <div className={`p-4 rounded-xl text-sm font-medium animate-fade-in ${message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-red-50 text-red-700 border border-red-100'}`}>
-                    {message.text}
-                </div>
-            )}
 
             <div className="space-y-4">
                 <div className="space-y-2">

@@ -1,20 +1,21 @@
-import { getProfileSettings, updateProfileInformation } from '../../api/profile';
-import FormSkeleton from '../Skeleton/FormSkeleton';
-import { useState, useEffect } from 'react';
+import { getProfileSettings, updateProfileInformation } from "../../api/profile";
+import FormSkeleton from "../Skeleton/FormSkeleton";
+import { useState, useEffect } from "react";
+import { useToast } from "../../context/ToastContext";
 
 const ProfileInformation = () => {
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        bio: '',
-        birthDay: '',
+        firstName: "",
+        lastName: "",
+        bio: "",
+        birthDay: "",
         gender: 1,
-        phoneNumber: '',
+        phoneNumber: "",
         relationshipStatus: 1
     });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [message, setMessage] = useState({ type: '', text: '' });
+    const { showToast } = useToast();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -23,55 +24,50 @@ const ProfileInformation = () => {
                 if (response.success && response.data) {
                     const data = response.data;
                     setFormData({
-                        firstName: data.firstName || '',
-                        lastName: data.lastName || '',
-                        bio: data.bio || '',
-                        birthDay: data.birthDay ? data.birthDay.split('T')[0] : '',
+                        firstName: data.firstName || "",
+                        lastName: data.lastName || "",
+                        bio: data.bio || "",
+                        birthDay: data.birthDay ? data.birthDay.split("T")[0] : "",
                         gender: data.gender || 1,
-                        phoneNumber: data.phoneNumber || '',
+                        phoneNumber: data.phoneNumber || "",
                         relationshipStatus: data.relationshipStatus || 1
                     });
                 }
             } catch (error) {
-                console.error('Error fetching profile settings:', error);
-                setMessage({ type: 'error', text: 'Failed to load profile information.' });
+                console.error("Error fetching profile settings:", error);
+                showToast("Failed to load profile information.", "error", 3000, "top-left");
             } finally {
                 setLoading(false);
             }
         };
-
         fetchData();
-    }, []);
+    }, [showToast]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: name === 'gender' || name === 'relationshipStatus' ? parseInt(value) : value
+            [name]: name === "gender" || name === "relationshipStatus" ? parseInt(value) : value
         }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSaving(true);
-        setMessage({ type: '', text: '' });
-
         try {
-            // Adjust birthday to ISO format if it exists
             const submitData = {
                 ...formData,
                 birthDay: formData.birthDay ? new Date(formData.birthDay).toISOString() : null
             };
-
             const response = await updateProfileInformation(submitData);
             if (response.success) {
-                setMessage({ type: 'success', text: 'Profile information updated successfully!' });
+                showToast("Profile information updated successfully!", "success", 3000, "top-left");
             } else {
-                setMessage({ type: 'error', text: response.message || 'Failed to update profile information.' });
+                showToast(response.message || "Failed to update profile information.", "error", 3000, "top-left");
             }
         } catch (error) {
-            console.error('Error updating profile information:', error);
-            setMessage({ type: 'error', text: 'An error occurred while saving.' });
+            console.error("Error updating profile information:", error);
+            showToast("An error occurred while saving.", "error", 3000, "top-left");
         } finally {
             setSaving(false);
         }
@@ -83,12 +79,6 @@ const ProfileInformation = () => {
 
     return (
         <form className="space-y-6" onSubmit={handleSubmit}>
-            {message.text && (
-                <div className={`p-4 rounded-xl text-sm font-medium animate-fade-in ${message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-red-50 text-red-700 border border-red-100'}`}>
-                    {message.text}
-                </div>
-            )}
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                     <label className="block text-sm font-bold text-gray-700 ml-1">First Name</label>
@@ -171,7 +161,6 @@ const ProfileInformation = () => {
                         <option value="3">In Relationship</option>
                     </select>
                 </div>
-
                 <div className="md:col-span-2 pt-4 flex justify-end">
                     <button
                         type="submit"
@@ -186,12 +175,11 @@ const ProfileInformation = () => {
                                 </svg>
                                 Saving...
                             </span>
-                        ) : 'Save Changes'}
+                        ) : "Save Changes"}
                     </button>
                 </div>
             </div>
         </form>
     );
 };
-
 export default ProfileInformation;

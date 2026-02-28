@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { LOGO } from '../api/client';
 
 const Login = () => {
     const { login } = useAuth();
+    const { showToast } = useToast();
     const navigate = useNavigate();
     const [credentials, setCredentials] = useState({
         UsernameOrEmail: '',
         Password: ''
     });
-    const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
@@ -23,7 +24,6 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
         setLoading(true);
 
         try {
@@ -31,10 +31,10 @@ const Login = () => {
             if (result.success) {
                 navigate('/');
             } else {
-                setError(result.message);
+                showToast(result.message, 'error');
             }
         } catch (err) {
-            setError('An error occurred during login');
+            showToast('An error occurred during login', 'error');
         } finally {
             setLoading(false);
         }
@@ -52,12 +52,6 @@ const Login = () => {
                                 className="inline-block max-w-[240px] h-auto"
                             />
                         </div>
-
-                        {error && (
-                            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-                                {error}
-                            </div>
-                        )}
 
                         <form onSubmit={handleSubmit}>
                             <div className="mb-6">

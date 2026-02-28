@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { updateProfilePhoto, updateCoverPhoto } from '../../api/profile';
 import ImageCropper from './ImageCropper';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 
 const ProfilePhotos = () => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [cropConfig, setCropConfig] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState({ type: '', text: '' });
     const { updateProfile } = useAuth();
+    const { showToast } = useToast();
 
     const handleFileChange = (e, type) => {
         const file = e.target.files[0];
@@ -27,7 +28,6 @@ const ProfilePhotos = () => {
 
     const onCropComplete = async (croppedFile) => {
         setLoading(true);
-        setMessage({ type: '', text: '' });
         try {
             let response;
             if (cropConfig.type === 'profile') {
@@ -37,14 +37,14 @@ const ProfilePhotos = () => {
             }
 
             if (response.success) {
-                setMessage({ type: 'success', text: `${cropConfig.type === 'profile' ? 'Profile' : 'Cover'} photo updated successfully!` });
+                showToast(`${cropConfig.type === 'profile' ? 'Profile' : 'Cover'} photo updated successfully!`, 'success', 3000, 'top-left');
                 updateProfile(); // Trigger Navbar update
             } else {
-                setMessage({ type: 'error', text: response.message || 'Failed to update photo.' });
+                showToast(response.message || 'Failed to update photo.', 'error', 3000, 'top-left');
             }
         } catch (error) {
             console.error('Upload error:', error);
-            setMessage({ type: 'error', text: 'An error occurred during upload.' });
+            showToast('An error occurred during upload.', 'error', 3000, 'top-left');
         } finally {
             setLoading(false);
             setSelectedImage(null);
@@ -59,11 +59,6 @@ const ProfilePhotos = () => {
 
     return (
         <div className="space-y-8">
-            {message.text && (
-                <div className={`p-4 rounded-xl text-sm font-medium animate-fade-in ${message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-red-50 text-red-700 border border-red-100'}`}>
-                    {message.text}
-                </div>
-            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-3">

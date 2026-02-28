@@ -10,7 +10,7 @@ const SecondaryLayout = () => {
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
     return (
-        <div className="flex flex-col min-h-screen bg-[#F4F7FC] overflow-hidden transition-all duration-400 pt-[95px] md:pt-[100px] md:pl-[175px] lg:pl-[405px] px-[10px] md:px-[30px] lg:px-[45px] pb-[50px]">
+        <div className="flex flex-col min-h-screen bg-[#F4F7FC] transition-all duration-400 pt-[95px] md:pt-[100px] md:pl-[175px] lg:pl-[405px] px-[10px] md:px-[30px] lg:px-[45px] pb-[50px]">
             <Navbar onMenuClick={toggleSidebar} />
             <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
             <ActivitiesSidebar />

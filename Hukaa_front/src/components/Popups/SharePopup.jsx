@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 const SharePopup = ({ isOpen, onClose, friends = [], postLink }) => {
     useEffect(() => {
@@ -6,14 +7,20 @@ const SharePopup = ({ isOpen, onClose, friends = [], postLink }) => {
             if (e.key === 'Escape') onClose();
         };
         if (isOpen) {
+            document.body.style.overflow = 'hidden';
             window.addEventListener('keydown', handleEsc);
+        } else {
+            document.body.style.overflow = 'unset';
         }
-        return () => window.removeEventListener('keydown', handleEsc);
+        return () => {
+            document.body.style.overflow = 'unset';
+            window.removeEventListener('keydown', handleEsc);
+        };
     }, [isOpen, onClose]);
 
     if (!isOpen) return null;
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-1000 p-4">
             <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in-up flex flex-col max-h-[80vh]">
                 <div className="p-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
@@ -57,7 +64,8 @@ const SharePopup = ({ isOpen, onClose, friends = [], postLink }) => {
 
 
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

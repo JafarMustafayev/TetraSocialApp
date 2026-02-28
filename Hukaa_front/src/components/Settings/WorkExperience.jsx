@@ -1,12 +1,13 @@
 import { getExperiences, addExperience, updateExperience, deleteExperience } from '../../api/profile';
 import FormSkeleton from '../Skeleton/FormSkeleton';
 import { useState, useEffect } from 'react';
+import { useToast } from '../../context/ToastContext';
 
 const WorkExperience = () => {
     const [experiences, setExperiences] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const { showToast, showConfirm } = useToast();
 
     const [isEditing, setIsEditing] = useState(false);
     const [currentId, setCurrentId] = useState(null);
@@ -42,10 +43,9 @@ const WorkExperience = () => {
                 });
                 setExperiences(mappedData);
             }
-            setError(null);
         } catch (err) {
-            setError('Failed to fetch experiences: ' + (err.message || ''));
             console.error(err);
+            showToast('Failed to fetch experiences.', 'error', 3000, 'top-left');
         } finally {
             setLoading(false);
         }
@@ -59,7 +59,6 @@ const WorkExperience = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
-        setError(null);
         try {
             // .NET DateTime model binding can be sensitive to the 'Z' suffix and milliseconds.
             // Using a strictly compliant YYYY-MM-DDTHH:mm:ss format.
@@ -86,13 +85,23 @@ const WorkExperience = () => {
 
 
             if (isEditing) {
-                await updateExperience(currentId, payload);
-                await fetchExperiences();
-                setIsEditing(false);
-                setCurrentId(null);
+                const response = await updateExperience(currentId, payload);
+                if (response.success) {
+                    showToast('Experience updated successfully!', 'success', 3000, 'top-left');
+                    await fetchExperiences();
+                    setIsEditing(false);
+                    setCurrentId(null);
+                } else {
+                    showToast(response.message || 'Failed to update experience', 'error', 3000, 'top-left');
+                }
             } else {
-                await addExperience(payload);
-                await fetchExperiences();
+                const response = await addExperience(payload);
+                if (response.success) {
+                    showToast('Experience added successfully!', 'success', 3000, 'top-left');
+                    await fetchExperiences();
+                } else {
+                    showToast(response.message || 'Failed to add experience', 'error', 3000, 'top-left');
+                }
             }
 
             // Success! Reset form
@@ -104,8 +113,8 @@ const WorkExperience = () => {
                 description: ''
             });
         } catch (err) {
-            setError(err.message || (isEditing ? 'Failed to update experience' : 'Failed to add experience'));
             console.error('Submission Error:', err);
+            showToast(err.message || (isEditing ? 'Failed to update experience' : 'Failed to add experience'), 'error', 3000, 'top-left');
         } finally {
             setIsSubmitting(false);
         }
@@ -121,22 +130,29 @@ const WorkExperience = () => {
             endDate: experience.endDate,
             description: experience.description
         });
-        setError(null);
         // Scroll to form
         window.scrollTo({ top: document.querySelector('form')?.offsetTop - 150, behavior: 'smooth' });
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this experience?")) {
-            try {
-                await deleteExperience(id);
-                setExperiences(experiences.filter(exp => exp.id !== id));
-                setError(null);
-            } catch (err) {
-                setError('Failed to delete experience: ' + (err.message || ''));
-                console.error(err);
+        showConfirm(
+            "Delete Experience?",
+            "Are you sure you want to delete this experience?",
+            async () => {
+                try {
+                    const response = await deleteExperience(id);
+                    if (response.success) {
+                        setExperiences(experiences.filter(exp => exp.id !== id));
+                        showToast('Experience deleted successfully!', 'success', 3000, 'top-left');
+                    } else {
+                        showToast(response.message || 'Failed to delete experience', 'error', 3000, 'top-left');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    showToast('Failed to delete experience: ' + (err.message || ''), 'error', 3000, 'top-left');
+                }
             }
-        }
+        );
     };
 
     const handleCancel = () => {
@@ -149,7 +165,6 @@ const WorkExperience = () => {
             endDate: '',
             description: ''
         });
-        setError(null);
     };
 
     if (loading && experiences.length === 0) {
@@ -158,12 +173,6 @@ const WorkExperience = () => {
 
     return (
         <div className="space-y-8">
-            {error && (
-                <div className="p-4 rounded-xl bg-red-50 text-red-700 border border-red-100 animate-fade-in font-medium text-sm">
-                    <span className="font-bold block mb-1">Error</span>
-                    {error}
-                </div>
-            )}
 
             {/* List of Experiences */}
             <div className="space-y-4">

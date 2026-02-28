@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { IMAGE_BASE_URL, USER_AVATAR } from '../../api/client';
 import { getMyConnections, getUserConnections, removeFollower, unfollowUser } from '../../api/follow';
@@ -134,7 +135,7 @@ const ConnectionsPopup = ({ isOpen, onClose, initialTab = 'followers', userId = 
 
     const displayList = activeTab === 'followers' ? connections.followers : connections.followings;
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 z-2000 flex items-center justify-center p-4">
             <div
                 className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
@@ -251,7 +252,8 @@ const ConnectionsPopup = ({ isOpen, onClose, initialTab = 'followers', userId = 
 
 
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { register as registerApi } from '../api/auth';
+import { useToast } from '../context/ToastContext';
 import { LOGO } from '../api/client';
 
 const Register = () => {
     const navigate = useNavigate();
+    const { showToast } = useToast();
     const [formData, setFormData] = useState({
         username: '',
         email: '',
         password: '',
         confirmPassword: ''
     });
-    const [error, setError] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
@@ -25,11 +25,9 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
-        setSuccessMessage('');
 
         if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match');
+            showToast('Passwords do not match', 'error');
             return;
         }
 
@@ -43,28 +41,25 @@ const Register = () => {
             });
 
             if (response.success) {
-                setSuccessMessage(response.message || 'Registration successful! Please check your email.');
+                showToast(response.message || 'Registration successful! Please check your email.', 'success');
                 setTimeout(() => {
                     navigate('/login');
                 }, 3000);
             } else {
-                // Handle specific error format from backend
                 if (response.Errors && response.Errors.length > 0) {
-                    setError(response.Errors.join(' '));
+                    showToast(response.Errors.join(' '), 'error');
                 } else {
-                    setError(response.Message || 'Registration failed');
+                    showToast(response.Message || 'Registration failed', 'error');
                 }
             }
         } catch (err) {
-            // Handle errors thrown by fetchClient
             if (err.data && err.data.errors) {
-                // Validation errors like "Email": ["Please provide a valid email address."]
                 const errorMessages = Object.values(err.data.errors).flat().join(' ');
-                setError(errorMessages);
+                showToast(errorMessages, 'error');
             } else if (err.data && err.data.Errors) {
-                setError(err.data.Errors.join(' '));
+                showToast(err.data.Errors.join(' '), 'error');
             } else {
-                setError(err.message || 'An error occurred during registration');
+                showToast(err.message || 'An error occurred during registration', 'error');
             }
         } finally {
             setLoading(false);
@@ -83,9 +78,6 @@ const Register = () => {
                                 className="inline-block max-w-[240px] h-auto"
                             />
                         </div>
-
-                        {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">{error}</div>}
-                        {successMessage && <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">{successMessage}</div>}
 
                         <form onSubmit={handleSubmit}>
                             <div className="mb-6">

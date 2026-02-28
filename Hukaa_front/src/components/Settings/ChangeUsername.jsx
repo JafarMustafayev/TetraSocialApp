@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { changeUsername } from '../../api/auth';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 
 const ChangeUsername = () => {
     const [userName, setUserName] = useState('');
     const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState({ type: '', text: '' });
     const { updateProfile } = useAuth();
+    const { showToast } = useToast();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setMessage({ type: '', text: '' });
 
         if (!userName.trim()) {
-            setMessage({ type: 'error', text: "Please enter a username." });
+            showToast("Please enter a username.", "error", 3000, "top-left");
             return;
         }
 
@@ -22,15 +22,15 @@ const ChangeUsername = () => {
             const response = await changeUsername({ userName });
 
             if (response.success) {
-                setMessage({ type: 'success', text: response.message || "Username changed successfully." });
+                showToast(response.message || "Username changed successfully.", "success", 3000, "top-left");
                 updateProfile(); // Trigger Navbar update
             } else {
-                setMessage({ type: 'error', text: response.message || "Failed to change username." });
+                showToast(response.message || "Failed to change username.", "error", 3000, "top-left");
             }
         } catch (error) {
             console.error('Change username error:', error);
             const errorMessage = error.data?.Errors?.[0] || error.message || "An error occurred.";
-            setMessage({ type: 'error', text: errorMessage });
+            showToast(errorMessage, "error", 3000, "top-left");
         } finally {
             setLoading(false);
         }
@@ -38,11 +38,6 @@ const ChangeUsername = () => {
 
     return (
         <form className="space-y-6 max-w-lg" onSubmit={handleSubmit}>
-            {message.text && (
-                <div className={`p-4 rounded-xl text-sm font-medium animate-fade-in ${message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-red-50 text-red-700 border border-red-100'}`}>
-                    {message.text}
-                </div>
-            )}
 
             <div className="space-y-4">
                 <div className="space-y-2">
