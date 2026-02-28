@@ -19,6 +19,8 @@ public class AppUser : IdentityUser<string>
     public ICollection<Comment> Comments { get; set; }
     public ICollection<Follow> Following { get; set; }
     public ICollection<Follow> Followers { get; set; }
+    public ICollection<SavedPost> SavedPosts { get; set; }
+
 
     public AppUser()
     {

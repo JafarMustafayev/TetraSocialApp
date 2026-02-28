@@ -11,6 +11,7 @@ public class SinglePostDto
     public DateTime CreatedAt { get; set; }
     public int TotalReactionCount { get; set; }
     public ReactionType? MyReaction { get; set; }
+    public bool IsSaved { get; set; }
     public int ShareCount { get; set; }
     public int CommentCount { get; set; }
     public bool IsOwner { get; set; }
@@ -28,5 +29,6 @@ public class SinglePostDto
         CommentCount = 0;
         IsOwner = false;
         Content = string.Empty;
+        IsSaved = false;
     }
 }

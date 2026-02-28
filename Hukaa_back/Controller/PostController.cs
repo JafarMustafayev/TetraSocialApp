@@ -9,21 +9,35 @@ public class PostController(
     [HttpGet("me/{page}")]
     public async Task<IActionResult> GetMyPosts(int page = 1)
     {
-        var res = await postService.GetMyPosts(page, 20);
+        var res = await postService.GetMyPostsAsync(page, 20);
         return Ok(res);
     }
 
     [HttpGet("feeds/{page}")]
     public async Task<IActionResult> GetMyFeeds(int page = 1)
     {
-        var res = await postService.GetMyFeeds(page, 20);
+        var res = await postService.GetMyFeedsAsync(page, 20);
         return Ok(res);
     }
 
     [HttpGet("archived/{page}")]
     public async Task<IActionResult> GetMyArchivedPosts(int page = 1)
     {
-        var res = await postService.GetMyArchivedPosts(page, 20);
+        var res = await postService.GetMyArchivedPostsAsync(page, 20);
+        return Ok(res);
+    }
+
+    [HttpGet("reacted/{page}")]
+    public async Task<IActionResult> GetReactedPosts(int page = 1)
+    {
+        var res = await postService.GetReactedPostsAsync(page, 20);
+        return Ok(res);
+    }
+
+    [HttpGet("saved/{page}")]
+    public async Task<IActionResult> GetSavedPosts(int page = 1)
+    {
+        var res = await postService.GetSavedPostsAsync(page, 20);
         return Ok(res);
     }
 
@@ -56,9 +70,17 @@ public class PostController(
     }
 
     [HttpPut("{postId}/archive")]
-    public async Task<IActionResult> UpdatePost([FromBody] TogglePostArchiveStatusDto request, string postId)
+    public async Task<IActionResult> TogglePostArchiveStatus(
+        [FromBody] TogglePostArchiveStatusDto request, string postId)
     {
         var res = await postService.ToggleArchiveAsync(postId, request);
+        return StatusCode(res.StatusCode, res);
+    }
+
+    [HttpPut("{postId}/save")]
+    public async Task<IActionResult> ToggleSavePost(string postId)
+    {
+        var res = await postService.ToggleSavedAsync(postId);
         return StatusCode(res.StatusCode, res);
     }
 }

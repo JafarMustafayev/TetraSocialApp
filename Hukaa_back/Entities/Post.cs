@@ -13,6 +13,7 @@ public class Post : BaseEntity
     public AppUser AppUser { get; set; }
     public ICollection<Reaction>? Reactions { get; set; }
     public ICollection<Comment>? Comments { get; set; }
+    public ICollection<SavedPost>? SavedPosts { get; set; }
 
     public Post()
     {
