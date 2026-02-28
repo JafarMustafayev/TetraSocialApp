@@ -20,6 +20,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
 import SecondaryLayout from './layouts/SecondaryLayout';
 import MyActivities from './pages/MyActivities';
+import SignalRTest from './pages/SignalRTest';
 import { ThemeProvider } from './context/ThemeContext';
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
                                 <Route path="profile" element={<Profile />} />
                                 <Route path="profile/:userId" element={<UserProfile />} />
                                 <Route path="archived" element={<Archived />} />
+                                <Route path="signalr-test" element={<SignalRTest />} />
                             </Route>
 
                             {/* Secondary Layout Routes (Dual Sidebar) */}

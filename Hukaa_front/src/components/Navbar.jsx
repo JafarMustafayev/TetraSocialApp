@@ -380,6 +380,12 @@ const Navbar = ({ onMenuClick }) => {
                             </div>
 
                             <div className="border-t border-gray-50 pt-2">
+                                <Link to="/signalr-test" className="w-[95%] mx-auto flex items-center px-5 py-2.5 text-sm text-gray-500 hover:bg-gray-50 transition-all group border border-gray-200 rounded-lg">
+                                    SignalR Test
+                                </Link>
+                            </div>
+
+                            <div className="border-t border-gray-50 pt-2">
                                 <button onClick={handleLogout} className="w-[95%] mx-auto flex items-center px-5 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-all group border border-gray-200 rounded-lg">
                                     <i className="ri-logout-box-line mr-3 text-lg text-red-400 group-hover:text-red-500"></i> Sign Out
                                 </button>
