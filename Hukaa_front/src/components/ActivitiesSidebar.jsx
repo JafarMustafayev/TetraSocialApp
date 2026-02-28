@@ -12,7 +12,7 @@ const ActivitiesSidebar = () => {
     const currentSection = searchParams.get('section');
 
     const activityItems = [
-        { id: 'liked', label: 'Liked posts', icon: 'ri-heart-line' },
+        { id: 'reactions', label: 'Reactions', icon: 'ri-emotion-line' },
         { id: 'saved', label: 'Saved posts', icon: 'ri-star-line' },
         { id: 'archived', label: 'Archived posts', icon: 'ri-archive-line' },
     ];
@@ -28,7 +28,7 @@ const ActivitiesSidebar = () => {
 
     const menuItems = isActivities ? activityItems : (isSettings ? settingItems : []);
     const paramKey = isActivities ? 'tab' : 'section';
-    const activeId = isActivities ? (currentTab || 'liked') : (currentSection || 'profile-information');
+    const activeId = isActivities ? (currentTab || 'reactions') : (currentSection || 'profile-information');
 
     if (!isSettings && !isActivities) return null;
 

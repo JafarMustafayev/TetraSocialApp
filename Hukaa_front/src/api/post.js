@@ -46,8 +46,8 @@ export const reactToPost = async (postId, reactionType) => {
     });
 };
 
-export const getLikedPosts = async (page) => {
-    return fetchClient(`/api/post/liked/${page}`, {
+export const getReactedPosts = async (page) => {
+    return fetchClient(`/api/post/reacted/${page}`, {
         method: 'GET',
     });
 };
@@ -55,6 +55,12 @@ export const getLikedPosts = async (page) => {
 export const getSavedPosts = async (page) => {
     return fetchClient(`/api/post/saved/${page}`, {
         method: 'GET',
+    });
+};
+
+export const toggleSavePost = async (postId) => {
+    return fetchClient(`/api/Post/${postId}/save`, {
+        method: 'PUT',
     });
 };
 

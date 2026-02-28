@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { IMAGE_BASE_URL, POST_SHARE_URL, FRONT_URL, USER_AVATAR } from '../api/client';
-import { updatePost, deletePost, toggleArchivePost, reactToPost } from '../api/post';
+import { updatePost, deletePost, toggleArchivePost, reactToPost, toggleSavePost } from '../api/post';
 import CommentPopup from './Popups/CommentPopup';
 import SharePopup from './SharePopup';
 import ImageGalleryPopup from './Popups/ImageGalleryPopup';
@@ -9,6 +9,7 @@ import { useToast } from '../context/ToastContext';
 
 const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
     const [myReaction, setMyReaction] = useState(post.myReaction);
+    const [isSaved, setIsSaved] = useState(post.isSaved || post.saved || false);
     const [reactionCount, setReactionCount] = useState(post.reactionCount || post.totalReactionCount || 0);
     const [commentCount, setCommentCount] = useState(post.commentCount || 0);
     const [showReactions, setShowReactions] = useState(false);
@@ -191,6 +192,27 @@ const PostWidget = ({ post, profileData, onDelete, onUpdate, onArchive }) => {
                 }
             }
         );
+    };
+
+    const handleToggleSave = async () => {
+        try {
+            const response = await toggleSavePost(post.id);
+            if (response.success) {
+                const newSaveState = !isSaved;
+                setIsSaved(newSaveState);
+                showToast(response.message || (newSaveState ? 'Post saved successfully' : 'Post removed from saved'), 'success', 3000, 'top-right');
+
+                // Notify parent about save state change
+                if (onSaveToggle) {
+                    onSaveToggle(post.id, newSaveState);
+                }
+            } else {
+                showToast(response.message || 'Failed to save post', 'error', 3000, 'top-right');
+            }
+        } catch (error) {
+            console.error('Failed to toggle save:', error);
+            showToast('An error occurred', 'error', 3000, 'top-right');
+        }
     };
 
     const renderMedia = () => {
