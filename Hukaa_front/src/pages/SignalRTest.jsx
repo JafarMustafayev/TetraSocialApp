@@ -3,12 +3,9 @@ import { Terminal, Wifi, WifiOff, MessageSquare, Trash2, Settings2, Activity, Pl
 import signalRService from '../api/signalr';
 
 const SignalRTest = () => {
-    // URL Construction
-    const defaultHubUrl = "http://localhost:5055/hubs/";
-
     // State
-    const [hubUrl, setHubUrl] = useState(defaultHubUrl);
-    const [eventName, setEventName] = useState('ReceiveMessage');
+    const [hubUrl, setHubUrl] = useState('http://localhost:5055/hubs/notification');
+    const [eventName, setEventName] = useState('ReceiveNotification');
     const [status, setStatus] = useState('Disconnected');
     const [messages, setMessages] = useState([]);
     const [isConnecting, setIsConnecting] = useState(false);
@@ -285,8 +282,8 @@ const SignalRTest = () => {
                                 <div key={msg.id} className="animate-in slide-in-from-bottom-2 duration-300">
                                     <div className="flex items-center gap-2 text-[10px] text-gray-500 mb-1">
                                         <span className={`px-1.5 py-0.5 rounded border uppercase font-bold tracking-widest ${msg.type === 'sent' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
-                                                msg.type === 'error' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                                                    'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                                            msg.type === 'error' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                                                'bg-blue-500/10 text-blue-400 border-blue-500/20'
                                             }`}>
                                             {msg.type === 'sent' ? `OUTGOING [${msg.event}]` :
                                                 msg.type === 'error' ? 'SEND_ERROR' :
@@ -295,8 +292,8 @@ const SignalRTest = () => {
                                         <span>@ {msg.time}</span>
                                     </div>
                                     <div className={`p-4 rounded-xl border shadow-inner ${msg.type === 'sent' ? 'bg-green-900/20 border-green-800/50 text-green-300/90' :
-                                            msg.type === 'error' ? 'bg-red-900/20 border-red-800/50 text-red-300' :
-                                                'bg-gray-800/50 border-gray-700/50 text-green-400/90'
+                                        msg.type === 'error' ? 'bg-red-900/20 border-red-800/50 text-red-300' :
+                                            'bg-gray-800/50 border-gray-700/50 text-green-400/90'
                                         }`}>
                                         <pre className="whitespace-pre-wrap leading-relaxed break-all">
                                             {msg.content}

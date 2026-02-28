@@ -19,7 +19,9 @@ class SignalRService {
         this.updateStatus('Connecting...');
 
         this.connection = new signalR.HubConnectionBuilder()
-            .withUrl(url)
+            .withUrl(url, {
+                accessTokenFactory: () => localStorage.getItem('token')
+            })
             .withAutomaticReconnect()
             .configureLogging(signalR.LogLevel.Information)
             .build();
