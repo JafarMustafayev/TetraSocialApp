@@ -1,4 +1,4 @@
-﻿namespace Hukaa_back.Services.Email;
+﻿namespace Hukaa_back.Services.Notification;
 
 public class EmailSenderService(
     IAppConfig appConfig

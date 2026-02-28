@@ -4,20 +4,11 @@ builder.Services.ConfigurationServiceCollections(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddCors(opt =>
-{
-    opt.AddDefaultPolicy(policy =>
-    {
-        policy.AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
-});
 
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
-if (app.Environment.IsDevelopment())
+if(app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -33,8 +24,9 @@ app.UseAuthentication();
 app.UseStaticFiles();
 app.UseAuthorization();
 
-app.UseCors();
+app.UseCors("CorsPolicy");
 
 app.MapControllers();
+app.MapHub<NotificationHub>("/hubs/notification");
 
 app.Run();

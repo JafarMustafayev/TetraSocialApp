@@ -1,4 +1,4 @@
-﻿namespace Hukaa_back.Abstractions.Services.Email;
+﻿namespace Hukaa_back.Abstractions.Services.Notification;
 
 public interface IEmailSenderService
 {

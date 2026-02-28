@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-
-namespace Hukaa_back.Configurations;
+﻿namespace Hukaa_back.Configurations;
 
 public static class ServiceRegistration
 {
     public static void ConfigurationServiceCollections(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddSignalR();
+
         services.AddHttpContextAccessor();
         services.ConnectionSqlServer(configuration);
         services.ConfigureIdentity();
@@ -14,6 +14,7 @@ public static class ServiceRegistration
         services.AddAutoMapper(typeof(ProfileMapping).Assembly);
         services.AddAuthhorization();
         services.AddJwtAuthentication(configuration);
+        services.AddCorsPolicy();
     }
 
     private static void ConnectionSqlServer(this IServiceCollection services, IConfiguration configuration)
@@ -40,6 +41,10 @@ public static class ServiceRegistration
         services.AddScoped<IReactionService, ReactionService>();
         services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<IFollowService, FollowService>();
+
+        //realtime
+        services.AddSingleton<IOnlineUserTracker, OnlineUserTracker>();
+        services.AddScoped<INotificationService, NotificationService>();
     }
 
     private static void ConfigureIdentity(this IServiceCollection services)
@@ -142,6 +147,38 @@ public static class ServiceRegistration
                         return timeValidationResult;
                     }
                 };
+
+                opt.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+
+                        var path = context.HttpContext.Request.Path;
+
+                        if(!string.IsNullOrEmpty(accessToken) &&
+                           path.StartsWithSegments("/hubs"))
+                        {
+                            context.Token = accessToken;
+                        }
+
+                        return Task.CompletedTask;
+                    }
+                };
             });
+    }
+
+    private static void AddCorsPolicy(this IServiceCollection services)
+    {
+        services.AddCors(options =>
+        {
+            options.AddPolicy("CorsPolicy", policy =>
+            {
+                policy.WithOrigins("http://localhost:5173")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+            });
+        });
     }
 }

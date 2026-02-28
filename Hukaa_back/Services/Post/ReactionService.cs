@@ -2,7 +2,8 @@
 
 public class ReactionService(
     AppDbContext context,
-    ICurrentUserService currentUserService) : IReactionService
+    ICurrentUserService currentUserService,
+    INotificationService notificationService) : IReactionService
 {
     public int GetReactionCount(string postId)
     {
@@ -50,20 +51,23 @@ public class ReactionService(
     {
         var userId = currentUserService.UserId;
 
-        var postExists = await context.Posts
-            .AnyAsync(x => x.Id == postId && !x.IsDeleted);
+        var post = await context.Posts
+            .Include(x => x.Reactions)
+            .FirstOrDefaultAsync(x => x.Id == postId && !x.IsDeleted);
 
-        if (!postExists)
+        if(post == null)
+        {
             throw new NotFoundException("Post", postId);
+        }
 
-        var existingReaction = await context.Reactions
-            .FirstOrDefaultAsync(x =>
+        var existingReaction = post.Reactions?
+            .FirstOrDefault(x =>
                 x.PostId == postId &&
                 x.AppUserId == userId);
 
         ReactionType? myReaction = null;
 
-        if (existingReaction == null)
+        if(existingReaction == null)
         {
             var newReaction = new Reaction
             {
@@ -73,14 +77,16 @@ public class ReactionService(
             };
 
             await context.Reactions.AddAsync(newReaction);
+            await notificationService.SendPostReactedNotificationAsync(postId, post.AppUserId, request.ReactionType);
             myReaction = request.ReactionType;
         }
-        else if (existingReaction.ReactionType == request.ReactionType)
+        else if(existingReaction.ReactionType == request.ReactionType)
         {
             context.Reactions.Remove(existingReaction);
         }
         else
         {
+            await notificationService.SendPostReactedNotificationAsync(postId, post.AppUserId, request.ReactionType);
             existingReaction.ReactionType = request.ReactionType;
             myReaction = request.ReactionType;
         }

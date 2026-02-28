@@ -20,6 +20,7 @@ public class AppUser : IdentityUser<string>
     public ICollection<Follow> Following { get; set; }
     public ICollection<Follow> Followers { get; set; }
     public ICollection<SavedPost> SavedPosts { get; set; }
+    public ICollection<Notification> Notifications { get; set; }
 
 
     public AppUser()
