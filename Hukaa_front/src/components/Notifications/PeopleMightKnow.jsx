@@ -20,7 +20,7 @@ const PeopleMightKnow = () => {
     ];
 
     return (
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden h-[70%] lg:h-[750px] flex flex-col">
+        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden lg:h-[805px] flex flex-col">
             <div className="p-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/30 shrink-0">
                 <h3 className="text-lg font-bold text-gray-800 m-0">Suggestions</h3>
                 <button className="text-main hover:rotate-180 transition-transform duration-500">

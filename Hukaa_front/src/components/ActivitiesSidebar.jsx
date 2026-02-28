@@ -72,7 +72,7 @@ const ActivitiesSidebar = () => {
             </div>
 
             {/* Mobile Horizontal Menu */}
-            <div className="lg:hidden sticky top-[95px] z-[999] bg-[#F4F7FC] py-3 -mx-4 px-4 overflow-x-auto whitespace-nowrap custom-scrollbar mb-4">
+            <div className="lg:hidden sticky top-[95px] z-10 bg-[#F4F7FC] py-3 -mx-4 px-4 overflow-x-auto whitespace-nowrap custom-scrollbar mb-4">
                 <div className="flex space-x-2">
                     {menuItems.map((item) => (
                         <Link

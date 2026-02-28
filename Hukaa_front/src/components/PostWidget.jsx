@@ -302,9 +302,9 @@ const PostWidget = ({ post, onDelete, onUpdate, onArchive, onSaveToggle }) => {
                             <div className="absolute right-0 mt-3 w-60 bg-white rounded-2xl shadow-2xl border border-gray-100 p-2 z-50 animate-fade-in-up">
                                 <button
                                     onClick={handleEditStart}
-                                    className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-[#3644D9] flex items-center rounded-xl transition-all group"
+                                    className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-main flex items-center rounded-xl transition-all group"
                                 >
-                                    <div className="w-9 h-9 rounded-lg bg-gray-50 text-gray-400 flex items-center justify-center mr-3 group-hover:bg-[#3644D9] group-hover:text-white transition-all shadow-sm">
+                                    <div className="w-9 h-9 rounded-lg bg-gray-50 text-gray-400 flex items-center justify-center mr-3 group-hover:bg-main group-hover:text-white transition-all shadow-sm">
                                         <i className="ri-edit-line text-lg"></i>
                                     </div>
                                     <span className="font-bold">Edit Post</span>
@@ -312,9 +312,9 @@ const PostWidget = ({ post, onDelete, onUpdate, onArchive, onSaveToggle }) => {
 
                                 <button
                                     onClick={handleToggleArchiveClick}
-                                    className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-[#3644D9] flex items-center rounded-xl transition-all group"
+                                    className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-main flex items-center rounded-xl transition-all group"
                                 >
-                                    <div className="w-9 h-9 rounded-lg bg-gray-50 text-gray-400 flex items-center justify-center mr-3 group-hover:bg-[#3644D9] group-hover:text-white transition-all shadow-sm">
+                                    <div className="w-9 h-9 rounded-lg bg-gray-50 text-gray-400 flex items-center justify-center mr-3 group-hover:bg-main group-hover:text-white transition-all shadow-sm">
                                         <i className={post.isArchived ? 'ri-lock-unlock-line text-lg' : 'ri-lock-line text-lg'}></i>
                                     </div>
                                     <span className="font-bold">

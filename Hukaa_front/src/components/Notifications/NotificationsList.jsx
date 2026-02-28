@@ -22,7 +22,7 @@ const NotificationsList = () => {
     };
 
     return (
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden h-[70%] lg:h-[750px] flex flex-col">
+        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden lg:h-[805px] flex flex-col">
             <div className="p-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/30 shrink-0">
                 <h3 className="text-lg font-bold text-gray-800 m-0">Notifications</h3>
                 <button className="w-8 h-8 flex items-center justify-center rounded-xl bg-white border border-gray-100 text-gray-500 hover:bg-gray-50 hover:text-red-500 hover:border-red-500 " type="button" onClick={clearAllNotifications}>

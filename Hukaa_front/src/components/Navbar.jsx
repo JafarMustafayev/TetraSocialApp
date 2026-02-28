@@ -182,7 +182,7 @@ const Navbar = ({ onMenuClick }) => {
 
                 {/* Mobile Search Overlay */}
                 {isMobileSearchOpen && (
-                    <div className="fixed top-[5px] left-[0.5%] w-[99%] h-[80px] bg-main backdrop-blur-xl z-[1100] flex items-center px-4 rounded-2xl animate-fade-in shadow-2xl md:hidden" ref={searchRef}>
+                    <div className="fixed top-[5px] left-[0.5%] w-[99%] h-[80px] bg-main backdrop-blur-xl z-50 flex items-center px-4 rounded-2xl animate-fade-in shadow-2xl md:hidden" ref={searchRef}>
                         <button
                             onClick={() => setIsMobileSearchOpen(false)}
                             className="mr-3 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white active:scale-90"
@@ -204,7 +204,7 @@ const Navbar = ({ onMenuClick }) => {
 
                             {/* Mobile Search Results Dropdown */}
                             {showResults && (
-                                <div className="fixed top-[90px] left-[0.5%] w-[99%] z-[1110] animate-fade-in-up">
+                                <div className="fixed top-[90px] left-[0.5%] w-[99%] z-50 animate-fade-in-up">
                                     <div className="bg-white w-full rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-gray-100 overflow-hidden max-h-[70vh] flex flex-col">
                                         <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                                             <h3 className="font-bold text-gray-800 text-sm">Search Results</h3>
