@@ -28,7 +28,7 @@ const PeopleMightKnow = () => {
                 </button>
             </div>
 
-            <div className="divide-y divide-gray-50 overflow-y-auto custom-scrollbar flex-1">
+            <div className="overflow-y-auto custom-scrollbar flex-1">
                 {suggestions.map((person) => (
                     <div key={person.id} className="p-4 flex items-center hover:bg-gray-50/50 transition-colors group">
                         <div className="shrink-0">

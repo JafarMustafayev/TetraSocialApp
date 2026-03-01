@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { login as loginApi, register as registerApi } from '../api/auth';
 import { getMe } from '../api/profile';
+import signalRService from '../api/signalr';
+import { SIGNALR_HUB_URL, IMAGE_BASE_URL } from '../api/client';
+
 
 const AuthContext = createContext();
 
@@ -12,11 +15,34 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const logout = () => {
+        localStorage.removeItem('token');
+        setUser(null);
+        signalRService.stopConnection();
+    };
+
+    const startSignalRConnection = () => {
+        const hubUrl = IMAGE_BASE_URL + SIGNALR_HUB_URL;
+        if (!hubUrl) return;
+
+        setTimeout(async () => {
+            try {
+                const status = signalRService.getConnectionState();
+                if (status === 'Disconnected') {
+                    await signalRService.startConnection(hubUrl);
+                }
+            } catch (err) {
+                console.error('Failed to start SignalR:', err);
+            }
+        }, 2000);
+    };
+
     const fetchUserProfile = async (token) => {
         try {
             const response = await getMe();
             if (response && response.success) {
                 setUser({ ...response.data, token });
+                startSignalRConnection();
             } else {
                 logout();
             }
@@ -60,17 +86,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const register = async (userData) => {
-        try {
-            const response = await registerApi(userData);
-            return response;
-        } catch (error) {
-            throw error;
-        }
-    };
-
-    const logout = () => {
-        localStorage.removeItem('token');
-        setUser(null);
+        return await registerApi(userData);
     };
 
     const value = {

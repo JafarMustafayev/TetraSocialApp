@@ -27,7 +27,6 @@ const SignalRTest = () => {
 
     // Handle incoming messages from the service
     const onMessageReceived = useCallback((message) => {
-        console.log(`[${eventName}] received:`, message);
         setMessages((prevMessages) => [...prevMessages, {
             id: Date.now() + Math.random(),
             content: typeof message === 'string' ? message : JSON.stringify(message, null, 2),
@@ -81,7 +80,7 @@ const SignalRTest = () => {
                 payload = (sendMessage.startsWith('{') || sendMessage.startsWith('['))
                     ? JSON.parse(sendMessage)
                     : sendMessage;
-            } catch (e) {
+            } catch {
                 payload = sendMessage;
             }
 

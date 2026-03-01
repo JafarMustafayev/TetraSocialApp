@@ -68,7 +68,7 @@ const PostWidget = ({ post, onDelete, onUpdate, onArchive, onSaveToggle }) => {
     const longPressTimeoutRef = useRef(null);
     const isLongPressActive = useRef(false);
 
-    const handleTouchStart = (e) => {
+    const handleTouchStart = () => {
         // Prevent default only if we want to block scroll, but here we just want to start a timer
         isLongPressActive.current = false;
         longPressTimeoutRef.current = setTimeout(() => {
@@ -77,14 +77,14 @@ const PostWidget = ({ post, onDelete, onUpdate, onArchive, onSaveToggle }) => {
         }, 500); // 500ms for long press
     };
 
-    const handleTouchEnd = (e) => {
+    const handleTouchEnd = () => {
         if (longPressTimeoutRef.current) {
             clearTimeout(longPressTimeoutRef.current);
         }
     };
 
 
-    const handleLikeClick = (e) => {
+    const handleLikeClick = () => {
         // If it was a long press that triggered reactions, don't execute normal click
         if (isLongPressActive.current) {
             isLongPressActive.current = false;

@@ -1,8 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { IMAGE_BASE_URL } from '../api/client';
 import { createPost } from '../api/post';
 
-const CreatePostWidget = ({ profileData, onPostCreated }) => {
+const CreatePostWidget = ({ onPostCreated }) => {
     const [content, setContent] = useState('');
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [previews, setPreviews] = useState([]);

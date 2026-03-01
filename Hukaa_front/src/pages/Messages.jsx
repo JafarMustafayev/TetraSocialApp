@@ -51,7 +51,6 @@ const Messages = () => {
     const handleSendMessage = (e) => {
         if (e) e.preventDefault();
         if (!messageText.trim()) return;
-        console.log('Sending message:', messageText);
         setMessageText('');
         if (textareaRef.current) {
             textareaRef.current.style.height = 'auto';

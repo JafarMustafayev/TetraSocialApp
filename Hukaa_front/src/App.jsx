@@ -16,6 +16,7 @@ import ResetPassword from './pages/ResetPassword';
 import EmailConfirmation from './pages/EmailConfirmation';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
+import { NotificationProvider } from './context/NotificationContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
 import SecondaryLayout from './layouts/SecondaryLayout';
@@ -28,46 +29,48 @@ function App() {
         <ThemeProvider>
             <ToastProvider>
                 <AuthProvider>
-                    <BrowserRouter>
-                        <Routes>
-                            {/* Main Layout Routes */}
-                            <Route path="/" element={
-                                <ProtectedRoute>
-                                    <MainLayout />
-                                </ProtectedRoute>
-                            }>
-                                <Route index element={<Home />} />
-                                <Route path="messages" element={<Messages />} />
-                                <Route path="notifications" element={<Notifications />} />
-                                <Route path="profile" element={<Profile />} />
-                                <Route path="profile/:userId" element={<UserProfile />} />
-                                <Route path="archived" element={<Archived />} />
-                                <Route path="signalr-test" element={<SignalRTest />} />
-                            </Route>
-
-                            {/* Secondary Layout Routes (Dual Sidebar) */}
-                            <Route element={
-                                <ProtectedRoute>
-                                    <SecondaryLayout />
-                                </ProtectedRoute>
-                            }>
-                                <Route path="/settings" element={<Settings />} />
-                                <Route path="/my-activities" element={<MyActivities />} />
-                            </Route>
-
-                            <Route element={<PublicRoute />}>
-                                <Route element={<AuthLayout />}>
-                                    <Route path="/login" element={<Login />} />
-                                    <Route path="/register" element={<Register />} />
-                                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <NotificationProvider>
+                        <BrowserRouter>
+                            <Routes>
+                                {/* Main Layout Routes */}
+                                <Route path="/" element={
+                                    <ProtectedRoute>
+                                        <MainLayout />
+                                    </ProtectedRoute>
+                                }>
+                                    <Route index element={<Home />} />
+                                    <Route path="messages" element={<Messages />} />
+                                    <Route path="notifications" element={<Notifications />} />
+                                    <Route path="profile" element={<Profile />} />
+                                    <Route path="profile/:userId" element={<UserProfile />} />
+                                    <Route path="archived" element={<Archived />} />
+                                    <Route path="signalr-test" element={<SignalRTest />} />
                                 </Route>
-                            </Route>
-                            <Route element={<AuthLayout />}>
-                                <Route path="/reset-password" element={<ResetPassword />} />
-                                <Route path="/email-confirmation" element={<EmailConfirmation />} />
-                            </Route>
-                        </Routes>
-                    </BrowserRouter>
+
+                                {/* Secondary Layout Routes (Dual Sidebar) */}
+                                <Route element={
+                                    <ProtectedRoute>
+                                        <SecondaryLayout />
+                                    </ProtectedRoute>
+                                }>
+                                    <Route path="/settings" element={<Settings />} />
+                                    <Route path="/my-activities" element={<MyActivities />} />
+                                </Route>
+
+                                <Route element={<PublicRoute />}>
+                                    <Route element={<AuthLayout />}>
+                                        <Route path="/login" element={<Login />} />
+                                        <Route path="/register" element={<Register />} />
+                                        <Route path="/forgot-password" element={<ForgotPassword />} />
+                                    </Route>
+                                </Route>
+                                <Route element={<AuthLayout />}>
+                                    <Route path="/reset-password" element={<ResetPassword />} />
+                                    <Route path="/email-confirmation" element={<EmailConfirmation />} />
+                                </Route>
+                            </Routes>
+                        </BrowserRouter>
+                    </NotificationProvider>
                 </AuthProvider>
             </ToastProvider>
         </ThemeProvider>

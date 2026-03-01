@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from 'react';
 import ProfileInformation from '../components/Settings/ProfileInformation';
 import WorkExperience from '../components/Settings/WorkExperience';
 import ChangeUsername from '../components/Settings/ChangeUsername';

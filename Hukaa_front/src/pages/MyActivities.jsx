@@ -1,5 +1,4 @@
 import { getReactedPosts, getSavedPosts, getArchivedPosts } from '../api/post';
-import { getMyProfile } from '../api/profile';
 import PostWidget from '../components/PostWidget';
 import PostSkeleton from '../components/Skeleton/PostSkeleton';
 import { useSearchParams } from 'react-router-dom';
@@ -14,17 +13,12 @@ const MyActivities = () => {
     const [isPostsLoading, setIsPostsLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
-    const [error, setError] = useState(null);
 
     const tabs = [
         { id: 'reactions', label: 'Reactions', icon: 'ri-emotion-line' },
         { id: 'saved', label: 'Saved Posts', icon: 'ri-bookmark-line' },
         { id: 'archived', label: 'Archived Posts', icon: 'ri-lock-line' },
     ];
-
-    const setActiveTab = (tab) => {
-        setSearchParams({ tab });
-    };
 
     useEffect(() => {
         const fetchInitialData = async () => {

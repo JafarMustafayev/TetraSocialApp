@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getUserProfile } from '../api/profile';
@@ -36,34 +36,48 @@ const UserProfile = () => {
         }
     }, [user, userId, navigate]);
 
+    const fetchProfile = useCallback(async () => {
+        setLoading(true);
+        try {
+            const response = await getUserProfile(userId);
+            if (response && response.success) {
+                const data = response.data;
+                setProfileData({
+                    ...data,
+                    isFollowing: data.followStatus === 1
+                });
+                // Reset posts only when user manually refreshes or user changes
+                // If it's a real-time update, we might want to keep posts or just refresh them
+                setPostsPage(1);
+                setHasMorePosts(true);
+            } else {
+                setError('Failed to load profile data');
+            }
+        } catch (err) {
+            console.error('Error fetching profile:', err);
+            setError(err.message || 'An error occurred while fetching profile');
+        } finally {
+            setLoading(false);
+        }
+    }, [userId]);
+
     useEffect(() => {
-        const fetchProfile = async () => {
-            setLoading(true);
-            try {
-                const response = await getUserProfile(userId);
-                if (response && response.success) {
-                    const data = response.data;
-                    setProfileData({
-                        ...data,
-                        isFollowing: data.followStatus === 1
-                    });
-                    // Reset posts when user changes
-                    setPosts([]);
-                    setPostsPage(1);
-                    setHasMorePosts(true);
-                } else {
-                    setError('Failed to load profile data');
-                }
-            } catch (err) {
-                console.error('Error fetching profile:', err);
-                setError(err.message || 'An error occurred while fetching profile');
-            } finally {
-                setLoading(false);
+        fetchProfile();
+    }, [fetchProfile]);
+
+    // Fast real-time update listener
+    useEffect(() => {
+        const handleFollowUpdate = (e) => {
+            const { userId: updatedUserId } = e.detail;
+            if (updatedUserId === userId) {
+                // Re-fetch profile to update followStatus and reveal content
+                fetchProfile();
             }
         };
 
-        fetchProfile();
-    }, [userId]);
+        window.addEventListener('followStatusUpdate', handleFollowUpdate);
+        return () => window.removeEventListener('followStatusUpdate', handleFollowUpdate);
+    }, [userId, fetchProfile]);
 
     const fetchPosts = async (page) => {
         if (isPostsLoading || !hasMorePosts || (profileData?.isPrivateProfile && !profileData?.isFollowing)) return;

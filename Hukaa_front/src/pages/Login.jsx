@@ -33,7 +33,7 @@ const Login = () => {
             } else {
                 showToast(result.message, 'error');
             }
-        } catch (err) {
+        } catch {
             showToast('An error occurred during login', 'error');
         } finally {
             setLoading(false);

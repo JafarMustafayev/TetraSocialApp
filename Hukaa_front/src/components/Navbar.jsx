@@ -5,8 +5,11 @@ import { IMAGE_BASE_URL, USER_AVATAR, LOGO } from '../api/client';
 import { searchProfiles } from '../api/profile';
 import { useTheme } from '../context/ThemeContext';
 import ListSkeleton from './Skeleton/ListSkeleton';
+import { useNotifications } from '../context/NotificationContext';
+import moment from 'moment';
 
 const Navbar = ({ onMenuClick }) => {
+    const { notifications, acceptRequest, rejectRequest } = useNotifications();
     const { user, logout } = useAuth();
     const { theme, setTheme } = useTheme();
     const navigate = useNavigate();
@@ -266,7 +269,7 @@ const Navbar = ({ onMenuClick }) => {
                         <i className={`${getThemeIcon()} text-xl sm:text-[22px]`}></i>
                     </button>
 
-                    {/* Inbox Dropdown */}
+                    {/* Inbox Dropdown
                     <div className="hidden md:block relative" onClick={stopPropagation}>
                         <button
                             onClick={(e) => toggleDropdown('inbox', e)}
@@ -292,38 +295,9 @@ const Navbar = ({ onMenuClick }) => {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
 
-                    {/* Requests Dropdown */}
-                    <div className="hidden md:block relative" onClick={stopPropagation}>
-                        <button
-                            onClick={(e) => toggleDropdown('requests', e)}
-                            className="w-[45px] h-[45px] flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white hover:text-main transition-all relative"
-                        >
-                            <i className="ri-user-follow-line text-[22px]"></i>
-                            <span className="absolute -top-[2px] -right-[2px] w-5 h-5 flex items-center justify-center rounded-full bg-[#3ED7FF] text-white text-[10px] font-bold border-2 border-main">3</span>
-                        </button>
 
-                        <div className={`absolute right-0 top-full mt-4 w-[320px] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 transform origin-top ${openDropdown === 'requests' ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-4'}`}>
-                            <div className="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
-                                <h3 className="font-bold text-gray-800">Friend Requests</h3>
-                                <Link to="/notifications" className="text-xs text-main font-bold hover:underline">View All</Link>
-                            </div>
-                            <div className="p-4 space-y-4">
-                                <div className="flex items-center gap-3">
-                                    <img src={USER_AVATAR} className="w-10 h-10 rounded-full object-cover" alt="user" />
-                                    <div className="flex-1">
-                                        <h4 className="text-sm font-bold text-gray-800">Sandra Cross</h4>
-                                        <p className="text-[11px] text-gray-400">26 Friends</p>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <button className="w-7 h-7 flex items-center justify-center rounded-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all"><i className="ri-close-line text-sm"></i></button>
-                                        <button className="w-7 h-7 flex items-center justify-center rounded-full bg-blue-50 text-main hover:bg-main hover:text-white transition-all"><i className="ri-check-line text-sm"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     {/* Notifications Dropdown */}
                     <div className="hidden md:block relative" onClick={stopPropagation}>
@@ -332,25 +306,73 @@ const Navbar = ({ onMenuClick }) => {
                             className="w-[45px] h-[45px] flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white hover:text-main transition-all relative"
                         >
                             <i className="ri-notification-3-line text-[22px]"></i>
-                            <span className="absolute -top-[2px] -right-[2px] w-5 h-5 flex items-center justify-center rounded-full bg-[#FF3E3E] text-white text-[10px] font-bold border-2 border-main">1</span>
+                            {notifications.length > 0 && (
+                                <span className="absolute -top-[2px] -right-[2px] w-5 h-5 flex items-center justify-center rounded-full bg-[#FF3E3E] text-white text-[10px] font-bold border-2 border-main">
+                                    {notifications.length > 9 ? '9+' : notifications.length}
+                                </span>
+                            )}
                         </button>
 
                         <div className={`absolute right-0 top-full mt-4 w-[320px] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 transform origin-top ${openDropdown === 'notifications' ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-4'}`}>
                             <div className="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
-                                <h3 className="font-bold text-gray-800">Notifications</h3>
-                                <Link to="/notifications" className="text-xs text-main font-bold hover:underline">View All</Link>
+                                <h3 className="font-bold text-gray-800 text-sm m-0">Notifications</h3>
+                                <Link to="/notifications" className="text-[10px] text-main font-bold hover:underline uppercase tracking-wider text-muted">View All</Link>
                             </div>
-                            <div className="p-2">
-                                <Link to="/notifications" className="p-3 flex items-start gap-3 hover:bg-gray-50 rounded-xl transition-colors group">
-                                    <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-main shrink-0">
-                                        <i className="ri-chat-3-line"></i>
+                            <div className="p-2 space-y-1 max-h-[400px] overflow-y-auto custom-scrollbar">
+                                {notifications.length > 0 ? (
+                                    notifications.slice(0, 3).map((notif) => {
+                                        let payload = {};
+                                        try { payload = JSON.parse(notif.payload); } catch { }
+                                        const userId = payload.ByUserId;
+                                        const img = payload.ByUserProfileImageUrl;
+                                        const userImg = img ? `${IMAGE_BASE_URL}/${img}` : USER_AVATAR;
+                                        const time = moment.utc(notif.createdAt).local().fromNow();
+                                        return (
+                                            <div key={notif.notificationId} className="relative group/item">
+                                                <Link
+                                                    to={notif.type === 4 ? '/notifications' : (payload.PostId ? `/posts/${payload.PostId}` : `/profile/${userId}`)}
+                                                    className="p-3 flex items-start gap-3 hover:bg-gray-50 rounded-xl transition-colors"
+                                                    onClick={() => setOpenDropdown(null)}
+                                                >
+                                                    <div className="shrink-0">
+                                                        <img src={userImg} className="w-10 h-10 rounded-full object-cover border border-gray-100" alt="user" />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <h4 className="text-sm font-bold text-gray-800 truncate leading-tight">
+                                                            {payload.ByUserName || 'System'}
+                                                        </h4>
+                                                        <p className="text-[11px] text-gray-500 line-clamp-2 mt-0.5">{notif.title}</p>
+                                                        <span className="text-[9px] font-bold text-main uppercase mt-1 block">{time}</span>
+                                                    </div>
+                                                </Link>
+
+                                                {notif.type === 4 && (
+                                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity bg-white/80 backdrop-blur-sm p-1 rounded-lg shadow-sm">
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); rejectRequest(userId, notif.notificationId); }}
+                                                            className="w-7 h-7 flex items-center justify-center rounded-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all transition-colors"
+                                                            title="Reject"
+                                                        >
+                                                            <i className="ri-close-line text-sm"></i>
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); acceptRequest(userId, notif.notificationId); }}
+                                                            className="w-7 h-7 flex items-center justify-center rounded-full bg-blue-50 text-main hover:bg-main hover:text-white transition-all transition-colors"
+                                                            title="Accept"
+                                                        >
+                                                            <i className="ri-check-line text-sm"></i>
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    <div className="p-8 text-center opacity-40">
+                                        <i className="ri-notification-off-line text-2xl block mb-1"></i>
+                                        <p className="text-xs italic">No new notifications</p>
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                        <h4 className="text-sm font-bold text-gray-800">James Vanwin</h4>
-                                        <p className="text-xs text-gray-500">Posted A Comment On Your Status</p>
-                                        <span className="text-[10px] font-bold text-main uppercase mt-1 block">20 Minutes Ago</span>
-                                    </div>
-                                </Link>
+                                )}
                             </div>
                         </div>
                     </div>
