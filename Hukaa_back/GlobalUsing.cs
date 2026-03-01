@@ -51,3 +51,4 @@ global using Hukaa_back.Hub;
 global using Hukaa_back.Realtime;
 global using System.Collections.Concurrent;
 global using Microsoft.AspNetCore.SignalR;
+global using Hukaa_back.DTOs.Notification;

@@ -2,8 +2,9 @@
 
 public enum NotificationType
 {
-    AcceptedFollowRequest,
-    FollowRequestNotification,
-    PostReactedNotification,
-    CommentNotification
+    PostReacted = 1,
+    CommentAdded = 2,
+    Followed = 3,
+    FollowRequestReceived = 4,
+    FollowRequestAccepted = 5
 }

@@ -3,24 +3,32 @@
 public class FollowService(
     AppDbContext context,
     ICurrentUserService currentUserService,
-    IMapper mapper) : IFollowService
+    IMapper mapper,
+    INotificationService notificationService) : IFollowService
 {
     public async Task<ResponseDto> FollowAsync(string followingId)
     {
         var follow = await context.Follows.FirstOrDefaultAsync(x => x.FollowingId == followingId
                                                                     && x.FollowerId == currentUserService.UserId);
 
-        if (follow != null)
+        if(follow != null)
         {
-            if (follow.Status == FollowStatus.Accepted)
+            if(follow.Status == FollowStatus.Accepted)
+            {
                 throw new BadHttpRequestException("You are already following this user.");
+            }
             else
+            {
                 throw new BadRequestException("A follow request to this user is already pending.");
+            }
         }
 
         var user = await context.Users.FirstOrDefaultAsync(x => x.Id == followingId);
 
-        if (user == null) throw new NotFoundException("User", followingId);
+        if(user == null)
+        {
+            throw new NotFoundException("User", followingId);
+        }
 
         await context.Follows.AddAsync(new Follow
         {
@@ -29,6 +37,15 @@ public class FollowService(
             Status = user.AccountType == AccountType.PublicAccount ? FollowStatus.Accepted : FollowStatus.Pending
         });
         await context.SaveChangesAsync();
+
+        if(user.AccountType == AccountType.PublicAccount)
+        {
+            await notificationService.SendFollowNotificationAsync(followingId);
+        }
+        else
+        {
+            await notificationService.SendFollowRequestReceivedNotificationAsync(followingId);
+        }
 
         return new ResponseDto
         {
@@ -52,7 +69,10 @@ public class FollowService(
                                                                     && x.FollowerId == currentUserService.UserId
                                                                     && x.Status == FollowStatus.Accepted);
 
-        if (follow == null) throw new BadRequestException("Cannot unfollow a user you are not following.");
+        if(follow == null)
+        {
+            throw new BadRequestException("Cannot unfollow a user you are not following.");
+        }
 
         context.Follows.Remove(follow);
         await context.SaveChangesAsync();
@@ -72,7 +92,10 @@ public class FollowService(
                                                                     && x.FollowerId == currentUserService.UserId
                                                                     && x.Status == FollowStatus.Pending);
 
-        if (follow == null) throw new BadRequestException("Pending follow request not found.");
+        if(follow == null)
+        {
+            throw new BadRequestException("Pending follow request not found.");
+        }
 
         context.Follows.Remove(follow);
         await context.SaveChangesAsync();
@@ -112,10 +135,14 @@ public class FollowService(
                                                                     && x.FollowingId == currentUserService.UserId
                                                                     && x.Status == FollowStatus.Pending);
 
-        if (follow == null) throw new BadRequestException("No pending follow request found from this user.");
+        if(follow == null)
+        {
+            throw new BadRequestException("No pending follow request found from this user.");
+        }
 
         follow.Status = FollowStatus.Accepted;
         await context.SaveChangesAsync();
+        await notificationService.SendFollowRequestAcceptedNotificationAsync(requesterId);
 
         return new ResponseDto
         {
@@ -132,7 +159,10 @@ public class FollowService(
                                                                     && x.FollowingId == currentUserService.UserId
                                                                     && x.Status == FollowStatus.Pending);
 
-        if (follow == null) throw new BadRequestException("No pending follow request found from this user.");
+        if(follow == null)
+        {
+            throw new BadRequestException("No pending follow request found from this user.");
+        }
 
         context.Follows.Remove(follow);
         await context.SaveChangesAsync();
@@ -152,7 +182,10 @@ public class FollowService(
                                                                     && x.FollowingId == currentUserService.UserId
                                                                     && x.Status == FollowStatus.Accepted);
 
-        if (follow == null) throw new BadRequestException("This user is not your follower.");
+        if(follow == null)
+        {
+            throw new BadRequestException("This user is not your follower.");
+        }
 
         context.Follows.Remove(follow);
         await context.SaveChangesAsync();
@@ -202,8 +235,10 @@ public class FollowService(
                                                              && x.FollowerId == currentUserService.UserId
                                                              && x.Status == FollowStatus.Accepted);
 
-        if (!canYouRead)
+        if(!canYouRead)
+        {
             throw new ForbiddenException("You cannot view this user's connections because you are not following them.");
+        }
 
         var following = await context.Follows
             .Include(x => x.Following)

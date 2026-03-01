@@ -174,7 +174,12 @@ public static class ServiceRegistration
         {
             options.AddPolicy("CorsPolicy", policy =>
             {
-                policy.WithOrigins("http://localhost:5173")
+                policy.WithOrigins(new[]
+                    {
+                        "http://192.168.1.67:5173",
+                        "http://192.168.1.90:5173",
+                        "http://localhost:5173"
+                    })
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();

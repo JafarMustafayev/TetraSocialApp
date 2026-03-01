@@ -9,6 +9,6 @@ public class Notification : BaseEntity
     public AppUser User { get; set; }
 
 
-    public bool IsRead { get; set; }
+    public bool IsRead { get; set; } = false;
     public DateTime? ReadAt { get; set; }
 }

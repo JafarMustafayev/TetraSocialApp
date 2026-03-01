@@ -4,16 +4,23 @@ public class CommentService(
     AppDbContext context,
     IMapper mapper,
     ICurrentUserService currentUserService,
-    UserManager<AppUser> userManager) : ICommentService
+    UserManager<AppUser> userManager,
+    INotificationService notificationService) : ICommentService
 {
     public async Task<ResponseDto> CreateCommentAsync(CommentCreateDto dto)
     {
         var user = await userManager.FindByIdAsync(currentUserService.UserId);
         var post = await context.Posts.FirstOrDefaultAsync(x => x.Id == dto.PostId);
 
-        if (user == null) throw new NotFoundException("User", currentUserService.UserId);
+        if(user == null)
+        {
+            throw new NotFoundException("User", currentUserService.UserId);
+        }
 
-        if (post == null) throw new NotFoundException("Post", dto.PostId);
+        if(post == null)
+        {
+            throw new NotFoundException("Post", dto.PostId);
+        }
 
         var comment = new Comment
         {
@@ -24,6 +31,11 @@ public class CommentService(
 
         context.Comments.Add(comment);
         await context.SaveChangesAsync();
+        await notificationService.SendCommentNotificationAsync(
+            comment.PostId,
+            comment.Id,
+            comment.Content,
+            post.AppUserId);
 
         var commentDto = mapper.Map<CommentDto>(comment);
         commentDto.IsOwner = true;
@@ -41,10 +53,16 @@ public class CommentService(
     {
         var user = await userManager.FindByIdAsync(currentUserService.UserId);
 
-        if (user == null) throw new NotFoundException("User", currentUserService.UserId);
+        if(user == null)
+        {
+            throw new NotFoundException("User", currentUserService.UserId);
+        }
 
         var comment = await context.Comments.FirstOrDefaultAsync(x => x.Id == commentId && x.AppUserId == user.Id);
-        if (comment == null) throw new NotFoundException("Comment", commentId);
+        if(comment == null)
+        {
+            throw new NotFoundException("Comment", commentId);
+        }
 
         mapper.Map(dto, comment);
 
@@ -69,8 +87,10 @@ public class CommentService(
         var userId = currentUserService.UserId;
         var comment = await context.Comments.FirstOrDefaultAsync(x => x.Id == commentId);
 
-        if (comment == null || comment.AppUserId != userId)
+        if(comment == null || comment.AppUserId != userId)
+        {
             throw new NotFoundException("Comment", commentId);
+        }
 
         comment.IsDeleted = true;
         comment.DeletedAt = DateTime.UtcNow;
@@ -98,15 +118,15 @@ public class CommentService(
                 IsOwner = c.AppUserId == currentUserService.UserId,
                 UserId = c.AppUser.Id,
                 UserImage = c.AppUser.ProfilePhotoPath,
-                UserName = c.AppUser.UserName
+                UserName = c.AppUser.UserName ?? "UserName"
             })
             .ToListAsync();
 
-        var dtos = mapper.Map<List<CommentDto>>(comments);
+        var commentMaps = mapper.Map<List<CommentDto>>(comments);
 
         var userId = currentUserService.UserId;
         // Owner check
-        foreach (var dto in dtos)
+        foreach (var dto in commentMaps)
             dto.IsOwner = dto.AppUserId == userId;
 
         return new ResponseDto
@@ -114,7 +134,7 @@ public class CommentService(
             Success = true,
             StatusCode = StatusCodes.Status200OK,
             Message = "Comments retrieved successfully",
-            Data = dtos
+            Data = commentMaps
         };
     }
 
