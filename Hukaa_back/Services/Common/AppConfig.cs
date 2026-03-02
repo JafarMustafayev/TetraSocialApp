@@ -7,7 +7,10 @@ public class AppConfig(IConfiguration configuration) : IAppConfig
         section ??= typeof(T).Name;
 
         var configSection = configuration.GetSection(section);
-        if (!configSection.Exists()) throw new InvalidOperationException($"Config section '{section}' not found.");
+        if(!configSection.Exists())
+        {
+            throw new InvalidOperationException($"Config section '{section}' not found.");
+        }
 
         var result = new T();
         configSection.Bind(result);
@@ -20,7 +23,10 @@ public class AppConfig(IConfiguration configuration) : IAppConfig
         var conn = configuration.GetConnectionString(name)
                    ?? configuration.GetSection($"DbConnection:{name}").Value;
 
-        if (string.IsNullOrEmpty(conn)) throw new InvalidOperationException($"Connection string '{name}' not found.");
+        if(string.IsNullOrEmpty(conn))
+        {
+            throw new InvalidOperationException($"Connection string '{name}' not found.");
+        }
 
         return conn;
     }

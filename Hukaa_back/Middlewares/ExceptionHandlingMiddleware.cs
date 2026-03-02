@@ -25,7 +25,7 @@ public sealed class ExceptionHandlingMiddleware
     {
         ResponseDto response;
 
-        if (exception is AppException appException)
+        if(exception is AppException appException)
         {
             response = new ResponseDto
             {

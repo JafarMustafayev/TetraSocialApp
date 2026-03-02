@@ -48,7 +48,10 @@ public class ExperienceService(
     {
         var user = await userManager.FindByIdAsync(currentUser.UserId);
 
-        if (user == null) throw new NotFoundException("User", currentUser.UserId);
+        if(user == null)
+        {
+            throw new NotFoundException("User", currentUser.UserId);
+        }
 
         var experience = mapper.Map<WorkExperience>(dto);
         experience.AppUser = user;
@@ -73,8 +76,10 @@ public class ExperienceService(
         var experience = await context.WorkExperiences
             .FirstOrDefaultAsync(x => x.Id == expId && x.AppUserId == userId && !x.IsDeleted);
 
-        if (experience == null)
+        if(experience == null)
+        {
             throw new NotFoundException("Experience", expId);
+        }
 
         mapper.Map(dto, experience);
 
@@ -95,8 +100,10 @@ public class ExperienceService(
         var experience = await context.WorkExperiences
             .FirstOrDefaultAsync(x => x.Id == expId && x.AppUserId == userId && !x.IsDeleted);
 
-        if (experience == null)
+        if(experience == null)
+        {
             throw new NotFoundException("Experience", expId);
+        }
 
         experience.IsDeleted = true;
         experience.DeleteAt = DateTime.UtcNow;

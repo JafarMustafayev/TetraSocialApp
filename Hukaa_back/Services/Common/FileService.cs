@@ -15,16 +15,22 @@ public class FileService(IWebHostEnvironment env) : IFileService
 
     public async Task<string> UploadProfilImageAsync(IFormFile file)
     {
-        if (file == null || file.Length == 0)
+        if(file == null || file.Length == 0)
+        {
             throw new Exception("File is empty");
+        }
 
         var folderName = string.Empty;
         var extension = Path.GetExtension(file.FileName).ToLower();
 
-        if (_allowedImageExtensions.Contains(extension))
+        if(_allowedImageExtensions.Contains(extension))
+        {
             folderName = "profile/photo";
+        }
         else
+        {
             throw new Exception("File format not supported");
+        }
 
         var filePath = await UploadAsync(file, folderName, extension);
 
@@ -33,16 +39,22 @@ public class FileService(IWebHostEnvironment env) : IFileService
 
     public async Task<string> UploadCoverImageAsync(IFormFile file)
     {
-        if (file == null || file.Length == 0)
+        if(file == null || file.Length == 0)
+        {
             throw new BadRequestException("File is empty");
+        }
 
         var folderName = string.Empty;
         var extension = Path.GetExtension(file.FileName).ToLower();
 
-        if (_allowedImageExtensions.Contains(extension))
+        if(_allowedImageExtensions.Contains(extension))
+        {
             folderName = "profile/cover";
+        }
         else
+        {
             throw new BadRequestException("File format not supported");
+        }
 
         var filePath = await UploadAsync(file, folderName, extension);
 
@@ -51,18 +63,26 @@ public class FileService(IWebHostEnvironment env) : IFileService
 
     public async Task<string> UploadPostAsync(IFormFile file)
     {
-        if (file == null || file.Length == 0)
+        if(file == null || file.Length == 0)
+        {
             throw new Exception("File is empty");
+        }
 
         var folderName = string.Empty;
         var extension = Path.GetExtension(file.FileName).ToLower();
 
-        if (_allowedImageExtensions.Contains(extension))
+        if(_allowedImageExtensions.Contains(extension))
+        {
             folderName = "posts/images";
-        else if (_allowedVideoExtensions.Contains(extension))
+        }
+        else if(_allowedVideoExtensions.Contains(extension))
+        {
             folderName = "posts/videos";
+        }
         else
+        {
             throw new BadRequestException("File format not supported");
+        }
 
         var filePath = await UploadAsync(file, folderName, extension);
 
@@ -71,8 +91,10 @@ public class FileService(IWebHostEnvironment env) : IFileService
 
     public async Task DeleteFileAsync(string path)
     {
-        if (string.IsNullOrWhiteSpace(path))
+        if(string.IsNullOrWhiteSpace(path))
+        {
             throw new ArgumentException("Path boş ola bilməz.", nameof(path));
+        }
 
         path = Path.Combine(env.WebRootPath, path);
         try
@@ -97,8 +119,10 @@ public class FileService(IWebHostEnvironment env) : IFileService
         // Folder path
         var folderPath = Path.Combine(env.WebRootPath, folderName);
 
-        if (!Directory.Exists(folderPath))
+        if(!Directory.Exists(folderPath))
+        {
             Directory.CreateDirectory(folderPath);
+        }
 
         // GUID + extension
         var fileName = Guid.NewGuid().ToString() + extension;

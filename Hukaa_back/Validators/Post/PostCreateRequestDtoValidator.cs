@@ -39,9 +39,12 @@ public class PostCreateRequestDtoValidator
             .WithMessage("Only images (.jpg, .jpeg, .png, .webp) and videos (.mp4, .mov, .avi, .mkv) are accepted.");
     }
 
-    private bool BeValidExtension(IFormFile file)
+    private bool BeValidExtension(IFormFile? file)
     {
-        if (file == null) return false;
+        if(file == null)
+        {
+            return false;
+        }
 
         var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
 

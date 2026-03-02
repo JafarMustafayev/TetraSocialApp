@@ -8,10 +8,12 @@ public class LoginRequestDtoValidator : AbstractValidator<LoginRequestDto>
             .NotEmpty().WithMessage("Username or Email cannot be empty.")
             .NotNull().WithMessage("Username or Email cannot be null.")
             .Matches(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-            .When(x => x.UsernameOrEmail.Contains('@'))
+            .When(x => !string.IsNullOrEmpty(x.UsernameOrEmail)
+                       && x.UsernameOrEmail.Contains('@'))
             .WithMessage("Invalid email format.")
-            .Matches(@"^[a-zA-Z0-9]+$")
-            .When(x => !x.UsernameOrEmail.Contains('@'))
+            .Matches(@"^[a-zA-Z0-9._-]+$")
+            .When(x => !string.IsNullOrEmpty(x.UsernameOrEmail)
+                       && !x.UsernameOrEmail.Contains('@'))
             .WithMessage("Username can only contain alphanumeric characters.");
 
         RuleFor(x => x.Password)

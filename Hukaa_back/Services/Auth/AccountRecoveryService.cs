@@ -10,7 +10,10 @@ public class AccountRecoveryService(
     public async Task<ResponseDto> ForgotPasswordAsync(ForgotPasswordRequestDto request)
     {
         var user = await userManager.FindByEmailAsync(request.Email);
-        if (user == null) throw new NotFoundException("User", request.Email);
+        if(user == null)
+        {
+            throw new NotFoundException("User", request.Email);
+        }
 
         var token = await userManager.GeneratePasswordResetTokenAsync(user);
         var url =
@@ -33,16 +36,21 @@ public class AccountRecoveryService(
         var email = WebUtility.UrlDecode(request.Email);
         var user = await userManager.FindByEmailAsync(email);
 
-        if (user == null) throw new NotFoundException("User", email);
+        if(user == null)
+        {
+            throw new NotFoundException("User", email);
+        }
 
         var token = WebUtility.UrlDecode(request.Token);
         var password = WebUtility.UrlDecode(request.Password);
 
         var res = await userManager.ResetPasswordAsync(user, token, password);
 
-        if (!res.Succeeded)
+        if(!res.Succeeded)
+        {
             throw new Exceptions.ValidationException("Invalid or expired  token",
                 res.Errors.Select(err => err.Description).ToList());
+        }
 
         return new ResponseDto
         {

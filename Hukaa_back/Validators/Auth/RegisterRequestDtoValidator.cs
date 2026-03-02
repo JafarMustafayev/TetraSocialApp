@@ -6,7 +6,9 @@ public class RegisterRequestDtoValidator : AbstractValidator<RegisterRequestDto>
     {
         RuleFor(x => x.Username)
             .NotNull().WithMessage("Username cannot be null.")
-            .NotEmpty().WithMessage("Username cannot be empty.");
+            .NotEmpty().WithMessage("Username cannot be empty.")
+            .Matches(@"^[a-zA-Z0-9._-]+$")
+            .WithMessage("Username can only contain alphanumeric characters.");
 
         RuleFor(x => x.Email)
             .NotNull().WithMessage("Email cannot be null.")

@@ -8,7 +8,9 @@ public static class IdentitySeed
         string[] roles = { UserRoles.User, UserRoles.Admin };
 
         foreach (var role in roles)
-            if (!await roleManager.RoleExistsAsync(role))
+            if(!await roleManager.RoleExistsAsync(role))
+            {
                 await roleManager.CreateAsync(new IdentityRole(role));
+            }
     }
 }

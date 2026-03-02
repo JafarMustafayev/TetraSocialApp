@@ -39,14 +39,18 @@ public class UpdateProfileInformationValidatorDto : AbstractValidator<UpdateProf
 
     private bool BeAValidAge(DateTime? birthDate)
     {
-        if (!birthDate.HasValue)
+        if(!birthDate.HasValue)
+        {
             return false;
+        }
 
         var today = DateTime.Today;
         var age = today.Year - birthDate.Value.Year;
 
-        if (birthDate.Value.Date > today.AddYears(-age))
+        if(birthDate.Value.Date > today.AddYears(-age))
+        {
             age--;
+        }
 
         return age >= 1;
     }

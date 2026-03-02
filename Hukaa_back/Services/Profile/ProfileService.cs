@@ -13,7 +13,10 @@ public class ProfileService(
         var user = await dbContext.Users
             .FirstOrDefaultAsync(user => user.Id == userId);
 
-        if (user == null) throw new NotFoundException("User", userId);
+        if(user == null)
+        {
+            throw new NotFoundException("User", userId);
+        }
 
         return new ResponseDto
         {
@@ -43,7 +46,10 @@ public class ProfileService(
             .Include(user => user.Following.Where(follow => follow.Status == FollowStatus.Accepted))
             .FirstOrDefaultAsync(user => user.Id == userId);
 
-        if (user == null) throw new NotFoundException("User", userId);
+        if(user == null)
+        {
+            throw new NotFoundException("User", userId);
+        }
 
         var profileDetail = mapper.Map<ProfileDetailsDto>(user);
         profileDetail.Experiences = mapper.Map<List<ExperienceDataDto>>(user.WorkExperiences);
@@ -64,7 +70,10 @@ public class ProfileService(
         var user = await dbContext.Users
             .FirstOrDefaultAsync(x => x.Id == userId);
 
-        if (user == null) throw new NotFoundException("User", userId);
+        if(user == null)
+        {
+            throw new NotFoundException("User", userId);
+        }
 
         return new ResponseDto
         {
@@ -91,7 +100,10 @@ public class ProfileService(
         var user = await dbContext.Users
             .FirstOrDefaultAsync(x => x.Id == userId);
 
-        if (user == null) throw new NotFoundException("User", userId);
+        if(user == null)
+        {
+            throw new NotFoundException("User", userId);
+        }
 
         return new ResponseDto
         {
@@ -114,16 +126,23 @@ public class ProfileService(
             .Include(user => user.Posts.Where(post => !post.IsArchived && !post.IsDeleted))
             .FirstOrDefaultAsync(user => user.Id == targetUserId);
 
-        if (user == null) throw new NotFoundException("User", targetUserId);
+        if(user == null)
+        {
+            throw new NotFoundException("User", targetUserId);
+        }
 
         ProfileSummaryDto profileSummaryDetail;
         var followStatus = user.Followers
             .FirstOrDefault(follow => follow.FollowerId == currentUser.UserId)?.Status ?? FollowStatus.None;
 
-        if (user.AccountType == AccountType.PublicAccount || followStatus == FollowStatus.Accepted)
+        if(user.AccountType == AccountType.PublicAccount || followStatus == FollowStatus.Accepted)
+        {
             profileSummaryDetail = mapper.Map<ProfileDetailsDto>(user);
+        }
         else
+        {
             profileSummaryDetail = mapper.Map<ProfileSummaryDto>(user);
+        }
 
         profileSummaryDetail.FollowStatus = followStatus;
         profileSummaryDetail.FollowersCount = user.Followers.Count(follow => follow.Status == FollowStatus.Accepted);
@@ -140,13 +159,15 @@ public class ProfileService(
 
     public async Task<ResponseDto> SearchUserProfileAsync(string query)
     {
-        if (string.IsNullOrWhiteSpace(query))
+        if(string.IsNullOrWhiteSpace(query))
+        {
             return new ResponseDto
             {
                 StatusCode = 400,
                 Message = "Search query cannot be empty.",
                 Success = false
             };
+        }
 
         query = query.Trim();
         var usersList = await dbContext.Users
@@ -177,7 +198,10 @@ public class ProfileService(
         var user = await dbContext.Users
             .FirstOrDefaultAsync(x => x.Id == userId);
 
-        if (user == null) throw new NotFoundException("User", userId);
+        if(user == null)
+        {
+            throw new NotFoundException("User", userId);
+        }
 
         mapper.Map(dto, user);
         await dbContext.SaveChangesAsync();
@@ -198,12 +222,17 @@ public class ProfileService(
         var user = await dbContext.Users
             .FirstOrDefaultAsync(x => x.Id == userId);
 
-        if (user == null) throw new NotFoundException("User", userId);
+        if(user == null)
+        {
+            throw new NotFoundException("User", userId);
+        }
 
-        if (user?.CoverPhotoPath != null
-            && user.CoverPhotoPath != "profile/cover/default-my-profile-bg.jpg"
-            && fileService.IsExist(user.CoverPhotoPath))
+        if(user?.CoverPhotoPath != null
+           && user.CoverPhotoPath != "profile/cover/default-my-profile-bg.jpg"
+           && fileService.IsExist(user.CoverPhotoPath))
+        {
             await fileService.DeleteFileAsync(user.CoverPhotoPath);
+        }
 
         var filePath = await fileService.UploadCoverImageAsync(dto.File);
         user.CoverPhotoPath = filePath;
@@ -228,13 +257,18 @@ public class ProfileService(
         var user = await dbContext.Users
             .FirstOrDefaultAsync(x => x.Id == userId);
 
-        if (user == null) throw new NotFoundException("User", userId);
+        if(user == null)
+        {
+            throw new NotFoundException("User", userId);
+        }
 
-        if (user.ProfilePhotoPath != null
-            && user.ProfilePhotoPath != "profile/photo/default-my-profile.png"
-            && fileService.IsExist(user.ProfilePhotoPath)
-           )
+        if(user.ProfilePhotoPath != null
+           && user.ProfilePhotoPath != "profile/photo/default-my-profile.png"
+           && fileService.IsExist(user.ProfilePhotoPath)
+          )
+        {
             await fileService.DeleteFileAsync(user.ProfilePhotoPath);
+        }
 
         var filePath = await fileService.UploadProfilImageAsync(dto.File);
         user.ProfilePhotoPath = filePath;
@@ -258,7 +292,10 @@ public class ProfileService(
         var user = await dbContext.Users
             .FirstOrDefaultAsync(user => user.Id == userId);
 
-        if (user == null) throw new NotFoundException("User", userId);
+        if(user == null)
+        {
+            throw new NotFoundException("User", userId);
+        }
 
         user.AccountType = user.AccountType == AccountType.PrivateAccount
             ? AccountType.PublicAccount

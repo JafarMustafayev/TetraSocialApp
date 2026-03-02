@@ -10,17 +10,22 @@ public class AccountManagementService(
         var userId = currentUserService.UserId;
 
         var user = await userManager.FindByIdAsync(userId);
-        if (user == null) throw new NotFoundException("User", userId);
+        if(user == null)
+        {
+            throw new NotFoundException("User", userId);
+        }
 
         var res = await signInManager.CheckPasswordSignInAsync(user, request.Password, false);
 
-        if (!res.Succeeded)
+        if(!res.Succeeded)
+        {
             return new ResponseDto
             {
                 Success = res.Succeeded,
                 StatusCode = StatusCodes.Status401Unauthorized,
                 Message = "The password provided is incorrect."
             };
+        }
 
         return new ResponseDto
         {
@@ -36,13 +41,18 @@ public class AccountManagementService(
 
         var user = await userManager.FindByIdAsync(userId);
 
-        if (user == null) throw new NotFoundException("User", userId);
+        if(user == null)
+        {
+            throw new NotFoundException("User", userId);
+        }
 
         var res = await userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
 
-        if (!res.Succeeded)
+        if(!res.Succeeded)
+        {
             throw new Exceptions.ValidationException("Unexpected error occurred.",
                 res.Errors.Select(err => err.Description).ToList());
+        }
 
         return new ResponseDto
         {
@@ -56,21 +66,29 @@ public class AccountManagementService(
     {
         var isExist = await userManager.FindByNameAsync(request.UserName) != null;
 
-        if (isExist) throw new BadRequestException("User already exists.", new[] { "User already exists." });
+        if(isExist)
+        {
+            throw new BadRequestException("User already exists.", new[] { "User already exists." });
+        }
 
         var userId = currentUserService.UserId;
 
         var user = await userManager.FindByIdAsync(userId);
 
-        if (user == null) throw new NotFoundException("User", userId);
+        if(user == null)
+        {
+            throw new NotFoundException("User", userId);
+        }
 
         user.UserName = request.UserName;
         await userManager.UpdateNormalizedUserNameAsync(user);
         var res = await userManager.UpdateAsync(user);
 
-        if (!res.Succeeded)
+        if(!res.Succeeded)
+        {
             throw new Exceptions.ValidationException("Unexpected error occurred.",
                 res.Errors.Select(err => err.Description).ToList());
+        }
 
         return new ResponseDto
         {
