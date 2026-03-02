@@ -101,9 +101,19 @@ const MyActivities = () => {
     }, [page, isPostsLoading, hasMore, activeTab]);
 
     const handlePostAction = (postId) => {
-        // For My Activities, if something is unliked/unsaved/unarchived, maybe remove it from the list
-        // But let's keep it simple for now and just update the UI if needed
         setPosts(prev => prev.filter(p => p.id !== postId));
+    };
+
+    const handlePostDeleted = (postId) => {
+        setPosts(prev => prev.filter(p => p.id !== postId));
+    };
+
+    const handlePostArchived = (postId) => {
+        setPosts(prev => prev.filter(p => p.id !== postId));
+    };
+
+    const handlePostUpdated = (updatedPost) => {
+        setPosts(prev => prev.map(p => p.id === updatedPost.id ? updatedPost : p));
     };
 
     if (loading) return (
@@ -131,9 +141,9 @@ const MyActivities = () => {
                             <PostWidget
                                 key={post.id}
                                 post={{ ...post, isArchived: activeTab === 'archived' }}
-                                onDelete={() => handlePostAction(post.id)}
-                                onUpdate={(updated) => setPosts(prev => prev.map(p => p.id === updated.id ? updated : p))}
-                                onArchive={() => activeTab === 'archived' && handlePostAction(post.id)}
+                                onDelete={handlePostDeleted}
+                                onUpdate={handlePostUpdated}
+                                onArchive={handlePostArchived}
                                 onSaveToggle={(postId, isSavedNow) => {
                                     if (activeTab === 'saved' && !isSavedNow) {
                                         handlePostAction(postId);

@@ -61,6 +61,10 @@ const Home = () => {
         setPosts(prev => prev.filter(p => p.id !== postId));
     };
 
+    const handlePostArchived = (postId) => {
+        setPosts(prev => prev.filter(p => p.id !== postId));
+    };
+
     const handlePostUpdated = (updatedPost) => {
         setPosts(prev => prev.map(p => p.id === updatedPost.id ? updatedPost : p));
     };
@@ -77,6 +81,7 @@ const Home = () => {
                             post={post}
                             onDelete={handlePostDeleted}
                             onUpdate={handlePostUpdated}
+                            onArchive={handlePostArchived}
                         />
                     ))}
 
