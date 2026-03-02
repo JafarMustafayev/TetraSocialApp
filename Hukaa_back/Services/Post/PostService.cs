@@ -108,10 +108,23 @@ public class PostService(
         var userId = currentUserService.UserId;
 
         var post = await context.Posts
-                       .Include(p => p.PostFiles)
-                       .Include(p => p.AppUser)
-                       .FirstOrDefaultAsync(p => p.Id == postId)
-                   ?? throw new NotFoundException("Post", postId);
+            .Include(post => post.PostFiles)
+            .Include(post => post.AppUser)
+            .Where(post =>
+                !post.IsArchived &&
+                (post.AppUserId == userId ||
+                 post.AppUser.AccountType == AccountType.PublicAccount ||
+                 context.Follows.Any(follow =>
+                     follow.FollowerId == userId &&
+                     follow.FollowingId == post.AppUserId &&
+                     follow.Status == FollowStatus.Accepted)))
+            .FirstOrDefaultAsync(post => post.Id == postId);
+
+        if(post == null)
+        {
+            throw new NotFoundException("Post", postId);
+        }
+
 
         var dto = MapToPostDto(post, userId);
 

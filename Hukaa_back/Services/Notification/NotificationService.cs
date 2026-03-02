@@ -49,7 +49,7 @@ public class NotificationService(
 
         var notification = new Entities.Notification
         {
-            Title = $"{user.UserName} reacted to your post",
+            Title = $"reacted to your post",
             UserId = postOwnerId,
             PayloadJson = JsonSerializer.Serialize(payload),
             Type = NotificationType.PostReacted,
@@ -95,7 +95,7 @@ public class NotificationService(
 
         var notification = new Entities.Notification
         {
-            Title = $"{user.UserName} commented on your post",
+            Title = $"commented on your post",
             UserId = postOwnerId,
             PayloadJson = JsonSerializer.Serialize(payload),
             Type = NotificationType.CommentAdded,
@@ -134,7 +134,7 @@ public class NotificationService(
 
         var notification = new Entities.Notification
         {
-            Title = $"{user.UserName} started following you",
+            Title = $"started following you",
             UserId = followedUserId,
             PayloadJson = JsonSerializer.Serialize(payload),
             Type = NotificationType.Followed,
@@ -173,7 +173,7 @@ public class NotificationService(
 
         var notification = new Entities.Notification
         {
-            Title = $"{user.UserName} sent you a follow request",
+            Title = $"sent you a follow request",
             UserId = requestedUserId,
             PayloadJson = JsonSerializer.Serialize(payload),
             Type = NotificationType.FollowRequestReceived,
@@ -212,7 +212,7 @@ public class NotificationService(
 
         var notification = new Entities.Notification
         {
-            Title = $"{user.UserName} accepted your follow request",
+            Title = $"accepted your follow request",
             UserId = requesterUserId,
             PayloadJson = JsonSerializer.Serialize(payload),
             Type = NotificationType.FollowRequestAccepted,
