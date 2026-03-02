@@ -22,6 +22,7 @@ import PublicRoute from './components/PublicRoute';
 import SecondaryLayout from './layouts/SecondaryLayout';
 import MyActivities from './pages/MyActivities';
 import SignalRTest from './pages/SignalRTest';
+import PostPage from './pages/PostPage';
 import { ThemeProvider } from './context/ThemeContext';
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
                                     <Route path="notifications" element={<Notifications />} />
                                     <Route path="profile" element={<Profile />} />
                                     <Route path="profile/:userId" element={<UserProfile />} />
+                                    <Route path="posts/:postId" element={<PostPage />} />
                                     <Route path="archived" element={<Archived />} />
                                     <Route path="signalr-test" element={<SignalRTest />} />
                                 </Route>

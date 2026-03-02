@@ -305,7 +305,7 @@ const UserProfile = () => {
                         </div>
 
                         {canSeeContent && (
-                            <div className="mt-8 md:mt-12 border-t border-gray-50">
+                            <div className="mt-8 md:mt-12 ">
                                 <ul className="flex space-x-8" role="tablist">
                                     {['timeline', 'about'].map(tab => (
                                         <li key={tab} className="relative">

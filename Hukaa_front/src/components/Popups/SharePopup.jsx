@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { useToast } from '../../context/ToastContext';
 
 const SharePopup = ({ isOpen, onClose, friends = [], postLink }) => {
+    const { showToast } = useToast();
     useEffect(() => {
         const handleEsc = (e) => {
             if (e.key === 'Escape') onClose();
@@ -35,7 +37,8 @@ const SharePopup = ({ isOpen, onClose, friends = [], postLink }) => {
                         <span className="text-sm text-gray-500 max-w-[240px] truncate mr-4">{postLink}</span>
                         <button className="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-700 transition-all flex items-center"
                             onClick={() => {
-                                navigator.clipboard.writeText(postLink);
+                                navigator.clipboard.writeText(postLink)
+                                showToast('Link copied to clipboard');
                             }}>
                             <i className="ri-file-copy-line mr-1"></i> Copy Link
                         </button>

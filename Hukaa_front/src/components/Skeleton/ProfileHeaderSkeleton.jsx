@@ -42,7 +42,7 @@ const ProfileHeaderSkeleton = () => {
                         </div>
 
                         {/* Tabs Placeholder */}
-                        <div className="mt-8 md:mt-12 border-t border-gray-50 pt-4 flex space-x-8">
+                        <div className="mt-8 md:mt-12  pt-4 flex space-x-8">
                             <div className="h-6 w-24 bg-gray-200 rounded-lg"></div>
                             <div className="h-6 w-24 bg-gray-100 rounded-lg"></div>
                         </div>

@@ -85,31 +85,36 @@ const NotificationsList = () => {
                         </Link>
                     </div>
                     <div className="ml-3 flex-1">
-                        <h4 className="text-[14px] font-bold text-gray-800 hover:text-main transition-colors leading-tight">
-                            <Link to={`/profile/${userId}`}>{name}</Link>
-                        </h4>
-                        <p className="text-[12px] text-gray-500 mt-0.5">{notif.title}</p>
+
+                        <div className="flex items-center">
+                            <h4 className="text-[16px] font-bold text-gray-100  hover:text-main transition-colors leading-tight mr-1">
+                                <Link to={`/profile/${userId}`}>{name}</Link>
+                            </h4>
+                            <p className="text-[16px] text-gray-500 mt-0.5">{notif.title}</p>
+                        </div>
 
                         {type === 2 && payload.CommentBody && (
-                            <p className="text-[11px] italic text-gray-400 mt-1 line-clamp-2">"{payload.CommentBody}"</p>
+                            <p className="text-[12px] italic text-gray-400 mt-1 line-clamp-2">"{payload.CommentBody.substring(0, 50)} ..."</p>
                         )}
 
-                        <span className="text-[10px] font-bold text-main uppercase mt-1 block">{time}</span>
                     </div>
-                    <button
-                        onClick={() => handleRead(notif.notificationId)}
-                        className="w-7 h-7 flex items-center justify-center rounded-full text-red-500 bg-red-50 hover:bg-red-500 hover:text-white transition-all opacity-100 lg:opacity-0 lg:group-hover:opacity-100 ml-2"
-                        title="Mark as read"
-                    >
-                        <i className="ri-close-line text-xs font-bold"></i>
-                    </button>
+                    <div className="justify-end">
+                        <span className="text-[10px] font-bold text-main uppercase mt-1 block mb-2">{time}</span>
+                        <button
+                            onClick={() => handleRead(notif.notificationId)}
+                            className="w-7 h-7 flex items-center justify-center rounded-full text-red-500 bg-red-50 hover:bg-red-500 hover:text-white transition-all opacity-100 lg:opacity-0 lg:group-hover:opacity-100 ml-10"
+                            title="Mark as read"
+                        >
+                            <i className="ri-close-line text-xs font-bold"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div className="ml-[52px] mt-3  flex justify-center gap-3">
                     {(type === 1 || type === 2) && payload.PostId && (
                         <Link
                             to={`/posts/${payload.PostId}`}
-                            className="flex-1 w-full text-center text-[11px] font-bold text-main hover:bg-main hover:text-white px-4 py-2 rounded-xl border border-main transition-all shadow-sm"
+                            className="flex-1 w-full text-center text-[11px] font-bold text-main hover:bg-main hover:text-white px-4 py-2 rounded-xl border border-main transition-all "
                         >
                             View Post
                         </Link>
@@ -118,7 +123,7 @@ const NotificationsList = () => {
                     {(type === 3 || type === 5) && (
                         <Link
                             to={`/profile/${userId}`}
-                            className="flex-1 w-full text-center text-[11px] font-bold text-main hover:bg-main hover:text-white px-4 py-2 rounded-xl border border-main transition-all shadow-sm"
+                            className="flex-1 w-full text-center text-[11px] font-bold text-main hover:bg-main hover:text-white px-4 py-2 rounded-xl border border-main transition-all"
                         >
                             View Profile
                         </Link>
@@ -128,13 +133,13 @@ const NotificationsList = () => {
                         <>
                             <button
                                 onClick={() => acceptRequest(userId, notif.notificationId)}
-                                className="flex-1 w-full text-[11px] font-bold bg-main text-white px-4 py-2 rounded-xl hover:bg-optional transition-all shadow-md shadow-blue-100"
+                                className="flex-1 py-2 px-3 bg-main text-white text-[12px] font-bold rounded-xl hover:bg-blue-700 transition-all shadow-sm shadow-blue-100 disabled:opacity-50"
                             >
                                 Accept
                             </button>
                             <button
                                 onClick={() => rejectRequest(userId, notif.notificationId)}
-                                className="flex-1 w-full text-[11px] font-bold text-gray-500 hover:bg-gray-100 px-4 py-2 rounded-xl border border-gray-200 transition-all shadow-sm"
+                                className="flex-1 py-2 px-3 text-red-500 bg-red-100 hover:bg-red-500 hover:text-white text-[12px] font-bold rounded-xl disabled:opacity-50 shadow-3xl shadow-red-600"
                             >
                                 Reject
                             </button>
@@ -148,7 +153,7 @@ const NotificationsList = () => {
     return (
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden lg:h-[805px] flex flex-col">
             <div className="p-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/30 shrink-0">
-                <h3 className="text-lg font-bold text-gray-800 m-0">Notifications</h3>
+                <h3 className="text-lg font-bold text-gray-800 m-0">Notifications {notifications.length > 0 ? `(${notifications.length})` : ''}</h3>
                 <div className="flex gap-2">
                     <button
                         className="group w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-gray-100 text-gray-500 hover:text-main hover:border-main transition-all shadow-sm active:scale-95 disabled:opacity-50"

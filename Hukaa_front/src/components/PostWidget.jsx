@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { IMAGE_BASE_URL, POST_SHARE_URL, FRONT_URL, USER_AVATAR } from '../api/client';
+import { IMAGE_BASE_URL, FRONT_URL, USER_AVATAR } from '../api/client';
 import { updatePost, deletePost, toggleArchivePost, reactToPost, toggleSavePost } from '../api/post';
 import CommentPopup from './Popups/CommentPopup';
 import SharePopup from './Popups/SharePopup';
@@ -29,7 +29,7 @@ const PostWidget = ({ post, onDelete, onUpdate, onArchive, onSaveToggle }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const { showToast, showConfirm } = useToast();
     const maxChars = 1000;
-    const SUMMARY_LIMIT = 250;
+    const SUMMARY_LIMIT = 50;
 
     const reactions = [
         { type: 'Like', icon: '👍', color: 'text-blue-600' },
@@ -250,7 +250,7 @@ const PostWidget = ({ post, onDelete, onUpdate, onArchive, onSaveToggle }) => {
         );
     };
 
-    const needsReadMore = post.content && (post.content.length > SUMMARY_LIMIT || post.content.split('\n').length > 5);
+    const needsReadMore = post.content && (post.content.split('\n').length > 15);
     const displayContent = needsReadMore && !isExpanded
         ? post.content.substring(0, SUMMARY_LIMIT) + '...'
         : post.content;
@@ -270,7 +270,7 @@ const PostWidget = ({ post, onDelete, onUpdate, onArchive, onSaveToggle }) => {
                         </Link>
                     </div>
                     <div>
-                        <Link to={`/profile/${post.userId}`} className="font-bold text-[15px] text-gray-800 hover:text-main block leading-tight transition-colors">
+                        <Link to={`/profile/${post.userId}`} className="font-bold text-[18px] text-gray-800 hover:text-main block leading-tight transition-colors">
                             {post.userName || 'USER NAME'}
                         </Link>
                         <span className="text-[11px] text-gray-400 font-bold flex items-center mt-0.5">
@@ -372,7 +372,7 @@ const PostWidget = ({ post, onDelete, onUpdate, onArchive, onSaveToggle }) => {
                     </div>
                 ) : (
                     <div className="mb-5 px-1">
-                        <p className="text-gray-700 whitespace-pre-wrap leading-[1.7] text-[15.5px] font-medium tracking-tight">
+                        <p className="text-gray-700 whitespace-pre-wrap leading-[1.7] text-[15.5px] font-medium tracking-tight wrap-anywhere">
                             {displayContent}
                         </p>
                         {needsReadMore && (
@@ -473,7 +473,7 @@ const PostWidget = ({ post, onDelete, onUpdate, onArchive, onSaveToggle }) => {
                 isOpen={showShare}
                 onClose={() => setShowShare(false)}
                 friends={tempFriends}
-                postLink={`${FRONT_URL}${POST_SHARE_URL}${post.id}`}
+                postLink={`${FRONT_URL}/posts/${post.id}`}
             />
             <ImageGalleryPopup
                 isOpen={showGallery}

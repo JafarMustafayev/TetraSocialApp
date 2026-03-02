@@ -1,5 +1,4 @@
 export const IMAGE_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7124';
-export const POST_SHARE_URL = import.meta.env.VITE_POST_SHARE_URL || '/posts/';
 export const FRONT_URL = import.meta.env.VITE_FRONT_URL || 'https://localhost:5173';
 export const USER_AVATAR = import.meta.env.VITE_USER_AVATAR || '/src/assets/images/user_avatar.png';
 export const COVER_IMAGE = import.meta.env.VITE_COVER_IMAGE || '/src/assets/images/cover_image.png';

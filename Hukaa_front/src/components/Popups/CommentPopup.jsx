@@ -4,6 +4,7 @@ import { getPostComments, createComment, deleteComment, updateComment } from '..
 import { IMAGE_BASE_URL } from '../../api/client';
 import { useToast } from '../../context/ToastContext';
 import CommentSkeleton from '../Skeleton/CommentSkeleton';
+import moment from 'moment';
 
 const CommentPopup = ({ isOpen, onClose, postId, onCommentCountChange }) => {
     const [comments, setComments] = useState([]);
@@ -13,8 +14,12 @@ const CommentPopup = ({ isOpen, onClose, postId, onCommentCountChange }) => {
     const [editingComment, setEditingComment] = useState(null);
     const [activeDropdownId, setActiveDropdownId] = useState(null);
     const { showToast, showConfirm } = useToast();
+    const [isExpanded, setIsExpanded] = useState(false);
     const dropdownRef = useRef(null);
     const textareaRef = useRef(null);
+
+    const maxChars = 500;
+    const SUMMARY_LIMIT = 250;
 
     useEffect(() => {
         if (textareaRef.current) {
@@ -130,6 +135,8 @@ const CommentPopup = ({ isOpen, onClose, postId, onCommentCountChange }) => {
 
     if (!isOpen) return null;
 
+
+
     return createPortal(
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-1000 p-4 transition-all duration-300">
             <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate-fade-in-up">
@@ -149,22 +156,22 @@ const CommentPopup = ({ isOpen, onClose, postId, onCommentCountChange }) => {
                     {isLoading ? (
                         <CommentSkeleton count={3} />
                     ) : comments.length > 0 ? (
-                        comments.map(comment => (
+                        comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map(comment => (
                             <div key={comment.id} className="flex space-x-4 group">
                                 <div className="w-10 h-10 rounded-full bg-blue-100 shrink-0 flex items-center justify-center text-blue-600 font-bold border border-white shadow-sm overflow-hidden">
-                                    {comment.userImage ? (
-                                        <img src={`${IMAGE_BASE_URL}/${comment.userImage}`} alt={comment.userName} className="w-full h-full object-cover" />
-                                    ) : (
-                                        (comment.userName || 'U').charAt(0)
-                                    )}
+                                    <img src={`${IMAGE_BASE_URL}/${comment.userImage}`} alt={comment.userName} className="w-full h-full object-cover" />
                                 </div>
                                 <div className="grow space-y-1">
                                     <div className="bg-gray-50 rounded-2xl rounded-tl-none p-4 border border-gray-100 group-hover:bg-gray-100 transition-colors relative">
                                         <div className="flex justify-between items-center mb-1">
-                                            <p className="font-bold text-sm text-gray-900 hover:text-blue-600 cursor-pointer">{comment.userName}</p>
+                                            <p className="font-bold text-[18px] text-gray-900 dark:text-gray-50 hover:text-blue-600 cursor-pointer">{comment.userName}</p>
                                             <div className="flex items-center space-x-2">
                                                 <span className="text-[10px] text-gray-400 font-medium">
-                                                    {comment.createdAt ? new Date(comment.createdAt).toLocaleDateString() : 'Just now'}
+                                                    {comment.createdAt ?
+                                                        (moment.utc(comment.createdAt).local().fromNow().includes('days') &&
+                                                            moment.utc(comment.createdAt).local().fromNow().split(' ')[0] < 7 ?
+                                                            moment.utc(comment.createdAt).local().fromNow() :
+                                                            moment.utc(comment.createdAt).local().format('DD MMM YYYY')) : ''}
                                                 </span>
                                                 {comment.isOwner && (
                                                     <div className="relative">
@@ -233,9 +240,10 @@ const CommentPopup = ({ isOpen, onClose, postId, onCommentCountChange }) => {
                             <textarea
                                 ref={textareaRef}
                                 placeholder="Add a friendly comment..."
-                                className="w-full bg-transparent border-none outline-none py-1 px-2 text-gray-700 placeholder-gray-400 resize-none max-h-32 min-h-[44px] leading-normal"
+                                className="w-full  border-none outline-none py-1 px-2 text-gray-700 placeholder-gray-400 bg-gray-50 resize-none max-h-32 min-h-[44px] leading-normal"
                                 value={newComment}
-                                onChange={(e) => setNewComment(e.target.value)}
+                                autoFocus
+                                onChange={(e) => setNewComment(e.target.value.substring(0, maxChars))}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter' && !e.shiftKey) {
                                         e.preventDefault();
@@ -243,18 +251,24 @@ const CommentPopup = ({ isOpen, onClose, postId, onCommentCountChange }) => {
                                     }
                                 }}
                             />
+
                         </div>
-                        <button
-                            onClick={handleAction}
-                            disabled={isSubmitting || !newComment.trim()}
-                            className="shrink-0 bg-blue-600 text-white rounded-xl px-6 py-3 text-sm font-bold hover:bg-blue-700 shadow-lg shadow-blue-100 transform hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100 disabled:shadow-none h-[44px] flex items-center justify-center min-w-[100px]"
-                        >
-                            {isSubmitting ? (
-                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                            ) : (
-                                editingComment ? 'Update' : 'Post'
-                            )}
-                        </button>
+                        <div className="justify-center space-x-2">
+                            <button
+                                onClick={handleAction}
+                                disabled={isSubmitting || !newComment.trim()}
+                                className="shrink-0 bg-blue-600 text-white rounded-xl px-6 py-3 text-sm font-bold hover:bg-blue-700 shadow-lg shadow-blue-100 transform hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100 disabled:shadow-none h-[44px] flex items-center justify-center min-w-[100px]"
+                            >
+                                {isSubmitting ? (
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                ) : (
+                                    editingComment ? 'Update' : 'Post'
+                                )}
+                            </button>
+                            <span className={`text-[11px] font-bold tracking-widest uppercase ${newComment.length >= maxChars ? 'text-red-500 mt-5' : 'text-gray-400'}`}>
+                                {newComment.length} / {maxChars}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>

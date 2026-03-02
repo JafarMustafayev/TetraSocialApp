@@ -98,7 +98,7 @@ const CreatePostWidget = ({ onPostCreated }) => {
                             value={content}
                             onChange={handleTextChange}
                             placeholder="What's on your mind?..."
-                            className="w-full bg-gray-50/50 border-none ring-1 ring-gray-100 focus:ring-4 focus:ring-blue-100 focus:bg-white text-gray-700 resize-none rounded-2xl p-4 min-h-[120px] transition-all placeholder:text-gray-400 font-medium text-[15px] outline-none"
+                            className="w-full bg-gray-50/50 border-none ring-1 ring-gray-500 focus:ring-2 focus:ring-blue-100 focus:bg-white text-gray-700 resize-none rounded-2xl p-4 min-h-[120px] transition-all placeholder:text-gray-400 font-medium text-[15px] outline-none"
                         ></textarea>
 
                         <div className="flex justify-end mt-2">

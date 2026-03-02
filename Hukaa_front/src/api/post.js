@@ -76,3 +76,9 @@ export const getFeeds = async (page) => {
     });
 };
 
+export const getPost = async (postId) => {
+    return fetchClient(`/api/post/${postId}`, {
+        method: 'GET',
+    });
+};
+

@@ -51,7 +51,7 @@ const FollowerRequests = () => {
                 ) : requests.length > 0 ? (
                     <>
                         {requests.map((req) => (
-                            <div key={req.id} className="p-4 flex flex-col hover:bg-gray-50/50 transition-colors group">
+                            <div key={req.id} className="p-4 flex flex-col hover:bg-gray-100 transition-colors group">
                                 <div className="flex items-center mb-3">
                                     <div className="shrink-0">
                                         <Link to={`/profile/${req.id}`}>
@@ -77,14 +77,14 @@ const FollowerRequests = () => {
                                         disabled={actionLoadingId === req.id}
                                         className="flex-1 py-2 px-3 bg-main text-white text-[12px] font-bold rounded-xl hover:bg-blue-700 transition-all shadow-sm shadow-blue-100 disabled:opacity-50"
                                     >
-                                        {actionLoadingId === req.id ? '...' : 'Confirm'}
+                                        {actionLoadingId === req.id ? '...' : 'Accept'}
                                     </button>
                                     <button
                                         onClick={() => handleReject(req.id)}
                                         disabled={actionLoadingId === req.id}
-                                        className="flex-1 py-2 px-3 text-red-500 bg-red-50 hover:bg-red-500 hover:text-white text-[12px] font-bold rounded-xl  transition-all disabled:opacity-50"
+                                        className="flex-1 py-2 px-3 text-red-500 bg-red-100 hover:bg-red-500 hover:text-white text-[12px] font-bold rounded-xl disabled:opacity-50 shadow-3xl shadow-red-600"
                                     >
-                                        Delete
+                                        Reject
                                     </button>
                                 </div>
                             </div>
