@@ -4,7 +4,8 @@ public class NotificationService(
     ICurrentUserService currentUser,
     IHubContext<NotificationHub, INotificationHubClient> hubContext,
     AppDbContext context,
-    IMapper mapper) : INotificationService
+    IMapper mapper,
+    IOnlineUserTracker onlineUserTracker) : INotificationService
 {
     public async Task<ResponseDto> GetNotificationsAsync(int page, int take)
     {
@@ -59,16 +60,19 @@ public class NotificationService(
         await context.Notifications.AddAsync(notification);
         await context.SaveChangesAsync();
 
-        await hubContext.Clients
-            .User(postOwnerId)
-            .ReceiveNotification(new NotificationEnvelope
-            {
-                Title = notification.Title,
-                CreatedAt = notification.CreatedAt,
-                NotificationId = notification.Id,
-                Type = notification.Type,
-                Payload = payload
-            });
+        if(onlineUserTracker.IsOnline(postOwnerId))
+        {
+            await hubContext.Clients
+                .User(postOwnerId)
+                .ReceiveNotification(new NotificationEnvelope
+                {
+                    Title = notification.Title,
+                    CreatedAt = notification.CreatedAt,
+                    NotificationId = notification.Id,
+                    Type = notification.Type,
+                    Payload = payload
+                });
+        }
     }
 
     public async Task SendCommentNotificationAsync(
@@ -105,16 +109,19 @@ public class NotificationService(
         await context.Notifications.AddAsync(notification);
         await context.SaveChangesAsync();
 
-        await hubContext.Clients
-            .User(postOwnerId)
-            .ReceiveNotification(new NotificationEnvelope
-            {
-                Title = notification.Title,
-                NotificationId = notification.Id,
-                Type = notification.Type,
-                CreatedAt = notification.CreatedAt,
-                Payload = payload
-            });
+        if(onlineUserTracker.IsOnline(postOwnerId))
+        {
+            await hubContext.Clients
+                .User(postOwnerId)
+                .ReceiveNotification(new NotificationEnvelope
+                {
+                    Title = notification.Title,
+                    NotificationId = notification.Id,
+                    Type = notification.Type,
+                    CreatedAt = notification.CreatedAt,
+                    Payload = payload
+                });
+        }
     }
 
     public async Task SendFollowNotificationAsync(string followedUserId)
@@ -144,16 +151,19 @@ public class NotificationService(
         await context.Notifications.AddAsync(notification);
         await context.SaveChangesAsync();
 
-        await hubContext.Clients
-            .User(followedUserId)
-            .ReceiveNotification(new NotificationEnvelope
-            {
-                Title = notification.Title,
-                NotificationId = notification.Id,
-                Type = notification.Type,
-                CreatedAt = notification.CreatedAt,
-                Payload = payload
-            });
+        if(onlineUserTracker.IsOnline(followedUserId))
+        {
+            await hubContext.Clients
+                .User(followedUserId)
+                .ReceiveNotification(new NotificationEnvelope
+                {
+                    Title = notification.Title,
+                    NotificationId = notification.Id,
+                    Type = notification.Type,
+                    CreatedAt = notification.CreatedAt,
+                    Payload = payload
+                });
+        }
     }
 
     public async Task SendFollowRequestReceivedNotificationAsync(string requestedUserId)
@@ -183,16 +193,19 @@ public class NotificationService(
         await context.Notifications.AddAsync(notification);
         await context.SaveChangesAsync();
 
-        await hubContext.Clients
-            .User(requestedUserId)
-            .ReceiveNotification(new NotificationEnvelope
-            {
-                Title = notification.Title,
-                NotificationId = notification.Id,
-                Type = notification.Type,
-                CreatedAt = notification.CreatedAt,
-                Payload = payload
-            });
+        if(onlineUserTracker.IsOnline(requestedUserId))
+        {
+            await hubContext.Clients
+                .User(requestedUserId)
+                .ReceiveNotification(new NotificationEnvelope
+                {
+                    Title = notification.Title,
+                    NotificationId = notification.Id,
+                    Type = notification.Type,
+                    CreatedAt = notification.CreatedAt,
+                    Payload = payload
+                });
+        }
     }
 
     public async Task SendFollowRequestAcceptedNotificationAsync(string requesterUserId)
@@ -222,16 +235,19 @@ public class NotificationService(
         await context.Notifications.AddAsync(notification);
         await context.SaveChangesAsync();
 
-        await hubContext.Clients
-            .User(requesterUserId)
-            .ReceiveNotification(new NotificationEnvelope
-            {
-                Title = notification.Title,
-                NotificationId = notification.Id,
-                Type = notification.Type,
-                CreatedAt = notification.CreatedAt,
-                Payload = payload
-            });
+        if(onlineUserTracker.IsOnline(requesterUserId))
+        {
+            await hubContext.Clients
+                .User(requesterUserId)
+                .ReceiveNotification(new NotificationEnvelope
+                {
+                    Title = notification.Title,
+                    NotificationId = notification.Id,
+                    Type = notification.Type,
+                    CreatedAt = notification.CreatedAt,
+                    Payload = payload
+                });
+        }
     }
 
     public async Task<ResponseDto> ReadNotificationsAsync(string notificationId)
