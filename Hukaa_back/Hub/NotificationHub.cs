@@ -2,17 +2,6 @@
 
 public class NotificationHub(
     IOnlineUserTracker tracker,
-    ICurrentUserService currentUser) : Hub<INotificationHubClient>
+    ICurrentUserService currentUser) : BaseHub<INotificationHubClient>(tracker, currentUser)
 {
-    public override async Task OnConnectedAsync()
-    {
-        tracker.AddConnection(currentUser.UserId, Context.ConnectionId);
-        await base.OnConnectedAsync();
-    }
-
-    public override Task OnDisconnectedAsync(Exception? exception)
-    {
-        tracker.RemoveConnection(currentUser.UserId, Context.ConnectionId);
-        return base.OnDisconnectedAsync(exception);
-    }
 }

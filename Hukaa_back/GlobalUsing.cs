@@ -48,7 +48,7 @@ global using System.Text.Json;
 global using Hukaa_back.DTOs.Comment;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Hukaa_back.Hub;
-global using Hukaa_back.Realtime;
+global using Hukaa_back.Abstractions.Realtime;
 global using System.Collections.Concurrent;
 global using Microsoft.AspNetCore.SignalR;
 global using Hukaa_back.DTOs.Notification;

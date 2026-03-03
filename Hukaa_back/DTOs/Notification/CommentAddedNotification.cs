@@ -1,4 +1,4 @@
-﻿namespace Hukaa_back.Realtime;
+﻿namespace Hukaa_back.DTOs.Notification;
 
 public sealed record CommentAddedNotification : BaseNotification
 {
