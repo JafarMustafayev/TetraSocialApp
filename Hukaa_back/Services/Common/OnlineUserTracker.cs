@@ -2,62 +2,54 @@
 
 public class OnlineUserTracker : IOnlineUserTracker
 {
+    private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, byte>> _userConnections = new();
+
+    private readonly ConcurrentDictionary<string, DateTime> _connectionHeartbeat = new();
+
     private readonly TimeSpan _timeout = TimeSpan.FromSeconds(20);
-
-    private readonly ConcurrentDictionary<string, HashSet<string>> _connections = new();
-
-    private readonly ConcurrentDictionary<string, DateTime> _heartbeat = new();
 
     public void AddConnection(string userId, string connectionId)
     {
-        _connections.AddOrUpdate(
-            userId,
-            _ => new HashSet<string> { connectionId },
-            (_, set) =>
-            {
-                lock (set)
-                {
-                    set.Add(connectionId);
-                }
+        var connections = _userConnections.GetOrAdd(userId, _ => new ConcurrentDictionary<string, byte>());
+        connections.TryAdd(connectionId, 0);
 
-                return set;
-            });
-
-        _heartbeat[userId] = DateTime.UtcNow;
+        _connectionHeartbeat[connectionId] = DateTime.UtcNow;
     }
 
     public void RemoveConnection(string userId, string connectionId)
     {
-        if(_connections.TryGetValue(userId, out var set))
+        if(_userConnections.TryGetValue(userId, out var connections))
         {
-            lock (set)
-            {
-                set.Remove(connectionId);
+            connections.TryRemove(connectionId, out _);
 
-                if(set.Count == 0)
-                {
-                    _connections.TryRemove(userId, out _);
-                }
+            if(connections.IsEmpty)
+            {
+                _userConnections.TryRemove(userId, out _);
             }
         }
 
-        _heartbeat.TryRemove(userId, out _);
+        _connectionHeartbeat.TryRemove(connectionId, out _);
     }
 
     public bool IsOnline(string userId)
     {
-        if(!_heartbeat.ContainsKey(userId))
+        if(!_userConnections.TryGetValue(userId, out var connections))
         {
             return false;
         }
 
-        return DateTime.UtcNow - _heartbeat[userId] < _timeout;
+        return connections.Keys.Any(connectionId =>
+            _connectionHeartbeat.TryGetValue(connectionId, out var lastSeen) &&
+            DateTime.UtcNow - lastSeen < _timeout);
     }
 
     public IEnumerable<string> GetConnections(string userId)
     {
-        return _connections.TryGetValue(userId, out var set)
-            ? set
-            : Enumerable.Empty<string>();
+        if(!_userConnections.TryGetValue(userId, out var connections))
+        {
+            return Enumerable.Empty<string>();
+        }
+
+        return connections.Keys;
     }
 }
