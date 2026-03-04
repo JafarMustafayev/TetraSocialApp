@@ -269,38 +269,10 @@ const Navbar = ({ onMenuClick }) => {
                         <i className={`${getThemeIcon()} text-xl sm:text-[22px]`}></i>
                     </button>
 
-                    {/* Inbox Dropdown
-                    <div className="hidden md:block relative" onClick={stopPropagation}>
-                        <button
-                            onClick={(e) => toggleDropdown('inbox', e)}
-                            className="w-[45px] h-[45px] flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white hover:text-main transition-all relative"
-                        >
-                            <i className="ri-mail-line text-[22px]"></i>
-                            <span className="absolute -top-[2px] -right-[2px] w-5 h-5 flex items-center justify-center rounded-full bg-[#1CCD16] text-white text-[10px] font-bold border-2 border-main">2</span>
-                        </button>
-
-                        <div className={`absolute right-0 top-full mt-4 w-[320px] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 transform origin-top ${openDropdown === 'inbox' ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-4'}`}>
-                            <div className="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
-                                <h3 className="font-bold text-gray-800">Messages</h3>
-                                <Link to="/messages" className="text-xs text-main font-bold hover:underline">View All</Link>
-                            </div>
-                            <div className="p-2 max-h-[400px] overflow-y-auto">
-                                <div className="p-3 flex items-center gap-3 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer">
-                                    <img src={USER_AVATAR} className="w-10 h-10 rounded-full object-cover" alt="user" />
-                                    <div className="flex-1 min-w-0">
-                                        <h4 className="text-sm font-bold text-gray-800 truncate">James Vanwin</h4>
-                                        <p className="text-xs text-gray-500 truncate">Hello Dear I Want Talk To You</p>
-                                    </div>
-                                    <span className="w-2 h-2 bg-main rounded-full"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div> */}
-
 
 
                     {/* Notifications Dropdown */}
-                    <div className="hidden md:block relative" onClick={stopPropagation}>
+                    <div className="blok md:hidden relative" onClick={stopPropagation}>
                         <button
                             onClick={(e) => toggleDropdown('notifications', e)}
                             className="w-[45px] h-[45px] flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white hover:text-main transition-all relative"

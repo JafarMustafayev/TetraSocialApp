@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
+
 @import "remixicon/fonts/remixicon.css";
 
 @theme {
@@ -187,6 +189,7 @@ html.dark .bg-white {
 html.dark .bg-gray-50 {
   background-color: #0b0f1a !important;
 }
+
 
 html.dark .bg-gray-50\/20 {
   background-color: oklch(0.2214 0.0301 272.29) !important;

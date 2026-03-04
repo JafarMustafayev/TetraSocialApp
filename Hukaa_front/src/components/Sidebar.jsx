@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useNotifications } from '../context/NotificationContext';
+import { useChat } from '../context/ChatContext';
 
 const Sidebar = ({ isOpen, onClose }) => {
     const location = useLocation();
     const { notifications } = useNotifications();
+    const { totalUnreadCount } = useChat();
 
     const menuItems = [
         { path: '/', label: 'News Feed', icon: 'ri-newspaper-line' },
@@ -14,7 +16,12 @@ const Sidebar = ({ isOpen, onClose }) => {
             icon: 'ri-notification-3-line',
             count: notifications.length
         },
-        { path: '/messages', label: 'Messages', icon: 'ri-chat-3-line' },
+        {
+            path: '/messages',
+            label: 'Messages',
+            icon: 'ri-chat-3-line',
+            count: totalUnreadCount
+        },
         {
             path: '/profile',
             label: 'Profile',

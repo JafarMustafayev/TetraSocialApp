@@ -23,54 +23,57 @@ import MyActivities from './pages/MyActivities';
 import SignalRTest from './pages/SignalRTest';
 import PostPage from './pages/PostPage';
 import { ThemeProvider } from './context/ThemeContext';
+import { ChatProvider } from './context/ChatContext';
 
 function App() {
     return (
         <ThemeProvider>
             <ToastProvider>
                 <AuthProvider>
-                    <NotificationProvider>
-                        <BrowserRouter>
-                            <Routes>
-                                {/* Main Layout Routes */}
-                                <Route path="/" element={
-                                    <ProtectedRoute>
-                                        <MainLayout />
-                                    </ProtectedRoute>
-                                }>
-                                    <Route index element={<Home />} />
-                                    <Route path="messages" element={<Messages />} />
-                                    <Route path="notifications" element={<Notifications />} />
-                                    <Route path="profile" element={<Profile />} />
-                                    <Route path="profile/:userId" element={<UserProfile />} />
-                                    <Route path="posts/:postId" element={<PostPage />} />
-                                    <Route path="signalr-test" element={<SignalRTest />} />
-                                </Route>
-
-                                {/* Secondary Layout Routes (Dual Sidebar) */}
-                                <Route element={
-                                    <ProtectedRoute>
-                                        <SecondaryLayout />
-                                    </ProtectedRoute>
-                                }>
-                                    <Route path="/settings" element={<Settings />} />
-                                    <Route path="/my-activities" element={<MyActivities />} />
-                                </Route>
-
-                                <Route element={<PublicRoute />}>
-                                    <Route element={<AuthLayout />}>
-                                        <Route path="/login" element={<Login />} />
-                                        <Route path="/register" element={<Register />} />
-                                        <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <ChatProvider>
+                        <NotificationProvider>
+                            <BrowserRouter>
+                                <Routes>
+                                    {/* Main Layout Routes */}
+                                    <Route path="/" element={
+                                        <ProtectedRoute>
+                                            <MainLayout />
+                                        </ProtectedRoute>
+                                    }>
+                                        <Route index element={<Home />} />
+                                        <Route path="messages" element={<Messages />} />
+                                        <Route path="notifications" element={<Notifications />} />
+                                        <Route path="profile" element={<Profile />} />
+                                        <Route path="profile/:userId" element={<UserProfile />} />
+                                        <Route path="posts/:postId" element={<PostPage />} />
+                                        <Route path="signalr-test" element={<SignalRTest />} />
                                     </Route>
-                                </Route>
-                                <Route element={<AuthLayout />}>
-                                    <Route path="/reset-password" element={<ResetPassword />} />
-                                    <Route path="/email-confirmation" element={<EmailConfirmation />} />
-                                </Route>
-                            </Routes>
-                        </BrowserRouter>
-                    </NotificationProvider>
+
+                                    {/* Secondary Layout Routes (Dual Sidebar) */}
+                                    <Route element={
+                                        <ProtectedRoute>
+                                            <SecondaryLayout />
+                                        </ProtectedRoute>
+                                    }>
+                                        <Route path="/settings" element={<Settings />} />
+                                        <Route path="/my-activities" element={<MyActivities />} />
+                                    </Route>
+
+                                    <Route element={<PublicRoute />}>
+                                        <Route element={<AuthLayout />}>
+                                            <Route path="/login" element={<Login />} />
+                                            <Route path="/register" element={<Register />} />
+                                            <Route path="/forgot-password" element={<ForgotPassword />} />
+                                        </Route>
+                                    </Route>
+                                    <Route element={<AuthLayout />}>
+                                        <Route path="/reset-password" element={<ResetPassword />} />
+                                        <Route path="/email-confirmation" element={<EmailConfirmation />} />
+                                    </Route>
+                                </Routes>
+                            </BrowserRouter>
+                        </NotificationProvider>
+                    </ChatProvider>
                 </AuthProvider>
             </ToastProvider>
         </ThemeProvider>
