@@ -14,6 +14,8 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole, string>
     public DbSet<SavedPost> SavedPosts { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<WorkExperience> WorkExperiences { get; set; }
+    public DbSet<Conversation> Conversations { get; set; }
+    public DbSet<Message> Messages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -32,5 +32,20 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
             .WithOne(x => x.Post)
             .HasForeignKey(x => x.PostId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(x => x.Comments)
+            .WithOne(x => x.Post)
+            .HasForeignKey(x => x.PostId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(x => x.SavedPosts)
+            .WithOne(x => x.Post)
+            .HasForeignKey(x => x.PostId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(x => x.Messages)
+            .WithOne(x => x.Post)
+            .HasForeignKey(x => x.PostId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

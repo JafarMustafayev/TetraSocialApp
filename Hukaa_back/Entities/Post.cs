@@ -14,6 +14,7 @@ public class Post : BaseEntity
     public ICollection<Reaction>? Reactions { get; set; }
     public ICollection<Comment>? Comments { get; set; }
     public ICollection<SavedPost>? SavedPosts { get; set; }
+    public ICollection<Message>? Messages { get; set; }
 
     public Post()
     {

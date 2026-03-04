@@ -45,6 +45,7 @@ public static class ServiceRegistration
         //realtime
         services.AddSingleton<IOnlineUserTracker, OnlineUserTracker>();
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IConversationService, ConversationService>();
     }
 
     private static void ConfigureIdentity(this IServiceCollection services)

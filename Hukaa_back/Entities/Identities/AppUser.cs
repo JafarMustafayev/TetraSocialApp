@@ -21,6 +21,8 @@ public class AppUser : IdentityUser<string>
     public ICollection<Follow> Followers { get; set; }
     public ICollection<SavedPost> SavedPosts { get; set; }
     public ICollection<Notification> Notifications { get; set; }
+    public ICollection<Message> Messages { get; set; }
+    public ICollection<Conversation> Conversations { get; set; }
 
 
     public AppUser()

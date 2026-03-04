@@ -52,3 +52,6 @@ global using Hukaa_back.Abstractions.Realtime;
 global using System.Collections.Concurrent;
 global using Microsoft.AspNetCore.SignalR;
 global using Hukaa_back.DTOs.Notification;
+global using Hukaa_back.Abstractions.Services.Conversation;
+global using Hukaa_back.DTOs.Chat;
+global using Hukaa_back.Services.Conversation;
