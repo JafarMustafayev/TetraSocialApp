@@ -198,9 +198,9 @@ const ChatArea = ({ selectedId, setSelectedId }) => {
     }
 
     return (
-        <div className={`flex-1 flex flex-col bg-[#e5ddd5] dark:bg-[#0b141a] relative h-full w-[calc(100vw-500px)] ${!selectedId ? 'hidden md:flex' : 'flex'}`}>
+        <div className={`flex-1 flex flex-col bg-[#e5ddd5] dark:bg-[#0b141a] relative h-full min-w-0 ${!selectedId ? 'hidden md:flex' : 'flex'}`}>
             {/* Chat Header - Fixed at Top */}
-            <div className="h-[70px] px-4 md:px-6 rounded-b-2xl bg-white/40 dark:bg-[#202c33]/80 backdrop-blur-sm flex items-center justify-between shrink-0 z-30">
+            <div className="h-[70px] px-4 md:px-6 rounded-b-2xl bg-white/40 dark:bg-[#202c33]/80 border-b border-gray-400 backdrop-blur-sm flex items-center justify-between shrink-0 z-30">
                 <div className="flex items-center">
                     <button
                         onClick={() => setSelectedId(null)}
@@ -284,7 +284,7 @@ const ChatArea = ({ selectedId, setSelectedId }) => {
             )}
 
             {/* Chat Input - Fixed at Bottom */}
-            <div className="p-3 bg-white/40 dark:bg-[#202c33]/80 backdrop-blur-xs rounded-t-2xl z-30">
+            <div className="p-3 bg-gray-300/60 dark:bg-[#202c33]/80 backdrop-blur-xs rounded-t-2xl border-t border-gray-400 z-30">
                 <form onSubmit={handleSendMessage} className="flex items-end space-x-2 md:space-x-4">
                     <div className="flex-1">
                         <textarea
@@ -294,7 +294,7 @@ const ChatArea = ({ selectedId, setSelectedId }) => {
                             onChange={(e) => setMessageText(e.target.value)}
                             onKeyDown={handleKeyDown}
                             placeholder="Type your message..."
-                            className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-4 md:px-5 py-3 text-sm outline-none focus:ring-2 focus:ring-main/20 transition-all shadow-inner resize-none min-h-[48px] max-h-[150px] overflow-y-auto"
+                            className="w-full ring-1 ring-gray-400 bg-gray-50 border-2 border-gray-100 rounded-2xl px-4 md:px-5 py-3 text-sm outline-none focus:ring-2 focus:ring-main/20 transition-all shadow-inner resize-none min-h-[48px] max-h-[150px] overflow-y-auto"
                         />
                     </div>
                     <button
