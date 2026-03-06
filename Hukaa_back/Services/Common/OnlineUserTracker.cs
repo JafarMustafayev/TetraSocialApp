@@ -2,54 +2,49 @@
 
 public class OnlineUserTracker : IOnlineUserTracker
 {
-    private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, byte>> _userConnections = new();
-
-    private readonly ConcurrentDictionary<string, DateTime> _connectionHeartbeat = new();
-
-    private readonly TimeSpan _timeout = TimeSpan.FromSeconds(20);
+    private readonly ConcurrentDictionary<string, HashSet<string>> _connections = new();
 
     public void AddConnection(string userId, string connectionId)
     {
-        var connections = _userConnections.GetOrAdd(userId, _ => new ConcurrentDictionary<string, byte>());
-        connections.TryAdd(connectionId, 0);
+        _connections.AddOrUpdate(
+            userId,
+            _ => new HashSet<string> { connectionId },
+            (_, set) =>
+            {
+                lock (set)
+                {
+                    set.Add(connectionId);
+                }
 
-        _connectionHeartbeat[connectionId] = DateTime.UtcNow;
+                return set;
+            });
     }
 
     public void RemoveConnection(string userId, string connectionId)
     {
-        if(_userConnections.TryGetValue(userId, out var connections))
+        if(_connections.TryGetValue(userId, out var set))
         {
-            connections.TryRemove(connectionId, out _);
-
-            if(connections.IsEmpty)
+            lock (set)
             {
-                _userConnections.TryRemove(userId, out _);
+                set.Remove(connectionId);
+
+                if(set.Count == 0)
+                {
+                    _connections.TryRemove(userId, out _);
+                }
             }
         }
-
-        _connectionHeartbeat.TryRemove(connectionId, out _);
     }
 
     public bool IsOnline(string userId)
     {
-        if(!_userConnections.TryGetValue(userId, out var connections))
-        {
-            return false;
-        }
-
-        return connections.Keys.Any(connectionId =>
-            _connectionHeartbeat.TryGetValue(connectionId, out var lastSeen) &&
-            DateTime.UtcNow - lastSeen < _timeout);
+        return _connections.ContainsKey(userId);
     }
 
     public IEnumerable<string> GetConnections(string userId)
     {
-        if(!_userConnections.TryGetValue(userId, out var connections))
-        {
-            return Enumerable.Empty<string>();
-        }
-
-        return connections.Keys;
+        return _connections.TryGetValue(userId, out var set)
+            ? set
+            : Enumerable.Empty<string>();
     }
 }

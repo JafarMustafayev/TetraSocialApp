@@ -2,8 +2,8 @@
 
 public abstract class BaseHub<T> : Hub<T> where T : class
 {
-    protected readonly IOnlineUserTracker tracker;
-    protected readonly ICurrentUserService currentUser;
+    private readonly IOnlineUserTracker tracker;
+    private readonly ICurrentUserService currentUser;
 
     protected BaseHub(
         IOnlineUserTracker tracker,
