@@ -80,7 +80,7 @@ const ConversationList = ({ selectedId, setSelectedId }) => {
                     >
                         <div className="relative shrink-0">
                             <img
-                                src={chat.user.profileImageUrl ? `${IMAGE_BASE_URL}${chat.user.profileImageUrl}` : USER_AVATAR}
+                                src={chat.user.profileImageUrl ? `${IMAGE_BASE_URL}/${chat.user.profileImageUrl}` : USER_AVATAR}
                                 alt={chat.user.userName}
                                 className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
                             />

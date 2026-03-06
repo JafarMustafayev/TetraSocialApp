@@ -3,117 +3,94 @@ import * as signalR from '@microsoft/signalr';
 class SignalRService {
     constructor() {
         this.connection = null;
-        this.listeners = new Map();
         this.statusCallback = null;
-        this.reconnectTimeout = null;
-        this.maxRetryAttempts = 10;
-        this.retryCount = 0;
+        this.retryTimeout = null;
+        this.url = null;
     }
 
     /**
-     * Initialize and start a SignalR connection
-     * @param {string} url - Hub URL
-     * @param {function} onStatusChange - Callback for status updates
+     * Start the SignalR connection
+     * @param {string} url 
+     * @param {function} onStatusChange 
      */
     async startConnection(url, onStatusChange) {
         this.url = url;
-        this.statusCallback = onStatusChange;
+        if (onStatusChange) this.statusCallback = onStatusChange;
+        
+        // Prevent multiple simultaneous start attempts
+        if (this.connection && this.connection.state !== signalR.HubConnectionState.Disconnected) {
+            return;
+        }
 
-        await this.stopConnection();
-        this.updateStatus('Connecting...');
+        this.updateStatus('Connecting');
 
         this.connection = new signalR.HubConnectionBuilder()
             .withUrl(url, {
                 accessTokenFactory: () => localStorage.getItem('token')
             })
             .withAutomaticReconnect({
-                nextRetryDelayInMilliseconds: retryContext => {
-                    if (retryContext.elapsedMilliseconds > 60000) {
-                        // If we've been reconnecting for more than 60 seconds, stop automatic retries
-                        // and let our manual close handler take over if needed
-                        return null;
-                    }
-                    // Exponential backoff: 2s, 5s, 10s, 30s
-                    return [2000, 5000, 10000, 30000][retryContext.previousRetryCount] || 30000;
-                }
+                nextRetryDelayInMilliseconds: () => 10000 // Always retry every 10 seconds
             })
-            .configureLogging(signalR.LogLevel.Information)
+            .configureLogging(signalR.LogLevel.Warning)
             .build();
 
-        // Restore any existing listeners
-        this.listeners.forEach((callback, methodName) => {
-            this.connection.on(methodName, callback);
-        });
-
         // Lifecycle Events
-        this.connection.onreconnecting((error) => {
-            this.updateStatus('Reconnecting...');
+        this.connection.onreconnecting(() => {
+            this.updateStatus('Connecting');
         });
 
-        this.connection.onreconnected((connectionId) => {
+        this.connection.onreconnected(() => {
             this.updateStatus('Connected');
-            this.retryCount = 0;
         });
 
-        this.connection.onclose(async (error) => {
+        this.connection.onclose(() => {
             this.updateStatus('Disconnected');
-
-            // Start manual reconnection if closed unexpectedly
-            if (error) {
-                this.scheduleReconnect();
-            }
+            // Manual retry if the connection was lost and automatic reconnect failed or was exhausted
+            this.scheduleManualRetry();
         });
 
         try {
             await this.connection.start();
             this.updateStatus('Connected');
-            this.retryCount = 0;
-            return true;
+            if (this.retryTimeout) {
+                clearTimeout(this.retryTimeout);
+                this.retryTimeout = null;
+            }
         } catch (err) {
-            this.updateStatus('Connection Failed');
-            this.scheduleReconnect();
-            return false;
+            console.error('SignalR Initial Connection Failed:', err);
+            this.updateStatus('Disconnected');
+            this.scheduleManualRetry();
         }
     }
 
-    scheduleReconnect() {
-        if (this.reconnectTimeout) return;
-
-        if (this.retryCount < this.maxRetryAttempts) {
-            const delay = Math.min(Math.pow(2, this.retryCount) * 1000, 30000);
-            this.retryCount++;
-
-            this.updateStatus(`Retrying in ${Math.round(delay / 1000)}s...`);
-
-            this.reconnectTimeout = setTimeout(async () => {
-                this.reconnectTimeout = null;
-                try {
-                    await this.startConnection(this.url, this.statusCallback);
-                } catch (e) {
-                    console.error('Manual reconnect failed:', e);
-                }
-            }, delay);
-        } else {
-            this.updateStatus('Connection Failed (Max Retries)');
-            console.error('Max reconnection attempts reached.');
-        }
+    /**
+     * Schedule a manual retry if it's not already scheduled
+     */
+    scheduleManualRetry() {
+        if (this.retryTimeout) return;
+        
+        console.log('SignalR: Scheduling manual retry in 10s...');
+        this.retryTimeout = setTimeout(async () => {
+            this.retryTimeout = null;
+            if (this.url) {
+                await this.startConnection(this.url);
+            }
+        }, 10000);
     }
 
     /**
      * Stop the current connection
      */
     async stopConnection() {
-        if (this.reconnectTimeout) {
-            clearTimeout(this.reconnectTimeout);
-            this.reconnectTimeout = null;
+        this.url = null; // Clear URL to prevent manual retries
+        if (this.retryTimeout) {
+            clearTimeout(this.retryTimeout);
+            this.retryTimeout = null;
         }
-        this.retryCount = 0;
 
         if (this.connection) {
             try {
-                if (this.connection.state !== signalR.HubConnectionState.Disconnected) {
-                    await this.connection.stop();
-                }
+                await this.connection.stop();
             } catch (err) {
                 console.error('Error stopping SignalR:', err);
             } finally {
@@ -129,7 +106,6 @@ class SignalRService {
      * @param {function} callback 
      */
     on(methodName, callback) {
-        this.listeners.set(methodName, callback);
         if (this.connection) {
             this.connection.on(methodName, callback);
         }
@@ -138,11 +114,15 @@ class SignalRService {
     /**
      * Remove a listener
      * @param {string} methodName 
+     * @param {function} callback
      */
-    off(methodName) {
-        this.listeners.delete(methodName);
+    off(methodName, callback) {
         if (this.connection) {
-            this.connection.off(methodName);
+            if (callback) {
+                this.connection.off(methodName, callback);
+            } else {
+                this.connection.off(methodName);
+            }
         }
     }
 

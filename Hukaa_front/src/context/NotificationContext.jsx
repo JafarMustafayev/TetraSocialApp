@@ -4,6 +4,7 @@ import { useToast } from './ToastContext';
 import { getNotifications, readAllNotifications, readNotification } from '../api/notification';
 import { getPendingFollowRequests, acceptFollowRequest, rejectFollowRequest } from '../api/follow';
 import { useAuth } from './AuthContext';
+import { SIGNALR_HUB_URL, IMAGE_BASE_URL } from '../api/client';
 
 const NotificationContext = createContext();
 
@@ -20,6 +21,7 @@ export const NotificationProvider = ({ children }) => {
     const [loadingRequests, setLoadingRequests] = useState(false);
     const [hasMoreNotifications, setHasMoreNotifications] = useState(true);
     const [page, setPage] = useState(1);
+    const [connectionStatus, setConnectionStatus] = useState('Disconnected');
     const isFetchingNotifs = useRef(false);
     const isFetchingRequests = useRef(false);
 
@@ -180,6 +182,22 @@ export const NotificationProvider = ({ children }) => {
 
     useEffect(() => {
         if (user) {
+            const hubUrl = IMAGE_BASE_URL + SIGNALR_HUB_URL;
+            signalRService.startConnection(hubUrl, (status) => {
+                setConnectionStatus(status);
+            });
+        } else {
+            signalRService.stopConnection();
+            setConnectionStatus('Disconnected');
+        }
+
+        return () => {
+            signalRService.stopConnection();
+        };
+    }, [user]);
+
+    useEffect(() => {
+        if (user) {
             fetchNotifications(1);
             fetchFollowRequests();
         } else {
@@ -223,7 +241,7 @@ export const NotificationProvider = ({ children }) => {
         };
 
         signalRService.on('ReceiveNotification', handleNotification);
-        return () => signalRService.off('ReceiveNotification');
+        return () => signalRService.off('ReceiveNotification', handleNotification);
     }, [showToast, normalizeNotification]);
 
     const value = {
@@ -245,6 +263,14 @@ export const NotificationProvider = ({ children }) => {
 
     return (
         <NotificationContext.Provider value={value}>
+            {connectionStatus !== 'Connected' && user && (
+                <div className="fixed top-0 left-0 right-0 z-9999 bg-red-500/90 backdrop-blur-sm text-white text-center py-1.5 text-xs font-semibold shadow-lg transition-all duration-500 ease-in-out">
+                    <div className="flex items-center justify-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                        {connectionStatus === 'Connecting' ? 'Reconnecting ...' : 'Offline - 10 seconds retry...'}
+                    </div>
+                </div>
+            )}
             {children}
         </NotificationContext.Provider>
     );
