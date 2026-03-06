@@ -25,14 +25,14 @@ const MessageBubble = ({ msg, isSender }) => {
                 relative px-3 pt-2 pb-1 bg-white dark:bg-[#202c33] 
                 rounded-2xl shadow-sm max-w-[85%] md:max-w-[75%] lg:max-w-[65%]
                 ${isSender
-                    ? 'bg-[#dcf8c6] dark:bg-[#005c4b] rounded-tr-none ml-8 md:ml-12'
-                    : 'bg-white dark:bg-[#202c33] rounded-tl-none mr-8 md:mr-12'
+                    ? 'bg-[#dcf8c6] dark:bg-[#005c4b] rounded-tr-none '
+                    : 'bg-white dark:bg-[#202c33] rounded-tl-none '
                 }
             `}>
                 <div className="text-[14.5px] leading-[1.4] text-gray-800 dark:text-gray-100 break-words break-all whitespace-pre-wrap overflow-hidden">
                     {renderContent()}
                     {/* Invisible spacer for the absolute positioned time/status */}
-                    <span className="inline-block w-[60px] h-4"></span>
+                    <span className={`inline-block h-4 ${isSender ? `w-[50px]` : `w-[35px]`}`}></span>
                 </div>
 
                 <div className="absolute bottom-1 right-2 flex items-center select-none">

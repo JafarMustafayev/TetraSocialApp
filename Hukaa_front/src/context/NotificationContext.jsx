@@ -183,16 +183,16 @@ export const NotificationProvider = ({ children }) => {
     useEffect(() => {
         if (user) {
             const hubUrl = IMAGE_BASE_URL + SIGNALR_HUB_URL;
-            signalRService.startConnection(hubUrl, (status) => {
+            signalRService.startConnection('notifications', hubUrl, (status) => {
                 setConnectionStatus(status);
             });
         } else {
-            signalRService.stopConnection();
+            signalRService.stopConnection('notifications');
             setConnectionStatus('Disconnected');
         }
 
         return () => {
-            signalRService.stopConnection();
+            signalRService.stopConnection('notifications');
         };
     }, [user]);
 
@@ -240,8 +240,8 @@ export const NotificationProvider = ({ children }) => {
             }
         };
 
-        signalRService.on('ReceiveNotification', handleNotification);
-        return () => signalRService.off('ReceiveNotification', handleNotification);
+        signalRService.on('notifications', 'ReceiveNotification', handleNotification);
+        return () => signalRService.off('notifications', 'ReceiveNotification', handleNotification);
     }, [showToast, normalizeNotification]);
 
     const value = {

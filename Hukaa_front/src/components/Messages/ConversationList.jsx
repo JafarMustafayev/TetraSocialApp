@@ -1,11 +1,52 @@
-import React, { useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useChat } from '../../context/ChatContext';
 import { IMAGE_BASE_URL, USER_AVATAR } from '../../api/client';
+import { searchProfiles } from '../../api/profile';
 import ConversationSkeleton from '../Skeleton/ConversationSkeleton';
+import ListSkeleton from '../Skeleton/ListSkeleton';
 
 const ConversationList = ({ selectedId, setSelectedId }) => {
-    const { conversations, fetchConversations, loading, hasMore } = useChat();
+    const { conversations, fetchConversations, loading, hasMore, startNewChat } = useChat();
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const searchRef = useRef(null);
+    const searchTimeout = useRef(null);
     const listScrollRef = useRef(null);
+
+    // Debounced search logic
+    useEffect(() => {
+        if (searchTimeout.current) clearTimeout(searchTimeout.current);
+
+        if (searchQuery.trim().length > 0) {
+            setIsSearching(true);
+            searchTimeout.current = setTimeout(async () => {
+                try {
+                    const response = await searchProfiles(searchQuery);
+                    if (response.success) {
+                        setSearchResults(response.data);
+                    }
+                } catch (error) {
+                    console.error('Search failed:', error);
+                } finally {
+                    setIsSearching(false);
+                }
+            }, 500);
+        } else {
+            setSearchResults([]);
+            setIsSearching(false);
+        }
+
+        return () => {
+            if (searchTimeout.current) clearTimeout(searchTimeout.current);
+        };
+    }, [searchQuery]);
+
+    const handleSearchResultClick = (user) => {
+        const conversationId = startNewChat(user);
+        setSelectedId(conversationId);
+        setSearchQuery('');
+    };
 
     // Initial loading skeletons
     if (loading && conversations.length === 0) {
@@ -23,7 +64,7 @@ const ConversationList = ({ selectedId, setSelectedId }) => {
     }
 
     const handleListScroll = () => {
-        if (!listScrollRef.current) return;
+        if (!listScrollRef.current || searchQuery.trim()) return;
         const { scrollTop, scrollHeight, clientHeight } = listScrollRef.current;
         if (scrollHeight - scrollTop <= clientHeight + 100 && hasMore && !loading) {
             fetchConversations();
@@ -55,13 +96,21 @@ const ConversationList = ({ selectedId, setSelectedId }) => {
                 <div className="flex items-center justify-start mb-4 md:mb-6">
                     <h2 className="text-xl font-bold text-gray-800">Messages</h2>
                 </div>
-                <div className="relative">
+                <div className="relative" ref={searchRef}>
                     <input
                         type="text"
-                        placeholder="Search messages..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search for people..."
                         className="w-full h-11 bg-white border border-gray-100 rounded-xl pl-11 pr-4 text-sm focus:border-main outline-none transition-all"
                     />
-                    <i className="ri-search-line absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                        {isSearching ? (
+                            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                            <i className="ri-search-line"></i>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -70,46 +119,82 @@ const ConversationList = ({ selectedId, setSelectedId }) => {
                 ref={listScrollRef}
                 onScroll={handleListScroll}
             >
-                {conversations.map((chat) =>
-                (
-                    console.log(chat),
-                    <div
-                        key={chat.conversationId}
-                        onClick={() => setSelectedId(chat.conversationId)}
-                        className={`flex items-center px-4 py-3 md:py-2 rounded-2xl cursor-pointer transition-all duration-300 hover:bg-[#acacad] dark:hover:bg-[#182041] mb-1 last:mb-0 group ${selectedId === chat.conversationId ? 'bg-[#d3d5d8] dark:bg-[#15253b]' : ''}`}
-                    >
-                        <div className="relative shrink-0">
-                            <img
-                                src={chat.user.profileImageUrl ? `${IMAGE_BASE_URL}/${chat.user.profileImageUrl}` : USER_AVATAR}
-                                alt={chat.user.userName}
-                                className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
-                            />
+                {searchQuery.trim() ? (
+                    <>
+                        <div className="px-4 py-2 text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+                            Search Results {isSearching && "..."}
                         </div>
-                        <div className="ml-4 flex-1 min-w-0">
-                            <div className="flex justify-between items-center mb-1">
-                                <h4 className="text-[15px] font-bold text-gray-800 truncate group-hover:text-main transition-colors">{chat.user.userName}</h4>
-                                <span className="text-[11px] text-gray-400 font-medium whitespace-nowrap ml-2">
-                                    {formatDate(chat.lastMessage?.sentAt)}
-                                </span>
+                        {isSearching && searchResults.length === 0 ? (
+                            <div className="mt-2">
+                                {[...Array(3)].map((_, i) => <ConversationSkeleton key={i} />)}
                             </div>
-                            <div className="flex justify-between items-center">
-                                <div className="flex items-center min-w-0">
-
-                                    {renderTicks(chat.lastMessage)}
-                                    <p className="text-[13px] truncate text-gray-500 ml-1">
-                                        {renderLastMessageContent(chat.lastMessage)}
-                                    </p>
+                        ) : searchResults.length > 0 ? (
+                            searchResults.map((result) => (
+                                <div
+                                    key={result.id}
+                                    onClick={() => handleSearchResultClick(result)}
+                                    className="flex items-center px-4 py-3 md:py-2 rounded-2xl cursor-pointer transition-all duration-300 hover:bg-[#acacad] dark:hover:bg-[#182041] mb-1 group"
+                                >
+                                    <div className="relative shrink-0">
+                                        <img
+                                            src={result.profileImageUrl || result.profilePhoto ? `${IMAGE_BASE_URL}/${result.profileImageUrl || result.profilePhoto}` : USER_AVATAR}
+                                            alt={result.userName}
+                                            className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
+                                        />
+                                    </div>
+                                    <div className="ml-4 flex-1 min-w-0">
+                                        <div className="flex justify-between items-center mb-1">
+                                            <h4 className="text-[15px] font-bold text-gray-800 truncate group-hover:text-main transition-colors">{result.userName}</h4>
+                                        </div>
+                                        <p className="text-[13px] text-gray-400 font-bold uppercase tracking-widest">Message</p>
+                                    </div>
                                 </div>
-                                {chat.unreadMessagesCount > 0 && (
-                                    <span className="ml-2 w-5 h-5 flex items-center justify-center bg-main text-white text-[10px] font-bold rounded-full">
-                                        {chat.unreadMessagesCount}
+                            ))
+                        ) : !isSearching && (
+                            <div className="p-8 text-center text-gray-400 italic text-sm">
+                                No users found
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    conversations.map((chat) => (
+                        <div
+                            key={chat.conversationId}
+                            onClick={() => setSelectedId(chat.conversationId)}
+                            className={`flex items-center px-4 py-3 md:py-2 rounded-2xl cursor-pointer transition-all duration-300 hover:bg-[#acacad] dark:hover:bg-[#182041] mb-1 last:mb-0 group ${selectedId === chat.conversationId ? 'bg-[#d3d5d8] dark:bg-[#15253b]' : ''}`}
+                        >
+                            <div className="relative shrink-0">
+                                <img
+                                    src={chat.user.profileImageUrl ? `${IMAGE_BASE_URL}/${chat.user.profileImageUrl}` : USER_AVATAR}
+                                    alt={chat.user.userName}
+                                    className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
+                                />
+                            </div>
+                            <div className="ml-4 flex-1 min-w-0">
+                                <div className="flex justify-between items-center mb-1">
+                                    <h4 className="text-[15px] font-bold text-gray-800 truncate group-hover:text-main transition-colors">{chat.user.userName}</h4>
+                                    <span className="text-[11px] text-gray-400 font-medium whitespace-nowrap ml-2">
+                                        {formatDate(chat.lastMessage?.sentAt)}
                                     </span>
-                                )}
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <div className="flex items-center min-w-0">
+                                        {renderTicks(chat.lastMessage)}
+                                        <p className="text-[13px] truncate text-gray-500 ml-1">
+                                            {renderLastMessageContent(chat.lastMessage)}
+                                        </p>
+                                    </div>
+                                    {chat.unreadMessagesCount > 0 && (
+                                        <span className="ml-2 w-5 h-5 flex items-center justify-center bg-main text-white text-[10px] font-bold rounded-full">
+                                            {chat.unreadMessagesCount}
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
-                {loading && (
+                    ))
+                )}
+                {loading && !searchQuery.trim() && (
                     <div className="mt-2">
                         {[...Array(3)].map((_, i) => <ConversationSkeleton key={i} />)}
                     </div>

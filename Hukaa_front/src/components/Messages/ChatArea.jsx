@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { useToast } from '../../context/ToastContext';
 
 const ChatArea = ({ selectedId, setSelectedId }) => {
-    const { conversations, messages, fetchMessages, messagesLoading, messagesHasMore, deleteConversation } = useChat();
+    const { conversations, messages, fetchMessages, messagesLoading, messagesHasMore, deleteConversation, tempChat, sendMessage, markAsRead, setSelectedId: setContextSelectedId } = useChat();
     const { showToast, showConfirm } = useToast();
     const [messageText, setMessageText] = useState('');
     const [showMoreMenu, setShowMoreMenu] = useState(false);
@@ -22,16 +22,22 @@ const ChatArea = ({ selectedId, setSelectedId }) => {
     const textareaRef = useRef(null);
     const isInitialLoad = useRef(true);
 
-    const activeChat = conversations.find(c => c.conversationId === selectedId);
+    const activeChat = conversations.find(c => c.conversationId === selectedId) || (tempChat?.conversationId === selectedId ? tempChat : null);
 
+    // Sync selectedId with context for unread count logic
+    useEffect(() => {
+        setContextSelectedId(selectedId);
+    }, [selectedId, setContextSelectedId]);
     useEffect(() => {
         if (selectedId) {
             isInitialLoad.current = true;
-            if (!messages[selectedId]) {
+            markAsRead(selectedId);
+            // Even if we have a real-time message in state, we need to fetch history if not already done
+            if (messagesHasMore[selectedId] === undefined) {
                 fetchMessages(selectedId, true);
             }
         }
-    }, [selectedId]);
+    }, [selectedId, markAsRead, messagesHasMore]);
 
     // Preserve scroll position when loading older messages
     useEffect(() => {
@@ -83,13 +89,26 @@ const ChatArea = ({ selectedId, setSelectedId }) => {
         }, {});
     }, [currentMessages]);
 
-    const handleSendMessage = (e) => {
+    const handleSendMessage = async (e) => {
         if (e) e.preventDefault();
-        if (!messageText.trim()) return;
-        // API call to send message would go here
+        if (!messageText.trim() || !activeChat) return;
+
+        const currentText = messageText.trim();
         setMessageText('');
         if (textareaRef.current) {
             textareaRef.current.style.height = 'auto';
+        }
+
+        try {
+            await sendMessage(
+                currentText,
+                activeChat.user.id,
+                activeChat.isTemp ? null : activeChat.conversationId
+            );
+        } catch (error) {
+            console.error('Failed to send message:', error);
+            // Optionally restore text on failure
+            setMessageText(currentText);
         }
     };
 
@@ -211,7 +230,7 @@ const ChatArea = ({ selectedId, setSelectedId }) => {
                     <Link to={`/profile/${activeChat.user.id}`} className="flex items-center">
                         <div className="relative">
                             <img
-                                src={activeChat.user.profileImageUrl ? `${IMAGE_BASE_URL}${activeChat.user.profileImageUrl}` : USER_AVATAR}
+                                src={activeChat.user.profileImageUrl ? `${IMAGE_BASE_URL}/${activeChat.user.profileImageUrl}` : USER_AVATAR}
                                 alt={activeChat.user.userName}
                                 className="w-10 h-10 rounded-full object-cover border border-gray-200"
                             />

@@ -2,150 +2,169 @@ import * as signalR from '@microsoft/signalr';
 
 class SignalRService {
     constructor() {
-        this.connection = null;
-        this.statusCallback = null;
-        this.retryTimeout = null;
-        this.url = null;
+        this.connections = {}; // { connectionKey: { connection, statusCallback, retryTimeout, url } }
     }
 
     /**
-     * Start the SignalR connection
+     * Start a SignalR connection for a specific key (e.g., 'notifications', 'chat')
+     * @param {string} connectionKey 
      * @param {string} url 
      * @param {function} onStatusChange 
      */
-    async startConnection(url, onStatusChange) {
-        this.url = url;
-        if (onStatusChange) this.statusCallback = onStatusChange;
+    async startConnection(connectionKey, url, onStatusChange) {
+        if (!this.connections[connectionKey]) {
+            this.connections[connectionKey] = {
+                connection: null,
+                statusCallback: null,
+                retryTimeout: null,
+                url: null
+            };
+        }
+
+        const connObj = this.connections[connectionKey];
+        connObj.url = url;
+        if (onStatusChange) connObj.statusCallback = onStatusChange;
         
         // Prevent multiple simultaneous start attempts
-        if (this.connection && this.connection.state !== signalR.HubConnectionState.Disconnected) {
+        if (connObj.connection && connObj.connection.state !== signalR.HubConnectionState.Disconnected) {
             return;
         }
 
-        this.updateStatus('Connecting');
+        this.updateStatus(connectionKey, 'Connecting');
 
-        this.connection = new signalR.HubConnectionBuilder()
+        connObj.connection = new signalR.HubConnectionBuilder()
             .withUrl(url, {
                 accessTokenFactory: () => localStorage.getItem('token')
             })
             .withAutomaticReconnect({
-                nextRetryDelayInMilliseconds: () => 10000 // Always retry every 10 seconds
+                nextRetryDelayInMilliseconds: () => 10000
             })
             .configureLogging(signalR.LogLevel.Warning)
             .build();
 
         // Lifecycle Events
-        this.connection.onreconnecting(() => {
-            this.updateStatus('Connecting');
+        connObj.connection.onreconnecting(() => {
+            this.updateStatus(connectionKey, 'Connecting');
         });
 
-        this.connection.onreconnected(() => {
-            this.updateStatus('Connected');
+        connObj.connection.onreconnected(() => {
+            this.updateStatus(connectionKey, 'Connected');
         });
 
-        this.connection.onclose(() => {
-            this.updateStatus('Disconnected');
-            // Manual retry if the connection was lost and automatic reconnect failed or was exhausted
-            this.scheduleManualRetry();
+        connObj.connection.onclose(() => {
+            this.updateStatus(connectionKey, 'Disconnected');
+            this.scheduleManualRetry(connectionKey);
         });
 
         try {
-            await this.connection.start();
-            this.updateStatus('Connected');
-            if (this.retryTimeout) {
-                clearTimeout(this.retryTimeout);
-                this.retryTimeout = null;
+            await connObj.connection.start();
+            this.updateStatus(connectionKey, 'Connected');
+            if (connObj.retryTimeout) {
+                clearTimeout(connObj.retryTimeout);
+                connObj.retryTimeout = null;
             }
         } catch (err) {
-            console.error('SignalR Initial Connection Failed:', err);
-            this.updateStatus('Disconnected');
-            this.scheduleManualRetry();
+            console.error(`SignalR [${connectionKey}] Initial Connection Failed:`, err);
+            this.updateStatus(connectionKey, 'Disconnected');
+            this.scheduleManualRetry(connectionKey);
         }
     }
 
     /**
-     * Schedule a manual retry if it's not already scheduled
+     * Schedule a manual retry for a specific connection
      */
-    scheduleManualRetry() {
-        if (this.retryTimeout) return;
+    scheduleManualRetry(connectionKey) {
+        const connObj = this.connections[connectionKey];
+        if (!connObj || connObj.retryTimeout) return;
         
-        console.log('SignalR: Scheduling manual retry in 10s...');
-        this.retryTimeout = setTimeout(async () => {
-            this.retryTimeout = null;
-            if (this.url) {
-                await this.startConnection(this.url);
+        console.log(`SignalR [${connectionKey}]: Scheduling manual retry in 10s...`);
+        connObj.retryTimeout = setTimeout(async () => {
+            connObj.retryTimeout = null;
+            if (connObj.url) {
+                await this.startConnection(connectionKey, connObj.url);
             }
         }, 10000);
     }
 
     /**
-     * Stop the current connection
+     * Stop a specific connection
      */
-    async stopConnection() {
-        this.url = null; // Clear URL to prevent manual retries
-        if (this.retryTimeout) {
-            clearTimeout(this.retryTimeout);
-            this.retryTimeout = null;
+    async stopConnection(connectionKey) {
+        const connObj = this.connections[connectionKey];
+        if (!connObj) return;
+
+        connObj.url = null;
+        if (connObj.retryTimeout) {
+            clearTimeout(connObj.retryTimeout);
+            connObj.retryTimeout = null;
         }
 
-        if (this.connection) {
+        if (connObj.connection) {
             try {
-                await this.connection.stop();
+                await connObj.connection.stop();
             } catch (err) {
-                console.error('Error stopping SignalR:', err);
+                console.error(`Error stopping SignalR [${connectionKey}]:`, err);
             } finally {
-                this.connection = null;
-                this.updateStatus('Disconnected');
+                connObj.connection = null;
+                this.updateStatus(connectionKey, 'Disconnected');
             }
         }
     }
 
     /**
      * Add a listener for a hub method
+     * @param {string} connectionKey
      * @param {string} methodName 
      * @param {function} callback 
      */
-    on(methodName, callback) {
-        if (this.connection) {
-            this.connection.on(methodName, callback);
+    on(connectionKey, methodName, callback) {
+        const connObj = this.connections[connectionKey];
+        if (connObj && connObj.connection) {
+            connObj.connection.on(methodName, callback);
         }
     }
 
     /**
      * Remove a listener
+     * @param {string} connectionKey
      * @param {string} methodName 
      * @param {function} callback
      */
-    off(methodName, callback) {
-        if (this.connection) {
+    off(connectionKey, methodName, callback) {
+        const connObj = this.connections[connectionKey];
+        if (connObj && connObj.connection) {
             if (callback) {
-                this.connection.off(methodName, callback);
+                connObj.connection.off(methodName, callback);
             } else {
-                this.connection.off(methodName);
+                connObj.connection.off(methodName);
             }
         }
     }
 
     /**
      * Invoke a method on the hub
+     * @param {string} connectionKey
      * @param {string} methodName 
      * @param {any} args 
      */
-    async invoke(methodName, ...args) {
-        if (!this.connection || this.connection.state !== signalR.HubConnectionState.Connected) {
-            throw new Error('SignalR is not connected');
+    async invoke(connectionKey, methodName, ...args) {
+        const connObj = this.connections[connectionKey];
+        if (!connObj || !connObj.connection || connObj.connection.state !== signalR.HubConnectionState.Connected) {
+            throw new Error(`SignalR [${connectionKey}] is not connected`);
         }
-        return await this.connection.invoke(methodName, ...args);
+        return await connObj.connection.invoke(methodName, ...args);
     }
 
-    updateStatus(status) {
-        if (this.statusCallback) {
-            this.statusCallback(status);
+    updateStatus(connectionKey, status) {
+        const connObj = this.connections[connectionKey];
+        if (connObj && connObj.statusCallback) {
+            connObj.statusCallback(status);
         }
     }
 
-    getConnectionState() {
-        return this.connection ? this.connection.state : signalR.HubConnectionState.Disconnected;
+    getConnectionState(connectionKey) {
+        const connObj = this.connections[connectionKey];
+        return connObj && connObj.connection ? connObj.connection.state : signalR.HubConnectionState.Disconnected;
     }
 }
 

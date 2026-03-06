@@ -4,6 +4,7 @@ export const USER_AVATAR = import.meta.env.VITE_USER_AVATAR || '/src/assets/imag
 export const COVER_IMAGE = import.meta.env.VITE_COVER_IMAGE || '/src/assets/images/cover_image.png';
 export const LOGO = import.meta.env.VITE_LOGO || '/src/assets/images/logo.png';
 export const SIGNALR_HUB_URL = import.meta.env.VITE_SIGNALR_HUB_URL || '/hubs/notification';
+export const SIGNALR_CHAT_HUB_URL = import.meta.env.VITE_SIGNALR_CHAT_HUB_URL || '/hubs/chat';
 const BASE_URL = IMAGE_BASE_URL;
 
 /**
