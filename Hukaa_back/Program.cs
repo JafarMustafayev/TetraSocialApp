@@ -28,5 +28,6 @@ app.UseCors("CorsPolicy");
 
 app.MapControllers();
 app.MapHub<NotificationHub>("/hubs/notification");
+app.MapHub<ChatHub>("/hubs/chat");
 
 app.Run();

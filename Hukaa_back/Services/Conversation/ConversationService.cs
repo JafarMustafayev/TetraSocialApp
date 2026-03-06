@@ -3,7 +3,9 @@
 public class ConversationService(
     AppDbContext context,
     ICurrentUserService currentUser,
-    IMapper mapper) : IConversationService
+    IMapper mapper,
+    IOnlineUserTracker onlineUserTracker,
+    IHubContext<ChatHub, IChatHubClient> hubContext) : IConversationService
 {
     public async Task<ResponseDto> GetConversationListAsync(int pageNumber, int pageSize)
     {
@@ -56,26 +58,26 @@ public class ConversationService(
         };
     }
 
-    public async Task<ResponseDto> GetConversationMessagesAsync(string conversationId, int page,int take)
+    public async Task<ResponseDto> GetConversationMessagesAsync(string conversationId, int page, int take)
     {
         if(take < 1)
         {
             take = 30;
         }
 
-        if (page < 1)
+        if(page < 1)
         {
             page = 1;
         }
 
         var messages = await context.Messages
             .Where(m => m.ConversationId == conversationId)
-            .OrderBy(m => m.CreatedAt)
+            .OrderByDescending(m => m.CreatedAt)
             .Skip((page - 1) * take)
             .Take(take)
             .ToListAsync();
 
-        await MarkAsReadAsync(messages);
+        await MarkAsReadAsync(conversationId);
         var map = mapper.Map<List<MessagesListItemDto>>(messages);
         map.ForEach(m => m.IsOwner = m.SenderId == currentUser.UserId);
 
@@ -117,17 +119,99 @@ public class ConversationService(
         };
     }
 
-    public async Task MarkAsReadAsync(List<Message> messages)
+    public async Task SendMessageAsync(SendMessageRequestDto request)
     {
-        messages.ForEach(message =>
+        var currentUserId = currentUser.UserId;
+        var receiverExists = await context.Users
+            .AnyAsync(x => x.Id == request.ReceiverId);
+
+        if(!receiverExists)
         {
-            if (message.SenderId != currentUser.UserId && !message.IsRead)
+            throw new HubException($"User with key '{request.ReceiverId}' was not found");
+        }
+
+        string conversationId;
+        if(!string.IsNullOrWhiteSpace(request.ConversationId))
+        {
+            var conversationExists = await context.Conversations
+                .AnyAsync(c =>
+                    c.Id == request.ConversationId &&
+                    ((c.InitiatorId == currentUserId && c.RecipientId == request.ReceiverId) ||
+                     (c.InitiatorId == request.ReceiverId && c.RecipientId == currentUserId)));
+
+            if(!conversationExists)
             {
-                message.IsRead = true;
+                throw new HubException($"Conversation with key '{request.ConversationId}' was not found");
             }
-        });
+
+            conversationId = request.ConversationId;
+        }
+        else
+        {
+            var conversation = new Entities.Conversation
+            {
+                InitiatorId = currentUserId,
+                RecipientId = request.ReceiverId
+            };
+            await context.Conversations.AddAsync(conversation);
+            conversationId = conversation.Id;
+        }
+
+        var message = new Message
+        {
+            Content = request.Content,
+            ConversationId = conversationId,
+            SenderId = currentUserId,
+            PostId = request.PostId,
+            MessageType = request.PostId == null
+                ? MessageType.Text
+                : MessageType.PostShare
+        };
+
+        await context.Messages.AddAsync(message);
         await context.SaveChangesAsync();
 
+        var messageDto = mapper.Map<MessagesListItemDto>(message);
+        if(onlineUserTracker.IsOnline(request.ReceiverId))
+        {
+            await hubContext
+                .Clients
+                .User(request.ReceiverId)
+                .ReceiveMessage(messageDto);
+        }
+
+        if(onlineUserTracker.IsOnline(currentUserId))
+        {
+            messageDto.IsOwner = true;
+            await hubContext
+                .Clients
+                .User(currentUserId)
+                .ReceiveMessage(messageDto);
+        }
+    }
+
+    // helper methods
+    public async Task MarkAsReadAsync(string conversationId)
+    {
+        var currentUserId = currentUser.UserId;
+
+        await context.Messages
+            .Where(m => m.ConversationId == conversationId &&
+                        m.SenderId != currentUserId &&
+                        !m.IsRead)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(m => m.IsRead, true));
+
+        var conversation = await context.Conversations
+            .FirstOrDefaultAsync(c => c.Id == conversationId);
+
+        var receiverId = conversation?.RecipientId == currentUserId
+            ? conversation?.InitiatorId
+            : conversation?.RecipientId;
+        await hubContext.Clients.User(receiverId ?? "").MessagesRead(new MarkAsReadDto
+        {
+            ConversationId = conversationId
+        });
     }
 
     private async Task<int> GetUnreadCountAsync(string conversationId)

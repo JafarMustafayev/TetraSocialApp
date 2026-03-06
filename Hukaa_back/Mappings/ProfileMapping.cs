@@ -24,6 +24,7 @@ public class ProfileMapping : Profile
             .ForMember(des => des.ProfileImagePath, opt => opt.MapFrom(src => src.ProfilePhotoPath));
 
         CreateMap<UpdateProfileInformationDto, AppUser>();
-        CreateMap<AppUser, UserPreviewDto>();
+        CreateMap<AppUser, UserPreviewDto>()
+            .ForMember(des => des.ProfileImageUrl, opt => opt.MapFrom(src => src.ProfilePhotoPath));
     }
 }
