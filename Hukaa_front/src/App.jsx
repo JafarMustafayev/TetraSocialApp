@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
+import AdminLayout from './layouts/AdminLayout';
 import Home from './pages/Home';
 import Messages from './pages/Messages';
 import Notifications from './pages/Notifications';
@@ -23,6 +24,9 @@ import MyActivities from './pages/MyActivities';
 import PostPage from './pages/PostPage';
 import { ThemeProvider } from './context/ThemeContext';
 import { ChatProvider } from './context/ChatContext';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminUsers from './pages/AdminUsers';
+import AdminPosts from './pages/AdminPosts';
 
 function App() {
     return (
@@ -55,6 +59,13 @@ function App() {
                                     }>
                                         <Route path="/settings" element={<Settings />} />
                                         <Route path="/my-activities" element={<MyActivities />} />
+                                    </Route>
+
+                                    {/* Admin Routes */}
+                                    <Route path="/dashboard" element={<AdminLayout />}>
+                                        <Route index element={<AdminDashboard />} />
+                                        <Route path="users" element={<AdminUsers />} />
+                                        <Route path="posts" element={<AdminPosts />} />
                                     </Route>
 
                                     <Route element={<PublicRoute />}>
