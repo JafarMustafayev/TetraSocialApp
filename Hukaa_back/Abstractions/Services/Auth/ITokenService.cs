@@ -2,5 +2,5 @@
 
 public interface ITokenService
 {
-    public AccessTokenResponse GenerateAccessToken(string userId);
+    public Task<AccessTokenResponse> GenerateAccessToken(string userId);
 }

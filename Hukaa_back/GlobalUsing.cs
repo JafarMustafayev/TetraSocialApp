@@ -55,3 +55,6 @@ global using Hukaa_back.DTOs.Notification;
 global using Hukaa_back.Abstractions.Services.Conversation;
 global using Hukaa_back.DTOs.Chat;
 global using Hukaa_back.Services.Conversation;
+global using Hukaa_back.Abstractions.Services.Dashboard;
+global using Hukaa_back.Services.Dashboard;
+global using Hukaa_back.DTOs.Dashboard;

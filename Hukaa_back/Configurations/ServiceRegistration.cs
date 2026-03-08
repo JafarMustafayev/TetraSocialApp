@@ -46,6 +46,11 @@ public static class ServiceRegistration
         services.AddSingleton<IOnlineUserTracker, OnlineUserTracker>();
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IConversationService, ConversationService>();
+
+        // Dashboard
+        services.AddScoped<IAdminStatsService, AdminStatsService>();
+        services.AddScoped<IAdminPostService , AdminPostService>();
+        services.AddScoped<IAdminUserService  , AdminUserService>();
     }
 
     private static void ConfigureIdentity(this IServiceCollection services)

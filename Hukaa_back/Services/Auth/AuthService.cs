@@ -27,7 +27,7 @@ public class AuthService(
             throw new UnauthorizedException(errors: ["Account is banned to sign in"]);
         }
 
-        var accessToken = tokenService.GenerateAccessToken(user.Id);
+        var accessToken = await tokenService.GenerateAccessToken(user.Id);
 
         return new ResponseDto
         {

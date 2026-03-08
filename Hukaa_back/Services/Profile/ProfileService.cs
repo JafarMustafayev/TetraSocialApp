@@ -4,7 +4,8 @@ public class ProfileService(
     ICurrentUserService currentUser,
     AppDbContext dbContext,
     IMapper mapper,
-    IFileService fileService) : IProfileService
+    IFileService fileService,
+    UserManager<AppUser> userManager) : IProfileService
 {
     // get profile information 
     public async Task<ResponseDto> GetMyProfileHeaderAsync()
@@ -13,10 +14,11 @@ public class ProfileService(
         var user = await dbContext.Users
             .FirstOrDefaultAsync(user => user.Id == userId);
 
-        if(user == null)
+        if (user == null)
         {
             throw new NotFoundException("User", userId);
         }
+       var isAdmin = await userManager.IsInRoleAsync(user, "Admin");
 
         return new ResponseDto
         {
@@ -30,7 +32,8 @@ public class ProfileService(
                 Username = user.UserName,
                 LastName = user.LastName,
                 FirstName = user.FirstName,
-                ProfilePhoto = user.ProfilePhotoPath
+                ProfilePhoto = user.ProfilePhotoPath,
+                IsAdmin  = isAdmin
             }
         };
     }

@@ -1,19 +1,23 @@
 ﻿namespace Hukaa_back.Services.Auth;
 
 public class TokenService(
-    IAppConfig config) : ITokenService
+    IAppConfig config,
+    UserManager<AppUser> userManager) : ITokenService
 {
     private readonly TokenParameters _tokenParameters = config.GetSection<TokenParameters>();
 
-    public AccessTokenResponse GenerateAccessToken(string userId)
+    public async Task<AccessTokenResponse> GenerateAccessToken(string userId)
     {
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(_tokenParameters.Signing.Key));
 
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+        var user = await userManager.FindByIdAsync(userId);
+
         var claims = new List<Claim>
         {
+            new(JwtRegisteredClaimNames.UniqueName, user.UserName ?? "UserName"),
             new(JwtRegisteredClaimNames.Sub, userId),
             new(ClaimTypes.NameIdentifier, userId),
 
@@ -23,6 +27,9 @@ public class TokenService(
                 ClaimValueTypes.Integer64),
             new(ClaimTypes.Role, UserRoles.User.ToString())
         };
+
+        var userRoles = await userManager.GetRolesAsync(user);
+        claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var token = new JwtSecurityToken(
             _tokenParameters.Jwt.Issuer,

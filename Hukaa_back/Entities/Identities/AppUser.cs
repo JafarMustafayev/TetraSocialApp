@@ -11,6 +11,7 @@ public class AppUser : IdentityUser<string>
     public string ProfilePhotoPath { get; set; }
     public string CoverPhotoPath { get; set; }
     public string? Bio { get; set; }
+    public DateTime CreatedAt { get; set; }
     public UserStatus UserStatus { get; set; }
 
     public ICollection<Post> Posts { get; set; }
@@ -38,5 +39,6 @@ public class AppUser : IdentityUser<string>
         Bio = string.Empty;
         UserStatus = UserStatus.PendingVerification;
         AccountType = AccountType.PrivateAccount;
+        CreatedAt = DateTime.UtcNow;
     }
 }
