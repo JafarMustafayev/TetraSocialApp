@@ -1,72 +1,100 @@
-import React, { useState, useEffect } from 'react';
-import { Users, FileText, ShieldBan, TrendingUp } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Users, FileText, ShieldBan, TrendingUp, ChevronRight } from 'lucide-react';
 import AdminHeader from '../components/admin/AdminHeader';
 import StatCard from '../components/admin/StatCard';
 import { getAdminStats } from '../api/admin';
-import { Link } from 'react-router-dom';
 
 export default function AdminDashboard() {
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        getAdminStats()
-            .then(setStats)
-            .catch(() => setStats(null))
-            .finally(() => setLoading(false));
+        const fetchStats = async () => {
+            try {
+                setLoading(true);
+                const result = await getAdminStats();
+                if (result?.success) {
+                    setStats(result.data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch admin stats:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStats();
     }, []);
 
+
     const cards = [
-        { label: 'Total Users', value: stats?.totalUsers, icon: Users, color: 'indigo' },
-        { label: 'Total Posts', value: stats?.totalPosts, icon: FileText, color: 'emerald' },
-        { label: 'Banned Users', value: stats?.bannedUsers, icon: ShieldBan, color: 'rose' },
-        { label: 'New Today', value: stats?.newToday, icon: TrendingUp, color: 'amber' },
+        { label: 'Active Users', value: stats?.activeUserCount || 0, icon: Users, color: 'violet' },
+        { label: 'Posts', value: stats?.totalPostCount || 0, icon: FileText, color: 'blue' },
+        { label: 'Banned Users', value: stats?.bannedUserCount || 0, icon: ShieldBan, color: 'red' },
+        { label: 'New Today Posts', value: stats?.todayPostsCount || 0, icon: TrendingUp, color: 'amber' },
+    ];
+
+    const navCards = [
+        {
+            title: 'Manage Users',
+            desc: 'View, search, and manage system users',
+            to: '/dashboard/users',
+            icon: Users,
+            color: 'violet'
+        },
+        {
+            title: 'Manage Posts',
+            desc: 'Review and moderate community posts',
+            to: '/dashboard/posts',
+            icon: FileText,
+            color: 'blue'
+        }
     ];
 
     return (
         <div className="flex flex-col h-full">
             <AdminHeader title="Dashboard" />
-            <main className="flex-1 p-8 overflow-y-auto">
-                {/* Stats Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
-                    {cards.map((c) => (
-                        <StatCard key={c.label} {...c} />
-                    ))}
+            <main className="flex-1 p-6 overflow-y-auto space-y-8">
+                {/* Stats grid */}
+                <div className="h-[150px] border border-white/5 rounded-2xl p-6">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        {cards.map((c) => (
+                            <StatCard key={c.label} {...c} />
+                        ))}
+                    </div>
                 </div>
 
-                {/* Quick links */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <QuickLink
-                        to="/admin/users"
-                        title="Manage Users"
-                        description="View, ban or unban registered users."
-                        icon={<Users size={22} className="text-indigo-400" />}
-                        badgeColor="bg-indigo-500/10 border-indigo-500/20"
-                    />
-                    <QuickLink
-                        to="/admin/posts"
-                        title="Manage Posts"
-                        description="Review and delete inappropriate posts."
-                        icon={<FileText size={22} className="text-emerald-400" />}
-                        badgeColor="bg-emerald-500/10 border-emerald-500/20"
-                    />
+
+                {/* Navigation Section */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-[150px]">
+                    {navCards.map((nav) => (
+                        <Link
+                            key={nav.to}
+                            to={nav.to}
+                            className="group relative bg-[#0f1117] border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all duration-300 overflow-hidden"
+                        >
+                            {/* Glow Effect */}
+                            <div className={`absolute inset-0 bg-${nav.color}-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+
+                            <div className="relative flex items-center justify-between">
+                                <div className="flex items-center gap-5">
+                                    <div className={`w-14 h-14 rounded-xl bg-${nav.color}-500/10 flex items-center justify-center text-${nav.color}-400 group-hover:scale-110 transition-transform duration-300`}>
+                                        <nav.icon size={28} />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-white font-semibold text-lg">{nav.title}</h3>
+                                        <p className="text-white/30 text-sm mt-0.5">{nav.desc}</p>
+                                    </div>
+                                </div>
+                                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/20 group-hover:bg-white/10 group-hover:text-white group-hover:translate-x-1 transition-all">
+                                    <ChevronRight size={20} />
+                                </div>
+                            </div>
+                        </Link>
+                    ))}
                 </div>
             </main>
         </div>
-    );
-}
-
-function QuickLink({ to, title, description, icon, badgeColor }) {
-    return (
-        <Link
-            to={to}
-            className="group block bg-white/3 hover:bg-white/5 border border-white/5 rounded-2xl p-6 transition-all duration-200"
-        >
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center border mb-4 ${badgeColor}`}>
-                {icon}
-            </div>
-            <h3 className="text-white font-semibold mb-1 group-hover:text-indigo-300 transition-colors">{title}</h3>
-            <p className="text-slate-500 text-sm">{description}</p>
-        </Link>
     );
 }

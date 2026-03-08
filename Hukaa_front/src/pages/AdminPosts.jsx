@@ -1,154 +1,160 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Search, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
 import AdminHeader from '../components/admin/AdminHeader';
-import PostRow from '../components/admin/PostRow';
+import PostCard from '../components/admin/PostRow';
 import ConfirmModal from '../components/admin/ConfirmModal';
 import { getAdminPosts, adminDeletePost } from '../api/admin';
 
 export default function AdminPosts() {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [search, setSearch] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(false);
     const [modal, setModal] = useState(null); // { post }
-    const [actionLoading, setActionLoading] = useState(false);
+    const [deleteLoading, setDeleteLoading] = useState(false);
 
     const load = useCallback(async (p = 1, q = '') => {
         setLoading(true);
         try {
-            const data = await getAdminPosts(p, q);
-            const list = Array.isArray(data) ? data : (data?.items ?? data?.data ?? []);
-            setPosts(list);
-            setHasMore(Array.isArray(data) ? list.length === 20 : (data?.hasNextPage ?? false));
-        } catch {
+            const res = await getAdminPosts(p, q);
+            if (res?.success) {
+                const list = res.data || [];
+                setPosts(list);
+                // Simple logic: if we got exactly 10 (per page limit usually), there might be more
+                // or if the backend provides total, we could use that.
+                setHasMore(list.length >= 10);
+            } else {
+                setPosts([]);
+                setHasMore(false);
+            }
+        } catch (error) {
+            console.error("Failed to load posts:", error);
             setPosts([]);
+            setHasMore(false);
         } finally {
             setLoading(false);
         }
     }, []);
 
-    useEffect(() => { load(1, ''); }, [load]);
+    // Consolidate initial load and debounced search
+    useEffect(() => {
+        if (!searchQuery) {
+            load(1, '');
+            setPage(1);
+            return;
+        }
 
-    const handleSearch = (e) => {
-        e.preventDefault();
-        setPage(1);
-        load(1, search);
-    };
+        const timer = setTimeout(() => {
+            setPage(1);
+            load(1, searchQuery);
+        }, 400);
 
-    const handlePage = (dir) => {
-        const next = page + dir;
-        setPage(next);
-        load(next, search);
+        return () => clearTimeout(timer);
+    }, [searchQuery, load]);
+
+    const handlePage = async (dir) => {
+        const nextPage = page + dir;
+        if (nextPage < 1) return;
+
+        setLoading(true);
+        try {
+            const res = await getAdminPosts(nextPage, searchQuery);
+            if (res?.success) {
+                const list = res.data || [];
+                if (list.length > 0 || dir === -1) {
+                    setPosts(list);
+                    setPage(nextPage);
+                    setHasMore(list.length >= 10);
+                } else {
+                    setHasMore(false);
+                }
+            }
+        } catch (error) {
+            console.error("Pagination failed:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleDelete = async () => {
         if (!modal) return;
-        setActionLoading(true);
+        setDeleteLoading(true);
         try {
-            await adminDeletePost(modal.post.id);
-            setPosts(prev => prev.filter(p => p.id !== modal.post.id));
-            setModal(null);
-        } catch { }
-        setActionLoading(false);
+            const res = await adminDeletePost(modal.post.id);
+            if (res?.success || res === null) { // 204 returns null
+                setPosts(prev => prev.filter(p => p.id !== modal.post.id));
+                setModal(null);
+            }
+        } catch (error) {
+            console.error("Delete failed:", error);
+        } finally {
+            setDeleteLoading(false);
+        }
     };
 
     return (
-        <div className="flex flex-col h-full">
-            <AdminHeader title="Posts" subtitle="Review and moderate shared posts" />
-
-            <main className="flex-1 p-8 overflow-y-auto">
-                {/* Toolbar */}
-                <div className="flex flex-col sm:flex-row gap-3 mb-6">
-                    <form onSubmit={handleSearch} className="flex gap-2 flex-1">
-                        <div className="relative flex-1">
-                            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-                            <input
-                                type="text"
-                                placeholder="Search by author or content…"
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                className="w-full pl-9 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/50 transition-colors"
-                            />
+        <div className="flex flex-col h-full bg-[#0a0c10]">
+            <AdminHeader
+                title="Posts"
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                showSearch
+                onRefresh={() => load(1, searchQuery)}
+            />
+            <main className="flex-1 p-6 overflow-y-auto">
+                <div className="max-w-7xl mx-auto space-y-6">
+                    {/* Grid */}
+                    {loading ? (
+                        <div className="flex flex-col items-center justify-center py-32 space-y-4">
+                            <div className="w-8 h-8 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+                            <p className="text-white/20 text-sm">Yüklənir...</p>
                         </div>
-                        <button
-                            type="submit"
-                            className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-xl transition-all"
-                        >
-                            Search
-                        </button>
-                    </form>
-                    <button
-                        onClick={() => { setSearch(''); setPage(1); load(1, ''); }}
-                        className="p-2.5 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white rounded-xl border border-white/10 transition-all"
-                        title="Reset"
-                    >
-                        <RefreshCw size={15} />
-                    </button>
-                </div>
-
-                {/* Table */}
-                <div className="bg-white/3 border border-white/5 rounded-2xl overflow-hidden">
-                    <table className="w-full">
-                        <thead>
-                            <tr className="border-b border-white/5">
-                                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Author</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Content</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider hidden lg:table-cell">Engagement</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider hidden md:table-cell">Date</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {loading ? (
-                                <tr><td colSpan={5} className="px-6 py-16 text-center text-slate-500 text-sm">Loading…</td></tr>
-                            ) : posts.length === 0 ? (
-                                <tr><td colSpan={5} className="px-6 py-16 text-center text-slate-500 text-sm">No posts found.</td></tr>
-                            ) : (
-                                posts.map(p => (
-                                    <PostRow
-                                        key={p.id}
-                                        post={p}
-                                        onDelete={(post) => setModal({ post })}
-                                    />
-                                ))
-                            )}
-                        </tbody>
-                    </table>
+                    ) : posts.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-32 bg-white/[0.02] border border-dashed border-white/10 rounded-2xl">
+                            <p className="text-white/20 text-sm">Paylaşım tapılmadı</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-4">
+                            {posts.map((post) => (
+                                <PostCard key={post.id} post={post} onDelete={(p) => setModal({ post: p })} />
+                            ))}
+                        </div>
+                    )}
 
                     {/* Pagination */}
-                    <div className="flex items-center justify-between px-6 py-3 border-t border-white/5">
-                        <span className="text-slate-500 text-xs">Page {page}</span>
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => handlePage(-1)}
-                                disabled={page === 1 || loading}
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                            >
-                                <ChevronLeft size={16} />
-                            </button>
-                            <button
-                                onClick={() => handlePage(1)}
-                                disabled={!hasMore || loading}
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                            >
-                                <ChevronRight size={16} />
-                            </button>
+                    {posts.length > 0 && (
+                        <div className="flex items-center justify-between pt-6 border-t border-white/5">
+                            <span className="text-white/30 text-xs font-medium bg-white/5 px-3 py-1 rounded-full">Səhifə {page}</span>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => handlePage(-1)}
+                                    disabled={page === 1 || loading}
+                                    className="px-4 py-2 text-xs font-medium rounded-xl border border-white/10 text-white/50 hover:text-white hover:bg-white/5 disabled:opacity-20 disabled:cursor-not-allowed transition-all duration-200"
+                                >
+                                    Əvvəlki
+                                </button>
+                                <button
+                                    onClick={() => handlePage(1)}
+                                    disabled={!hasMore || loading}
+                                    className="px-4 py-2 text-xs font-medium rounded-xl border border-white/10 text-white/50 hover:text-white hover:bg-white/5 disabled:opacity-20 disabled:cursor-not-allowed transition-all duration-200"
+                                >
+                                    Növbəti
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </main>
 
-            {/* Confirm Modal */}
             <ConfirmModal
                 isOpen={!!modal}
-                title="Delete this post?"
-                message={`This action cannot be undone. The post by @${modal?.post?.user?.username} will be permanently removed.`}
-                confirmLabel="Delete Post"
+                title="Paylaşımı Sil"
+                message="Bu paylaşımı silmək istədiyinizə əminsiniz? Bu əməliyyat geri alına bilməz."
+                confirmLabel="Bəli, Sil"
                 danger
                 onConfirm={handleDelete}
                 onCancel={() => setModal(null)}
-                loading={actionLoading}
+                loading={deleteLoading}
             />
         </div>
     );

@@ -373,13 +373,16 @@ const Navbar = ({ onMenuClick }) => {
                                 <span className="text-xs text-gray-400 truncate block">@{user?.username}</span>
                             </div>
 
-                            <div className="border-t border-gray-50 pt-2">
-                                <Link to="/signalr-test" className="w-[95%] mx-auto flex items-center px-5 py-2.5 text-sm text-gray-500 hover:bg-gray-50 transition-all group border border-gray-200 rounded-lg">
-                                    SignalR Test
-                                </Link>
-                            </div>
+                            {user?.isAdmin && (
+                                <div className=" py-2">
+                                    <Link target='_blank' to="/dashboard" className="w-[95%] mx-auto flex items-center px-5 py-2.5 text-sm text-gray-500 hover:bg-gray-50 transition-all group border border-gray-200 rounded-lg">
+                                        <i className="ri-dashboard-line mr-3 text-lg text-gray-400 group-hover:text-gray-500"></i>
+                                        Dashboard
+                                    </Link>
+                                </div>
+                            )}
 
-                            <div className="border-t border-gray-50 pt-2">
+                            <div className=" pt-2">
                                 <button onClick={handleLogout} className="w-[95%] mx-auto flex items-center px-5 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-all group border border-gray-200 rounded-lg">
                                     <i className="ri-logout-box-line mr-3 text-lg text-red-400 group-hover:text-red-500"></i> Sign Out
                                 </button>

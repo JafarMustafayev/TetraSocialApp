@@ -62,7 +62,11 @@ function App() {
                                     </Route>
 
                                     {/* Admin Routes */}
-                                    <Route path="/dashboard" element={<AdminLayout />}>
+                                    <Route path="/dashboard" element={
+                                        <ProtectedRoute>
+                                            <AdminLayout />
+                                        </ProtectedRoute>
+                                    }>
                                         <Route index element={<AdminDashboard />} />
                                         <Route path="users" element={<AdminUsers />} />
                                         <Route path="posts" element={<AdminPosts />} />

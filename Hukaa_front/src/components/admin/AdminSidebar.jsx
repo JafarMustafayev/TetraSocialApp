@@ -1,24 +1,29 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, FileText, LogOut } from 'lucide-react';
-import { LOGO } from '../../api/client';
+import { Users, FileText, LayoutDashboard, ShieldCheck, Bell, LogOut, ChevronRight } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { Link } from 'react-router-dom';
+import { IMAGE_BASE_URL, LOGO } from '../../api/client';
 
 const navItems = [
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, end: true },
-    { to: '/dashboard/users', label: 'Users', icon: Users },
-    { to: '/dashboard/posts', label: 'Posts', icon: FileText },
+    { to: '/dashboard/users', label: 'Users', icon: Users, end: false },
+    { to: '/dashboard/posts', label: 'Posts', icon: FileText, end: false },
 ];
 
 export default function AdminSidebar() {
-    return (
-        <aside className="w-64 min-h-screen bg-[#0f1629] border-r border-white/5 flex flex-col">
-            {/* Logo */}
-            <div className="flex items-center gap-3 px-6 py-5 border-b border-white/5">
-                <img src={LOGO} alt="Hukaa" className="h- w-30 object-contain" />
+    const { logout } = useAuth();
 
+    return (
+        <aside className="w-64 min-h-screen bg-[#0f1117] border-r border-white/5 flex flex-col shrink-0">
+            {/* Logo */}
+            <div className="px-6 py-6 border-b border-white/5">
+                <Link to="/">
+                    <img src={LOGO} alt="logo" className="w-32" />
+                </Link>
             </div>
 
-            {/* Navigation */}
+            {/* Nav */}
             <nav className="flex-1 px-3 py-4 space-y-1">
                 {navItems.map(({ to, label, icon: Icon, end }) => (
                     <NavLink
@@ -26,27 +31,39 @@ export default function AdminSidebar() {
                         to={to}
                         end={end}
                         className={({ isActive }) =>
-                            `flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${isActive
-                                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
-                                : 'text-slate-400 hover:text-white hover:bg-white/5'
+                            `w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150 group border
+                            ${isActive
+                                ? 'bg-violet-600/20 text-violet-300 border-violet-500/20'
+                                : 'text-white/40 hover:text-white/70 hover:bg-white/5 border-transparent'
                             }`
                         }
                     >
-                        <Icon size={18} />
-                        {label}
+                        {({ isActive }) => (
+                            <>
+                                <Icon
+                                    size={16}
+                                    className={isActive ? 'text-violet-400' : 'text-white/30 group-hover:text-white/50'}
+                                />
+                                <span className="flex-1 text-left font-medium">{label}</span>
+                                {isActive && <ChevronRight size={14} className="text-violet-400/60" />}
+                            </>
+                        )}
                     </NavLink>
                 ))}
             </nav>
 
-            {/* Footer */}
-            <div className="px-3 pb-4">
-                <NavLink
-                    to="/"
-                    className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all duration-200"
-                >
-                    <LogOut size={18} />
-                    Back to App
-                </NavLink>
+            {/* Bottom */}
+            <div className="px-3 py-4 border-t border-white/5 space-y-1">
+
+                <Link
+                    to="/">
+                    <button
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-400/60 hover:text-red-400 hover:bg-red-500/10 transition-all"
+                    >
+                        <LogOut size={16} />
+                        <span>Go to site</span>
+                    </button>
+                </Link>
             </div>
         </aside>
     );
