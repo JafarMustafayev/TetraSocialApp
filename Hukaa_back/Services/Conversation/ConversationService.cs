@@ -172,6 +172,7 @@ public class ConversationService(
         await context.SaveChangesAsync();
 
         var messageDto = mapper.Map<MessagesListItemDto>(message);
+        messageDto.TempConversationId = request.TempConversationId;
         if(onlineUserTracker.IsOnline(request.ReceiverId))
         {
             await hubContext
@@ -180,14 +181,12 @@ public class ConversationService(
                 .ReceiveMessage(messageDto);
         }
 
-        if(onlineUserTracker.IsOnline(currentUserId))
-        {
-            messageDto.IsOwner = true;
-            await hubContext
-                .Clients
-                .User(currentUserId)
-                .ReceiveMessage(messageDto);
-        }
+
+        messageDto.IsOwner = true;
+        await hubContext
+            .Clients
+            .User(currentUserId)
+            .ReceiveMessage(messageDto);
     }
 
     // helper methods

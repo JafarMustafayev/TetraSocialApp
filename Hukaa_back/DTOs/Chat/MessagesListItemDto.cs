@@ -4,6 +4,8 @@ public class MessagesListItemDto
 {
     public string MessageId { get; set; } = string.Empty;
     public string SenderId { get; set; } = string.Empty;
+    public string ConversationId { get; set; } = string.Empty;
+    public string? TempConversationId { get; set; } = string.Empty;
     public bool IsOwner { get; set; }
     public DateTime SentAt { get; set; }
     public string Content { get; set; } = string.Empty;
