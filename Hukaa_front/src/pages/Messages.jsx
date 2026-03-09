@@ -5,10 +5,11 @@ import ConversationList from '../components/Messages/ConversationList';
 import ChatArea from '../components/Messages/ChatArea';
 
 const Messages = () => {
-    const { fetchConversations, setSelectedId: setContextSelectedId, conversations } = useChat();
+    const { fetchConversations, conversations, startNewChat } = useChat();
     const [selectedId, setSelectedId] = useState(null);
     const [searchParams, setSearchParams] = useSearchParams();
     const [initialMessage, setInitialMessage] = useState('');
+    const [emptyInput, setEmptyInput] = useState(false);
 
     useEffect(() => {
         fetchConversations(true);
@@ -17,16 +18,23 @@ const Messages = () => {
     // Handle query parameters for starting a chat with a specific user
     useEffect(() => {
         const userId = searchParams.get('userId');
+        const userName = searchParams.get('userName');
+        const profileImageUrl = searchParams.get('profileImageUrl');
         const message = searchParams.get('message');
 
         if (userId && conversations.length > 0) {
             const existingConv = conversations.find(c => c.user.id === userId);
             if (existingConv) {
                 setSelectedId(existingConv.conversationId);
+            } else if (userName) {
+                // Start a new temp chat if we have user info
+                const tempChatId = startNewChat({
+                    id: userId,
+                    userName: userName,
+                    profileImageUrl: profileImageUrl
+                });
+                setSelectedId(tempChatId);
             }
-            // If they don't have an existing chat, the logic in ChatContext
-            // for startNewChat would be needed here if we wanted to open a temp chat.
-            // For now, selecting existing one or waiting for user interaction works.
 
             if (message) {
                 setInitialMessage(message);
@@ -35,7 +43,7 @@ const Messages = () => {
             // Clear params to avoid re-triggering
             setSearchParams({}, { replace: true });
         }
-    }, [searchParams, conversations]);
+    }, [searchParams, conversations, startNewChat]);
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === 'Escape') {

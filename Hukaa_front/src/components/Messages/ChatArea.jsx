@@ -7,16 +7,27 @@ import { Link } from 'react-router-dom';
 import { useToast } from '../../context/ToastContext';
 
 const ChatArea = ({ selectedId, setSelectedId, initialMessage, setInitialMessage }) => {
-    const { conversations, messages, fetchMessages, messagesLoading, messagesHasMore, deleteConversation, tempChat, sendMessage, markAsRead, setSelectedId: setContextSelectedId } = useChat();
+    const {
+        conversations, messages,
+        fetchMessages, messagesLoading,
+        messagesHasMore, deleteConversation,
+        tempChat, sendMessage, markAsRead,
+        setSelectedId: setContextSelectedId
+    } = useChat();
     const { showToast, showConfirm } = useToast();
     const [messageText, setMessageText] = useState('');
 
-    // Pre-fill message if provided (e.g., Happy Birthday)
+    // Handle message pre-filling and input clearing on chat switch
+    const lastId = useRef(selectedId);
     useEffect(() => {
-        if (initialMessage && selectedId) {
+        if (initialMessage) {
             setMessageText(initialMessage);
-            if (setInitialMessage) setInitialMessage(''); // Clear it once used
+            if (setInitialMessage) setInitialMessage('');
+        } else if (selectedId !== lastId.current) {
+            // Only clear if the chat actually switched and no template was provided
+            setMessageText('');
         }
+        lastId.current = selectedId;
     }, [selectedId, initialMessage, setInitialMessage]);
     const [showMoreMenu, setShowMoreMenu] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -36,6 +47,7 @@ const ChatArea = ({ selectedId, setSelectedId, initialMessage, setInitialMessage
     useEffect(() => {
         setContextSelectedId(selectedId);
     }, [selectedId, setContextSelectedId]);
+
     useEffect(() => {
         if (selectedId) {
             isInitialLoad.current = true;

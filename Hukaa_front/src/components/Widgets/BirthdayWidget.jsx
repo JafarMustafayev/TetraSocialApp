@@ -29,7 +29,13 @@ const BirthdayWidget = () => {
 
     const handleInviteToChat = (user) => {
         const message = `Happy Birthday, ${user.userName}! 🎉 Wishing you a great day!`;
-        navigate(`/messages?userId=${user.id}&message=${encodeURIComponent(message)}`);
+        const params = new URLSearchParams({
+            userId: user.id,
+            userName: user.userName,
+            profileImageUrl: user.profileImageUrl || '',
+            message: message
+        });
+        navigate(`/messages?${params.toString()}`);
     };
 
     return (
