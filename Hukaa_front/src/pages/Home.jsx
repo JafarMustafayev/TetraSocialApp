@@ -77,6 +77,12 @@ const Home = () => {
                 <div className="news-feed-area">
                     <CreatePostWidget onPostCreated={handlePostCreated} />
 
+                    {/* Mobile Only Widgets */}
+                    <div className="lg:hidden space-y-4 mb-6">
+                        <BirthdayWidget />
+                        <SuggestedUsersWidget maxItems={3} />
+                    </div>
+
                     {posts.map(post => (
                         <PostWidget
                             key={post.id}
@@ -103,8 +109,8 @@ const Home = () => {
                 </div>
             </div>
 
-            <div className="w-full lg:w-1/4 px-3">
-                <aside className="widget-area">
+            <div className="hidden lg:block lg:w-1/4 px-3 ">
+                <aside className="widget-area sticky top-25">
                     <BirthdayWidget />
                     <SuggestedUsersWidget maxItems={5} />
                 </aside>

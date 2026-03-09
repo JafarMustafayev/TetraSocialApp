@@ -214,7 +214,7 @@ const ChatArea = ({ selectedId, setSelectedId, initialMessage, setInitialMessage
 
     if (!activeChat) {
         return (
-            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-gray-50/50 relative z-10 hidden md:flex">
+            <div className="flex-1 flex-col items-center justify-center p-8 text-center bg-gray-50/50 relative z-10 hidden md:flex">
                 <div className="w-20 h-20 md:w-24 md:h-24 bg-white rounded-3xl flex items-center justify-center shadow-sm mb-6">
                     <i className="ri-chat-smile-2-line text-4xl md:text-5xl text-main/20"></i>
                 </div>
@@ -225,7 +225,7 @@ const ChatArea = ({ selectedId, setSelectedId, initialMessage, setInitialMessage
     }
 
     return (
-        <div className={`flex-1 flex flex-col bg-[#e5ddd5] dark:bg-[#0b141a] relative h-full min-w-0 ${!selectedId ? 'hidden md:flex' : 'flex'}`}>
+        <div className={`flex-1 flex flex-col bg-[#e5ddd5] dark:bg-[#0b141a] relative h-full min-w-0 ${!selectedId ? 'max-md:hidden' : ''}`}>
             {/* Chat Header - Fixed at Top */}
             <div className="h-[70px] px-4 md:px-6 rounded-b-2xl bg-white/40 dark:bg-[#202c33]/80 border-b border-gray-400 backdrop-blur-sm flex items-center justify-between shrink-0 z-30">
                 <div className="flex items-center">

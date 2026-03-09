@@ -355,8 +355,8 @@ const UserProfile = () => {
                                         {isPostsLoading && <PostSkeleton count={2} />}
                                     </div>
                                 </div>
-                                <div className="w-full lg:w-1/4 px-3">
-                                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                                <div className="w-full lg:w-1/4 px-3 ">
+                                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow sticky top-25">
                                         <h3 className="text-lg font-bold text-gray-800 mb-6 pb-4 border-b border-gray-50 flex items-center">
                                             <i className="ri-information-line mr-2 text-main"></i>
                                             About {profileData.firstName}

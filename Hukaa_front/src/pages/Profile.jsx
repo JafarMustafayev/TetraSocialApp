@@ -246,6 +246,9 @@ const Profile = () => {
                             <div className="w-full lg:w-3/4 px-3">
                                 <div className="news-feed-area">
                                     <CreatePostWidget profileData={profileData} onPostCreated={handlePostCreated} />
+                                    <div className="lg:hidden space-y-4 mb-6">
+                                        <SuggestedUsersWidget maxItems={3} />
+                                    </div>
 
                                     {posts && posts.length > 0 ? (
                                         posts.map(post => (
@@ -268,8 +271,8 @@ const Profile = () => {
                                 </div>
                             </div>
 
-                            <div className="w-full lg:w-1/4 px-3">
-                                <aside className="widget-area">
+                            <div className="hidden lg:block lg:w-1/4 px-3">
+                                <aside className="widget-area sticky top-25">
                                     <SuggestedUsersWidget maxItems={5} />
                                 </aside>
                             </div>
