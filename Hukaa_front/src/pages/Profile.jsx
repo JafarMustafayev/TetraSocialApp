@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getMyProfile, getSuggestedPeople } from '../api/profile';
-import { followUser } from '../api/follow';
+import { getMyProfile } from '../api/profile';
 import { getMyPosts } from '../api/post';
 import { IMAGE_BASE_URL, USER_AVATAR, COVER_IMAGE } from '../api/client';
 import PostWidget from '../components/PostWidget';
@@ -9,7 +8,7 @@ import CreatePostWidget from '../components/CreatePostWidget';
 import ConnectionsPopup from '../components/Popups/ConnectionsPopup';
 import PostSkeleton from '../components/Skeleton/PostSkeleton';
 import ProfileHeaderSkeleton from '../components/Skeleton/ProfileHeaderSkeleton';
-import UserSkeleton from '../components/Skeleton/UserSkeleton';
+import SuggestedUsersWidget from '../components/Widgets/SuggestedUsersWidget';
 
 const Profile = () => {
     const [activeTab, setActiveTab] = useState('timeline');
@@ -18,11 +17,6 @@ const Profile = () => {
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
-    // Suggested users state
-    const [suggestedUsers, setSuggestedUsers] = useState([]);
-    const [isSuggestedLoading, setIsSuggestedLoading] = useState(true);
-    const [followingIds, setFollowingIds] = useState(new Set());
 
     // Posts state for infinite scroll
     const [posts, setPosts] = useState([]);
@@ -47,43 +41,8 @@ const Profile = () => {
             }
         };
 
-        const fetchSuggestions = async () => {
-            setIsSuggestedLoading(true);
-            try {
-                const response = await getSuggestedPeople();
-                if (response && response.success) {
-                    setSuggestedUsers(response.data);
-                }
-            } catch (err) {
-                console.error('Error fetching suggested people:', err);
-            } finally {
-                setIsSuggestedLoading(false);
-            }
-        };
-
         fetchProfile();
-        fetchSuggestions();
     }, []);
-
-    const handleFollow = async (userId) => {
-        if (followingIds.has(userId)) return;
-
-        setFollowingIds(prev => new Set(prev).add(userId));
-        try {
-            const response = await followUser(userId);
-            if (response && response.success) {
-                setSuggestedUsers(prev => prev.filter(user => user.id !== userId));
-            }
-        } catch (err) {
-            console.error('Error following user:', err);
-        } finally {
-            setFollowingIds(prev => {
-                const next = new Set(prev);
-                next.delete(userId);
-                return next;
-            });
-        }
-    };
 
     const fetchPosts = async (page) => {
         if (isPostsLoading || !hasMorePosts) return;
@@ -114,7 +73,6 @@ const Profile = () => {
         }
     };
 
-    // Load initial posts
     useEffect(() => {
         if (profileData) {
             fetchPosts(1);
@@ -312,60 +270,7 @@ const Profile = () => {
 
                             <div className="w-full lg:w-1/4 px-3">
                                 <aside className="widget-area">
-                                    <div className="bg-white p-5 rounded-xl shadow-sm mb-6 border border-gray-100">
-                                        <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-50">
-                                            <h3 className="text-lg font-bold text-gray-800 m-0">Suggestions {suggestedUsers.length > 0 ? `(${suggestedUsers.length})` : ''}</h3>
-                                            <button
-                                                onClick={async () => {
-                                                    setIsSuggestedLoading(true);
-                                                    try {
-                                                        const response = await getSuggestedPeople();
-                                                        if (response && response.success) setSuggestedUsers(response.data);
-                                                    } finally {
-                                                        setIsSuggestedLoading(false);
-                                                    }
-                                                }}
-                                                disabled={isSuggestedLoading}
-                                                className="group w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-gray-100 text-gray-500 hover:text-main hover:border-main transition-all shadow-sm active:scale-95 disabled:opacity-50"
-                                            >
-                                                <i className={`group-hover:rotate-180 transition-transform duration-500 ri-refresh-line ${loading ? 'animate-spin' : ''}`}></i>
-                                            </button>
-                                        </div>
-                                        <div className="space-y-5">
-                                            {isSuggestedLoading ? (
-                                                <UserSkeleton count={3} />
-                                            ) : suggestedUsers.length > 0 ? (
-                                                suggestedUsers.slice(0, 5).map((user) => (
-                                                    <div key={user.id} className="flex items-center justify-between group">
-                                                        <div className="flex items-center">
-                                                            <Link to={`/profile/${user.id}`} className="relative shrink-0">
-                                                                <img
-                                                                    src={user.profileImageUrl ? `${IMAGE_BASE_URL}/${user.profileImageUrl}` : USER_AVATAR}
-                                                                    className="w-11 h-11 rounded-full object-cover ring-2 ring-gray-50 group-hover:ring-blue-100 transition-all"
-                                                                    alt={user.userName}
-                                                                />
-                                                            </Link>
-                                                            <div className="ml-3">
-                                                                <Link to={`/profile/${user.id}`} className="block text-[15px] font-bold text-gray-700 hover:text-blue-600 transition-colors leading-tight">{user.userName}</Link>
-                                                                <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-tighter">Suggested for you</span>
-                                                            </div>
-                                                        </div>
-                                                        <button
-                                                            onClick={() => handleFollow(user.id)}
-                                                            disabled={followingIds.has(user.id)}
-                                                            className="px-3 py-1 text-xs font-bold text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-600 hover:text-white transition-all disabled:opacity-50"
-                                                        >
-                                                            {followingIds.has(user.id) ? (
-                                                                <i className="ri-loader-4-line animate-spin"></i>
-                                                            ) : 'Add'}
-                                                        </button>
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <div className="text-center text-gray-400 py-4">No suggestions</div>
-                                            )}
-                                        </div>
-                                    </div>
+                                    <SuggestedUsersWidget maxItems={5} />
                                 </aside>
                             </div>
                         </div>
