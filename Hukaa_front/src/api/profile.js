@@ -92,3 +92,9 @@ export const getUserProfile = async (userId) => {
         method: 'GET',
     });
 };
+
+export const getSuggestedPeople = async () => {
+    return fetchClient('/api/Profile/suggested-people', {
+        method: 'GET',
+    });
+};
