@@ -3,6 +3,8 @@ import PostWidget from '../components/PostWidget';
 import CreatePostWidget from '../components/CreatePostWidget';
 import PostSkeleton from '../components/Skeleton/PostSkeleton';
 import { getFeeds } from '../api/post';
+import SuggestedUsersWidget from '../components/Widgets/SuggestedUsersWidget';
+import BirthdayWidget from '../components/Widgets/BirthdayWidget';
 
 const Home = () => {
     const [posts, setPosts] = useState([]);
@@ -99,6 +101,13 @@ const Home = () => {
                         </div>
                     )}
                 </div>
+            </div>
+
+            <div className="w-full lg:w-1/4 px-3">
+                <aside className="widget-area">
+                    <BirthdayWidget />
+                    <SuggestedUsersWidget maxItems={5} />
+                </aside>
             </div>
         </div>
     );

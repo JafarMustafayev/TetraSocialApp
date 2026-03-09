@@ -98,3 +98,9 @@ export const getSuggestedPeople = async () => {
         method: 'GET',
     });
 };
+
+export const getBirthdays = async () => {
+    return fetchClient('/api/Profile/birthdays', {
+        method: 'GET',
+    });
+};
