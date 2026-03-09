@@ -7,6 +7,7 @@ public interface IProfileService
     Task<ResponseDto> GetProfileInformationSettingsDataAsync();
     Task<ResponseDto> GetPrivacySettingDataAsync();
     Task<ResponseDto> GetUserProfileAsync(string targetUserId);
+    Task<ResponseDto> GetSuggestedPeopleAsync();
     Task<ResponseDto> SearchUserProfileAsync(string query);
     Task<ResponseDto> UpdateProfileAsync(UpdateProfileInformationDto dto);
     Task<ResponseDto> ChangeProfilePhotoAsync(ChangeProfilePhotoCoverDto dto);

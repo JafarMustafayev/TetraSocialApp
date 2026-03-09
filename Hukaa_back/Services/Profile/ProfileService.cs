@@ -14,11 +14,12 @@ public class ProfileService(
         var user = await dbContext.Users
             .FirstOrDefaultAsync(user => user.Id == userId);
 
-        if (user == null)
+        if(user == null)
         {
             throw new NotFoundException("User", userId);
         }
-       var isAdmin = await userManager.IsInRoleAsync(user, "Admin");
+
+        var isAdmin = await userManager.IsInRoleAsync(user, "Admin");
 
         return new ResponseDto
         {
@@ -33,7 +34,7 @@ public class ProfileService(
                 LastName = user.LastName,
                 FirstName = user.FirstName,
                 ProfilePhoto = user.ProfilePhotoPath,
-                IsAdmin  = isAdmin
+                IsAdmin = isAdmin
             }
         };
     }
@@ -157,6 +158,38 @@ public class ProfileService(
             Message = "Profile data has been successfully retrieved.",
             Success = true,
             Data = profileSummaryDetail
+        };
+    }
+
+    public async Task<ResponseDto> GetSuggestedPeopleAsync()
+    {
+        var userId = currentUser.UserId;
+
+        var myFollowings = await dbContext.Follows
+            .Where(f => f.FollowerId == userId)
+            .Select(f => f.FollowingId)
+            .ToListAsync();
+
+        var suggestedPeople = await dbContext.Users
+            .Where(u =>
+                u.Id != userId &&
+                !myFollowings.Contains(u.Id) &&
+                dbContext.Follows.Any(f =>
+                    myFollowings.Contains(f.FollowerId) &&
+                    f.FollowingId == u.Id
+                ))
+            .OrderBy(u => Guid.NewGuid())
+            .Take(10)
+            .ToListAsync();
+
+        var mappedPeople = mapper.Map<List<UserPreviewDto>>(suggestedPeople);
+
+        return new ResponseDto
+        {
+            StatusCode = StatusCodes.Status200OK,
+            Success = true,
+            Message = "Suggested Profile  has been successfully retrieved.",
+            Data = mappedPeople
         };
     }
 

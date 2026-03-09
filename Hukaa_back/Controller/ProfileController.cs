@@ -41,6 +41,13 @@ public class ProfileController(
         return StatusCode(res.StatusCode, res);
     }
 
+    [HttpGet("suggested-people")]
+    public async Task<IActionResult> GetSuggestedPeople()
+    {
+        var result = await profileService.GetSuggestedPeopleAsync();
+        return StatusCode(result.StatusCode, result);
+    }
+
     [HttpGet("search")]
     public async Task<IActionResult> SearchUserProfile([FromQuery] string query)
     {
