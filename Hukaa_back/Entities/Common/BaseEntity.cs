@@ -7,7 +7,7 @@ public abstract class BaseEntity
 
     public BaseEntity()
     {
-        CreatedAt = DateTime.UtcNow;
+        CreatedAt = DateTime.Now;
         Id = Guid.NewGuid().ToString();
     }
 }

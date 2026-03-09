@@ -54,7 +54,7 @@ public class NotificationService(
             UserId = postOwnerId,
             PayloadJson = JsonSerializer.Serialize(payload),
             Type = NotificationType.PostReacted,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.Now
         };
 
         await context.Notifications.AddAsync(notification);
@@ -103,7 +103,7 @@ public class NotificationService(
             UserId = postOwnerId,
             PayloadJson = JsonSerializer.Serialize(payload),
             Type = NotificationType.CommentAdded,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.Now
         };
 
         await context.Notifications.AddAsync(notification);
@@ -145,7 +145,7 @@ public class NotificationService(
             UserId = followedUserId,
             PayloadJson = JsonSerializer.Serialize(payload),
             Type = NotificationType.Followed,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.Now
         };
 
         await context.Notifications.AddAsync(notification);
@@ -187,7 +187,7 @@ public class NotificationService(
             UserId = requestedUserId,
             PayloadJson = JsonSerializer.Serialize(payload),
             Type = NotificationType.FollowRequestReceived,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.Now
         };
 
         await context.Notifications.AddAsync(notification);
@@ -229,7 +229,7 @@ public class NotificationService(
             UserId = requesterUserId,
             PayloadJson = JsonSerializer.Serialize(payload),
             Type = NotificationType.FollowRequestAccepted,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.Now
         };
 
         await context.Notifications.AddAsync(notification);

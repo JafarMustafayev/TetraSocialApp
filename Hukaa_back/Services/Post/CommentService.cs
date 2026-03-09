@@ -93,7 +93,7 @@ public class CommentService(
         }
 
         comment.IsDeleted = true;
-        comment.DeletedAt = DateTime.UtcNow;
+        comment.DeletedAt = DateTime.Now;
         await context.SaveChangesAsync();
 
         return new ResponseDto

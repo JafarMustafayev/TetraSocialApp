@@ -148,7 +148,7 @@ public class PostService(
         {
             Content = request.Content,
             AppUser = user,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.Now
         };
 
         await context.Posts.AddAsync(post);
@@ -211,7 +211,7 @@ public class PostService(
             throw new UnauthorizedAccessException("You cannot delete this post.");
         }
 
-        post.DeleteAt = DateTime.UtcNow;
+        post.DeleteAt = DateTime.Now;
         post.IsDeleted = true;
 
         if(post.PostFiles is { Count: > 0 })
@@ -374,7 +374,7 @@ public class PostService(
         {
             await fileService.DeleteFileAsync(file.FilePath);
             file.IsDeleted = true;
-            file.DeletedAt = DateTime.UtcNow;
+            file.DeletedAt = DateTime.Now;
         }
     }
 

@@ -108,7 +108,7 @@ public class ConversationService(
         }
 
         conversation.IsDeleted = true;
-        conversation.DeletedAt = DateTime.UtcNow;
+        conversation.DeletedAt = DateTime.Now;
         await context.SaveChangesAsync();
 
         return new ResponseDto

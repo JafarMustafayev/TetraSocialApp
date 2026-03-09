@@ -23,6 +23,6 @@ public class Post : BaseEntity
         IsArchived = false;
         IsDeleted = false;
         ShareCounter = 0;
-        CreatedAt = DateTime.UtcNow;
+        CreatedAt = DateTime.Now;
     }
 }

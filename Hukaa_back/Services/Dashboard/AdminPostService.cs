@@ -75,7 +75,7 @@ public class AdminPostService(
             throw new NotFoundException("Post", postId);
         }
         post.IsDeleted = true;
-        post.DeleteAt = DateTime.UtcNow;
+        post.DeleteAt = DateTime.Now;
         await context.SaveChangesAsync();
 
         return new ResponseDto

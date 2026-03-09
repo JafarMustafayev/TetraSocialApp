@@ -196,7 +196,7 @@ public class ProfileService(
     public async Task<ResponseDto> GetTodayBirthdaysAsync()
     {
         var userId = currentUser.UserId;
-        var today = DateTime.UtcNow.Date;
+        var today = DateTime.Now.Date;
 
         var birthdayUsers = await dbContext.Users
             .Where(u =>

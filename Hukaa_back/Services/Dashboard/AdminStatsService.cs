@@ -62,13 +62,13 @@ public class AdminStatsService(
 
     private async Task<int> GetTodayPostsCountAsync()
     {
-        var hours = DateTime.UtcNow.Hour;
+        var hours = DateTime.Now.Hour;
 
         var counts = await context.Posts
             .Where(post =>
             !post.IsDeleted &&
             !post.IsArchived && 
-            post.CreatedAt>DateTime.UtcNow.AddHours(-hours) )
+            post.CreatedAt>DateTime.Now.AddHours(-hours) )
             .ToListAsync();
 
         

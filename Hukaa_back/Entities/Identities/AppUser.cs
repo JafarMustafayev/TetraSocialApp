@@ -39,6 +39,6 @@ public class AppUser : IdentityUser<string>
         Bio = string.Empty;
         UserStatus = UserStatus.PendingVerification;
         AccountType = AccountType.PrivateAccount;
-        CreatedAt = DateTime.UtcNow;
+        CreatedAt = DateTime.Now;
     }
 }

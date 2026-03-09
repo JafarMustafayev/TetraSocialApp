@@ -18,7 +18,7 @@ public class UpdateExperienceDtoValidator : AbstractValidator<UpdateExperienceDt
         RuleFor(x => x.StartDate)
             .NotEqual(DateTime.MinValue)
             .WithMessage("Start date is required")
-            .LessThanOrEqualTo(DateTime.UtcNow)
+            .LessThanOrEqualTo(DateTime.Now)
             .WithMessage("Start date cannot be in the future");
 
         RuleFor(x => x.EndDate)

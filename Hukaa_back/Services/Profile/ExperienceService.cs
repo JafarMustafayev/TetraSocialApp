@@ -106,7 +106,7 @@ public class ExperienceService(
         }
 
         experience.IsDeleted = true;
-        experience.DeleteAt = DateTime.UtcNow;
+        experience.DeleteAt = DateTime.Now;
 
         await context.SaveChangesAsync();
 
