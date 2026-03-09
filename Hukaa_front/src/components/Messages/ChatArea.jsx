@@ -6,10 +6,18 @@ import ChatAreaSkeleton from '../Skeleton/ChatAreaSkeleton';
 import { Link } from 'react-router-dom';
 import { useToast } from '../../context/ToastContext';
 
-const ChatArea = ({ selectedId, setSelectedId }) => {
+const ChatArea = ({ selectedId, setSelectedId, initialMessage, setInitialMessage }) => {
     const { conversations, messages, fetchMessages, messagesLoading, messagesHasMore, deleteConversation, tempChat, sendMessage, markAsRead, setSelectedId: setContextSelectedId } = useChat();
     const { showToast, showConfirm } = useToast();
     const [messageText, setMessageText] = useState('');
+
+    // Pre-fill message if provided (e.g., Happy Birthday)
+    useEffect(() => {
+        if (initialMessage && selectedId) {
+            setMessageText(initialMessage);
+            if (setInitialMessage) setInitialMessage(''); // Clear it once used
+        }
+    }, [selectedId, initialMessage, setInitialMessage]);
     const [showMoreMenu, setShowMoreMenu] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isScrolling, setIsScrolling] = useState(false);

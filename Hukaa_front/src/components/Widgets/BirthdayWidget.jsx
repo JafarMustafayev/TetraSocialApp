@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { getBirthdays } from '../../api/profile';
 import { IMAGE_BASE_URL, USER_AVATAR } from '../../api/client';
 import UserSkeleton from '../Skeleton/UserSkeleton';
@@ -7,6 +7,7 @@ import UserSkeleton from '../Skeleton/UserSkeleton';
 const BirthdayWidget = () => {
     const [birthdays, setBirthdays] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate();
 
     const fetchBirthdays = async () => {
         setIsLoading(true);
@@ -25,6 +26,11 @@ const BirthdayWidget = () => {
     useEffect(() => {
         fetchBirthdays();
     }, []);
+
+    const handleInviteToChat = (user) => {
+        const message = `Happy Birthday, ${user.userName}! 🎉 Wishing you a great day!`;
+        navigate(`/messages?userId=${user.id}&message=${encodeURIComponent(message)}`);
+    };
 
     return (
         <div className="bg-white p-5 rounded-xl shadow-sm mb-6 border border-gray-100">
@@ -48,8 +54,8 @@ const BirthdayWidget = () => {
                     <UserSkeleton count={3} />
                 ) : birthdays.length > 0 ? (
                     birthdays.map((user) => (
-                        <div key={user.id} className="flex items-center group">
-                            <Link to={`/profile/${user.id}`} className="relative shrink-0">
+                        <div key={user.id} className="flex items-center group cursor-pointer" onClick={() => handleInviteToChat(user)}>
+                            <div className="relative shrink-0">
                                 <img
                                     src={user.profileImageUrl ? `${IMAGE_BASE_URL}/${user.profileImageUrl}` : USER_AVATAR}
                                     className="w-11 h-11 rounded-full object-cover ring-2 ring-gray-50 group-hover:ring-pink-100 transition-all"
@@ -58,9 +64,9 @@ const BirthdayWidget = () => {
                                 <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-pink-500 rounded-full flex items-center justify-center border-2 border-white">
                                     <i className="ri-cake-fill text-[10px] text-white"></i>
                                 </div>
-                            </Link>
+                            </div>
                             <div className="ml-3 min-w-0">
-                                <Link to={`/profile/${user.id}`} className="block text-[15px] font-bold text-gray-700 hover:text-pink-600 transition-colors leading-tight truncate">{user.userName}</Link>
+                                <span className="block text-[15px] font-bold text-gray-700 group-hover:text-pink-600 transition-colors leading-tight truncate">{user.userName}</span>
                                 <span className="text-[11px] font-semibold text-gray-400">Having a birthday today!</span>
                             </div>
                         </div>
