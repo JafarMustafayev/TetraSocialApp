@@ -48,6 +48,13 @@ public class ProfileController(
         return StatusCode(result.StatusCode, result);
     }
 
+    [HttpGet("birthdays")]
+    public async Task<IActionResult> GetTodayBirthdaysAsync()
+    {
+        var result = await profileService.GetTodayBirthdaysAsync();
+        return StatusCode(result.StatusCode, result);
+    }
+
     [HttpGet("search")]
     public async Task<IActionResult> SearchUserProfile([FromQuery] string query)
     {

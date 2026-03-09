@@ -193,6 +193,34 @@ public class ProfileService(
         };
     }
 
+    public async Task<ResponseDto> GetTodayBirthdaysAsync()
+    {
+        var userId = currentUser.UserId;
+        var today = DateTime.UtcNow.Date;
+
+        var birthdayUsers = await dbContext.Users
+            .Where(u =>
+                u.BirthDay.HasValue &&
+                u.BirthDay.Value.Day == today.Day &&
+                u.BirthDay.Value.Month == today.Month &&
+                dbContext.Follows.Any(f =>
+                    f.FollowerId == userId &&
+                    f.FollowingId == u.Id))
+            .OrderBy(u => Guid.NewGuid())
+            .Take(10)
+            .ToListAsync();
+
+        var mappedBirthdays = mapper.Map<List<UserPreviewDto>>(birthdayUsers);
+
+        return new ResponseDto
+        {
+            StatusCode = StatusCodes.Status200OK,
+            Success = true,
+            Message = "Birthday has been successfully retrieved.",
+            Data = mappedBirthdays
+        };
+    }
+
     public async Task<ResponseDto> SearchUserProfileAsync(string query)
     {
         if(string.IsNullOrWhiteSpace(query))
