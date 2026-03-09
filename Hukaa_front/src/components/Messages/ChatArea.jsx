@@ -43,11 +43,6 @@ const ChatArea = ({ selectedId, setSelectedId, initialMessage, setInitialMessage
 
     const activeChat = conversations.find(c => c.conversationId === selectedId) || (tempChat?.conversationId === selectedId ? tempChat : null);
 
-    // Sync selectedId with context for unread count logic
-    useEffect(() => {
-        setContextSelectedId(selectedId);
-    }, [selectedId, setContextSelectedId]);
-
     useEffect(() => {
         if (selectedId) {
             isInitialLoad.current = true;
@@ -123,7 +118,7 @@ const ChatArea = ({ selectedId, setSelectedId, initialMessage, setInitialMessage
             await sendMessage(
                 currentText,
                 activeChat.user.id,
-                activeChat.isTemp ? null : activeChat.conversationId
+                activeChat.conversationId
             );
         } catch (error) {
             console.error('Failed to send message:', error);

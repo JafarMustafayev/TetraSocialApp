@@ -5,8 +5,7 @@ import ConversationList from '../components/Messages/ConversationList';
 import ChatArea from '../components/Messages/ChatArea';
 
 const Messages = () => {
-    const { fetchConversations, conversations, startNewChat } = useChat();
-    const [selectedId, setSelectedId] = useState(null);
+    const { fetchConversations, conversations, startNewChat, selectedId, setSelectedId } = useChat();
     const [searchParams, setSearchParams] = useSearchParams();
     const [initialMessage, setInitialMessage] = useState('');
     const [emptyInput, setEmptyInput] = useState(false);

@@ -19,7 +19,13 @@ export const ChatProvider = ({ children }) => {
     const { user } = useAuth();
     const isFetching = useRef(false);
     const isFetchingMessages = useRef(false);
+    const conversationsRef = useRef(conversations);
     const [totalUnreadCount, setTotalUnreadCount] = useState(0);
+
+    // Keep ref in sync for stable callbacks
+    useEffect(() => {
+        conversationsRef.current = conversations;
+    }, [conversations]);
 
     const startNewChat = useCallback((otherUser) => {
         const existingConv = conversations.find(c => c.user.id === otherUser.id);
@@ -135,10 +141,13 @@ export const ChatProvider = ({ children }) => {
 
     const sendMessage = useCallback(async (content, receiverId, conversationId) => {
         try {
+            const isTemp = conversationId && conversationId.startsWith('new_');
             const payload = {
                 content,
                 receiverId,
-                conversationId: conversationId && conversationId.startsWith('new_') ? null : conversationId,
+                conversationId: isTemp ? null : conversationId,
+                tempConversationId: isTemp ? conversationId : null,
+                TempConversationId: isTemp ? conversationId : null,
                 postId: null
             };
             await signalRService.invoke('chat', 'SendMessage', payload);
@@ -150,6 +159,11 @@ export const ChatProvider = ({ children }) => {
 
     const markAsRead = useCallback(async (conversationId) => {
         if (!conversationId || conversationId.startsWith('new_')) return;
+
+        // Find conversation in ref to check if it actually has unread messages
+        const conv = conversationsRef.current.find(c => c.conversationId === conversationId);
+        if (!conv || conv.unreadMessagesCount === 0) return;
+
         try {
             await signalRService.invoke('chat', 'MarkAsRead', { conversationId });
         } catch (err) {
@@ -172,11 +186,8 @@ export const ChatProvider = ({ children }) => {
             return conv;
         }));
 
-        // 2. If it's the current active chat, invoke MarkAsRead back per user request
+        // 2. If it's the current active chat, update any messages in state to show they are read
         if (selectedId === conversationId) {
-            markAsRead(conversationId);
-
-            // Also update any messages in state to show they are read
             setMessages(prev => {
                 if (!prev[conversationId]) return prev;
                 return {
@@ -188,62 +199,102 @@ export const ChatProvider = ({ children }) => {
     }, [selectedId, markAsRead]);
 
     const handleReceiveMessage = useCallback((message) => {
-        let convId = message.conversationId;
+        const tempIdFromMsg = message.tempConversationId || message.TempConversationId;
+        const realIdFromMsg = message.conversationId;
 
-        if (!convId) {
-            if (message.isOwner) {
-                convId = selectedId;
-            } else {
-                const conversation = conversations.find(c => c.user.id === message.senderId);
-                convId = conversation?.conversationId;
+        // Find which conversation this belongs to
+        let convToUpdate = conversations.find(c => {
+            if (realIdFromMsg && c.conversationId === realIdFromMsg) return true;
+            if (tempIdFromMsg && c.conversationId === tempIdFromMsg) return true;
+            return false;
+        });
 
-                if (!convId && tempChat && tempChat.user.id === message.senderId) {
-                    convId = tempChat.conversationId;
-                }
-            }
+        // Special case for tempChat (not yet in conversations list)
+        let isFromTempChat = false;
+        if (!convToUpdate && tempChat && tempIdFromMsg === tempChat.conversationId) {
+            convToUpdate = tempChat;
+            isFromTempChat = true;
         }
 
-        if (!convId) {
+        // If it's a completely new message from someone else (standard existing chat)
+        if (!convToUpdate && !message.isOwner) {
+            convToUpdate = conversations.find(c => c.user.id === message.senderId);
+        }
+
+        // Final ID to use for this message update
+        const targetId = realIdFromMsg || (convToUpdate ? convToUpdate.conversationId : null);
+
+        if (!targetId) {
             fetchConversations(true);
             return;
         }
 
-        // 1. Add message to state and sort
+        // Promotion Logic: Temp ID -> Real ID
+        if (tempIdFromMsg && realIdFromMsg && tempIdFromMsg !== realIdFromMsg) {
+            // Check if this temp ID exists in our local state
+            const hasTempInState = conversations.some(c => c.conversationId === tempIdFromMsg) ||
+                (tempChat && tempChat.conversationId === tempIdFromMsg);
+
+            if (hasTempInState) {
+                // 1. Update selectedId
+                if (selectedId === tempIdFromMsg) {
+                    setSelectedId(realIdFromMsg);
+                }
+
+                // 2. Move messages history
+                setMessages(prev => {
+                    const existingTemp = prev[tempIdFromMsg] || [];
+                    const newState = { ...prev };
+                    delete newState[tempIdFromMsg];
+                    // Merge with any existing messages for the real ID (unlikely but safe)
+                    const updated = [...(newState[realIdFromMsg] || []), ...existingTemp];
+                    newState[realIdFromMsg] = updated.sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt));
+                    return newState;
+                });
+
+                // 3. The conversations list update will happen below in the combined logic
+            }
+        }
+
+        // Add message to messages state
         setMessages(prev => {
-            const existing = prev[convId] || [];
+            const existing = prev[targetId] || [];
             if (existing.some(m => m.messageId === message.messageId)) return prev;
-            const updated = [...existing, message];
             return {
                 ...prev,
-                [convId]: updated.sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt))
+                [targetId]: [...existing, message].sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt))
             };
         });
 
-        // 2. Update conversations list incrementally
+        // Update Conversations list
         setConversations(prev => {
-            const index = prev.findIndex(c => c.conversationId === convId);
-            const isCurrentlySelected = selectedId === convId;
+            const isCurrentlySelected = selectedId === targetId || selectedId === tempIdFromMsg;
+            const index = prev.findIndex(c =>
+                c.conversationId === targetId ||
+                (tempIdFromMsg && c.conversationId === tempIdFromMsg)
+            );
 
             if (index !== -1) {
                 const updated = [...prev];
                 const conv = { ...updated[index] };
                 conv.lastMessage = message;
-                if (message.conversationId && conv.conversationId !== message.conversationId) {
-                    conv.conversationId = message.conversationId;
-                }
+                conv.conversationId = targetId; // Promote to real ID if it was temp
+                conv.isTemp = false;
+
                 if (!isCurrentlySelected && !message.isOwner) {
                     conv.unreadMessagesCount = (conv.unreadMessagesCount || 0) + 1;
                 }
+
                 updated.splice(index, 1);
                 return [conv, ...updated];
-            } else if (tempChat && tempChat.conversationId === convId) {
-                const newRealConv = {
+            } else if (isFromTempChat) {
+                const newConv = {
                     ...tempChat,
-                    conversationId: message.conversationId || tempChat.conversationId,
+                    conversationId: targetId,
                     lastMessage: message,
                     isTemp: false
                 };
-                return [newRealConv, ...prev];
+                return [newConv, ...prev];
             }
             return prev;
         });
@@ -255,7 +306,7 @@ export const ChatProvider = ({ children }) => {
             }
             return prev;
         });
-    }, [conversations, selectedId, tempChat, fetchConversations]);
+    }, [conversations, selectedId, tempChat, fetchConversations, messages]);
 
     // Hub Connection
     useEffect(() => {
