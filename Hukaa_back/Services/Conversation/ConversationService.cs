@@ -42,6 +42,7 @@ public class ConversationService(
         {
             conversation.UnreadMessagesCount = counts.GetValueOrDefault(conversation.ConversationId, 0);
             conversation.User = users.GetValueOrDefault(conversation.ConversationId, null);
+            conversation.User.IsOnline = onlineUserTracker.IsOnline(conversation.User.Id);
             conversation.LastMessage = lastMessages.GetValueOrDefault(conversation.ConversationId, null);
         }
 
