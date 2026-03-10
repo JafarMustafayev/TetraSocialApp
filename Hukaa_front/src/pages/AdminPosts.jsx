@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import AdminHeader from '../components/admin/AdminHeader';
 import PostCard from '../components/admin/PostRow';
 import ConfirmModal from '../components/admin/ConfirmModal';
 import { getAdminPosts, adminDeletePost } from '../api/admin';
 
 export default function AdminPosts() {
+    const { onMenuClick } = useOutletContext();
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -100,6 +102,7 @@ export default function AdminPosts() {
                 setSearchQuery={setSearchQuery}
                 showSearch
                 onRefresh={() => load(1, searchQuery)}
+                onMenuClick={onMenuClick}
             />
             <main className="flex-1 p-6 overflow-y-auto">
                 <div className="max-w-7xl mx-auto space-y-6">

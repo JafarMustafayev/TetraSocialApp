@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import AdminHeader from '../components/admin/AdminHeader';
 import UserTable from '../components/admin/UserTable';
 import UserPostsDrawer from '../components/admin/UserPostsDrawer';
 import { getAdminUsers, banUser, unbanUser } from '../api/admin';
 
 export default function AdminUsers() {
+    const { onMenuClick } = useOutletContext();
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -102,6 +104,7 @@ export default function AdminUsers() {
                 setSearchQuery={setSearchQuery}
                 showSearch
                 onRefresh={() => load(1, searchQuery)}
+                onMenuClick={onMenuClick}
             />
             <main className="flex-1 p-6 overflow-y-auto space-y-4">
                 <UserTable

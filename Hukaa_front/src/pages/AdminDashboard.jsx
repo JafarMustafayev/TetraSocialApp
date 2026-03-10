@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Users, FileText, ShieldBan, TrendingUp, ChevronRight } from 'lucide-react';
 import AdminHeader from '../components/admin/AdminHeader';
@@ -6,6 +6,7 @@ import StatCard from '../components/admin/StatCard';
 import { getAdminStats } from '../api/admin';
 
 export default function AdminDashboard() {
+    const { onMenuClick } = useOutletContext();
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -53,12 +54,12 @@ export default function AdminDashboard() {
     ];
 
     return (
-        <div className="flex flex-col h-full">
-            <AdminHeader title="Dashboard" />
+        <div className="flex flex-col h-full font-inter">
+            <AdminHeader title="Dashboard" onMenuClick={onMenuClick} />
             <main className="flex-1 p-6 overflow-y-auto space-y-8">
                 {/* Stats grid */}
-                <div className="h-[150px] border border-white/5 rounded-2xl p-6">
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="border border-white/5 rounded-2xl p-4 lg:p-6 bg-white/[0.01]">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         {cards.map((c) => (
                             <StatCard key={c.label} {...c} />
                         ))}
@@ -67,7 +68,7 @@ export default function AdminDashboard() {
 
 
                 {/* Navigation Section */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-[150px]">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
                     {navCards.map((nav) => (
                         <Link
                             key={nav.to}

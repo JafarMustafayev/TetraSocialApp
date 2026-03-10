@@ -55,7 +55,7 @@ export default function UserPostsDrawer({ user, onClose, onPostDeleted }) {
             />
 
             {/* Drawer */}
-            <div className="fixed right-0 top-0 bottom-0 z-40 w-[460px] bg-[#0a0c10] border-l border-white/5 flex flex-col shadow-2xl overflow-hidden">
+            <div className="fixed right-0 top-0 bottom-0 z-40 w-full sm:w-[460px] bg-[#0a0c10] border-l border-white/5 flex flex-col shadow-2xl overflow-hidden">
                 {/* Header */}
                 <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between shrink-0 bg-[#0f1117]">
                     <div className="flex items-center gap-3">

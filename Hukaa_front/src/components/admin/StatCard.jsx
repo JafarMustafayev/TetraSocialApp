@@ -20,8 +20,8 @@ export default function StatCard({ label, value, icon: Icon, color = 'violet', s
                 <Icon size={18} />
             </div>
             <div>
-                <p className="text-white/40 text-xs font-medium uppercase tracking-wider">{label}</p>
-                <p className="text-white text-2xl font-bold mt-0.5">{value ?? '—'}</p>
+                <p className="text-white/40 text-[10px] lg:text-xs font-medium uppercase tracking-wider">{label}</p>
+                <p className="text-white text-xl lg:text-2xl font-bold mt-0.5">{value ?? '—'}</p>
                 {sub && <p className="text-white/30 text-xs mt-1">{sub}</p>}
             </div>
         </div>

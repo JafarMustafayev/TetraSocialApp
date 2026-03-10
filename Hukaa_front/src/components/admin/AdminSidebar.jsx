@@ -11,16 +11,23 @@ const navItems = [
     { to: '/dashboard/posts', label: 'Posts', icon: FileText, end: false },
 ];
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ isOpen, onClose }) {
     const { logout } = useAuth();
 
     return (
-        <aside className="w-64 min-h-screen bg-[#0f1117] border-r border-white/5 flex flex-col shrink-0">
+        <aside className={`
+            fixed inset-y-0 left-0 z-50 w-64 bg-[#0f1117] border-r border-white/5 flex flex-col shrink-0 transition-transform duration-300 ease-in-out
+            ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+            lg:relative lg:translate-x-0
+        `}>
             {/* Logo */}
-            <div className="px-6 py-6 border-b border-white/5">
-                <Link to="/">
+            <div className="px-6 py-6 border-b border-white/5 flex items-center justify-between">
+                <Link to="/" onClick={onClose}>
                     <img src={LOGO} alt="logo" className="w-32" />
                 </Link>
+                <button onClick={onClose} className="lg:hidden p-2 text-white/40 hover:text-white">
+                    <ChevronRight className="rotate-180" size={20} />
+                </button>
             </div>
 
             {/* Nav */}
@@ -30,6 +37,7 @@ export default function AdminSidebar() {
                         key={to}
                         to={to}
                         end={end}
+                        onClick={onClose}
                         className={({ isActive }) =>
                             `w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150 group border
                             ${isActive
@@ -54,9 +62,7 @@ export default function AdminSidebar() {
 
             {/* Bottom */}
             <div className="px-3 py-4 border-t border-white/5 space-y-1">
-
-                <Link
-                    to="/">
+                <Link to="/" onClick={onClose}>
                     <button
                         className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-400/60 hover:text-red-400 hover:bg-red-500/10 transition-all"
                     >

@@ -24,10 +24,10 @@ export default function UserTable({ users, loading, searchQuery, onToggleBan, on
 
     return (
         <>
-            <div className="bg-[#0f1117] border border-white/5 rounded-2xl overflow-hidden">
+            <div className="bg-[#0f1117] border border-white/5 rounded-2xl overflow-hidden flex flex-col">
                 {/* Table header info */}
-                <div className="px-5 py-4 border-b border-white/5 flex items-center justify-end">
-
+                <div className="px-5 py-4 border-b border-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <h2 className="text-white/50 text-xs font-medium uppercase tracking-wider">İstifadəçi siyahısı</h2>
                     <div className="flex gap-3 text-xs text-white/30">
                         <span className="flex items-center gap-1.5">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
