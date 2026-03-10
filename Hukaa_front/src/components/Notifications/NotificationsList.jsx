@@ -73,7 +73,7 @@ const NotificationsList = () => {
         const img = payload.ByUserProfileImageUrl;
 
         const userImg = img ? `${IMAGE_BASE_URL}/${img}` : USER_AVATAR;
-        const time = moment.utc(notif.createdAt).local().fromNow();
+        const time = moment(notif.createdAt).fromNow();
 
         return (
             <div key={notif.notificationId} className="p-4 flex flex-col hover:bg-gray-100 transition-colors group border-b border-gray-50 last:border-0">

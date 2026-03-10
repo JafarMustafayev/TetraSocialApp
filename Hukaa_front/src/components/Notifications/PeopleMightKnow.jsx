@@ -52,7 +52,7 @@ const PeopleMightKnow = () => {
     return (
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden lg:h-[805px] flex flex-col">
             <div className="p-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/30 shrink-0">
-                <h3 className="text-lg font-bold text-gray-800 m-0">Suggestions {suggestions.length > 0 ? `(${suggestions.length})` : ''}</h3>
+                <h3 className="text-lg font-bold text-gray-800 m-0">Suggestions</h3>
                 <button
                     onClick={fetchSuggestions}
                     disabled={loading}

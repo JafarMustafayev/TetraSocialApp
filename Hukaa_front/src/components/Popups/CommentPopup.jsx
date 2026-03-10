@@ -168,10 +168,10 @@ const CommentPopup = ({ isOpen, onClose, postId, onCommentCountChange }) => {
                                             <div className="flex items-center space-x-2">
                                                 <span className="text-[10px] text-gray-400 font-medium">
                                                     {comment.createdAt ?
-                                                        (moment.utc(comment.createdAt).local().fromNow().includes('days') &&
-                                                            moment.utc(comment.createdAt).local().fromNow().split(' ')[0] < 7 ?
-                                                            moment.utc(comment.createdAt).local().fromNow() :
-                                                            moment.utc(comment.createdAt).local().format('DD MMM YYYY')) : ''}
+                                                        (moment(comment.createdAt).fromNow().includes('days') &&
+                                                            moment(comment.createdAt).fromNow().split(' ')[0] < 7 ?
+                                                            moment(comment.createdAt).fromNow() :
+                                                            moment(comment.createdAt).format('DD MMM YYYY')) : ''}
                                                 </span>
                                                 {comment.isOwner && (
                                                     <div className="relative">

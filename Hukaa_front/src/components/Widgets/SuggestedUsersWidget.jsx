@@ -51,7 +51,7 @@ const SuggestedUsersWidget = ({ maxItems = 5 }) => {
     return (
         <div className="bg-white p-5 rounded-xl shadow-sm mb-6 border border-gray-100">
             <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-50">
-                <h3 className="text-lg font-bold text-gray-800 m-0">Suggestions {suggestedUsers.length > 0 ? `(${suggestedUsers.length})` : ''}</h3>
+                <h3 className="text-lg font-bold text-gray-800 m-0">Suggestions </h3>
                 <button
                     onClick={fetchSuggestions}
                     disabled={isLoading}

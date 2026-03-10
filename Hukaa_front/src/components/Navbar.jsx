@@ -298,7 +298,7 @@ const Navbar = ({ onMenuClick }) => {
                                         const userId = payload.ByUserId;
                                         const img = payload.ByUserProfileImageUrl;
                                         const userImg = img ? `${IMAGE_BASE_URL}/${img}` : USER_AVATAR;
-                                        const time = moment.utc(notif.createdAt).local().fromNow();
+                                        const time = moment(notif.createdAt).fromNow();
                                         return (
                                             <div key={notif.notificationId} className="relative group/item">
                                                 <Link
