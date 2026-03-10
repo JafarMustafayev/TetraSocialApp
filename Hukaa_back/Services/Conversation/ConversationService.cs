@@ -111,6 +111,22 @@ public class ConversationService(
         conversation.DeletedAt = DateTime.Now;
         await context.SaveChangesAsync();
 
+        var conversationAction = new ConversationActionDto
+        {
+            ConversationId = conversationId
+        };
+
+        var receiverId = conversation.InitiatorId == currentUserId
+            ? conversation.RecipientId
+            : conversation.InitiatorId;
+
+
+        await hubContext.Clients.User(currentUserId).DeleteConversation(conversationAction);
+        if(onlineUserTracker.IsOnline(receiverId))
+        {
+            await hubContext.Clients.User(receiverId).DeleteConversation(conversationAction);
+        }
+
         return new ResponseDto
         {
             StatusCode = StatusCodes.Status200OK,
@@ -207,10 +223,12 @@ public class ConversationService(
         var receiverId = conversation?.RecipientId == currentUserId
             ? conversation?.InitiatorId
             : conversation?.RecipientId;
-        await hubContext.Clients.User(receiverId ?? "").MessagesRead(new MarkAsReadDto
+
+        var conversationAction = new ConversationActionDto
         {
             ConversationId = conversationId
-        });
+        };
+        await hubContext.Clients.User(receiverId ?? "").MessagesRead(conversationAction);
     }
 
     private async Task<int> GetUnreadCountAsync(string conversationId)

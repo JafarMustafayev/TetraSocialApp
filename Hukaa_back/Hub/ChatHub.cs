@@ -5,7 +5,7 @@ public class ChatHub(
     ICurrentUserService currentUser,
     IConversationService conversationService,
     IValidator<SendMessageRequestDto> sendMessageValidator,
-    IValidator<MarkAsReadDto> markAsReadValidator)
+    IValidator<ConversationActionDto> markAsReadValidator)
     : BaseHub<IChatHubClient>(tracker, currentUser)
 {
     public async Task SendMessage(SendMessageRequestDto request)
@@ -14,7 +14,7 @@ public class ChatHub(
         await conversationService.SendMessageAsync(request);
     }
 
-    public async Task MarkAsRead(MarkAsReadDto request)
+    public async Task MarkAsRead(ConversationActionDto request)
     {
         await ValidateAsync(request, markAsReadValidator);
         await conversationService.MarkAsReadAsync(request.ConversationId);

@@ -6,4 +6,6 @@ public interface IChatHubClient
     Task MessagesRead(MarkAsReadDto dto);
     Task UserOnline();
     Task UserOffline();
+    Task MessagesRead(ConversationActionDto dto);
+    Task DeleteConversation(ConversationActionDto dto);
 }

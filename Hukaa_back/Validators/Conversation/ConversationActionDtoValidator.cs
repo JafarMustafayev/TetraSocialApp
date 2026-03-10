@@ -1,8 +1,8 @@
 ﻿namespace Hukaa_back.Validators.Conversation;
 
-public class MarkAsReadDtoValidator : AbstractValidator<MarkAsReadDto>
+public class ConversationActionDtoValidator : AbstractValidator<ConversationActionDto>
 {
-    public MarkAsReadDtoValidator()
+    public ConversationActionDtoValidator()
     {
         RuleFor(x => x.ConversationId)
             .NotNull().NotEmpty()
