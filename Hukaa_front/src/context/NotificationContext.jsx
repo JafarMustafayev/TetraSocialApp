@@ -264,7 +264,7 @@ export const NotificationProvider = ({ children }) => {
     return (
         <NotificationContext.Provider value={value}>
             {connectionStatus !== 'Connected' && user && (
-                <div className="fixed top-0 left-0 right-0 z-9999 bg-red-500/90 backdrop-blur-sm text-white text-center py-1.5 text-xs font-semibold shadow-lg transition-all duration-500 ease-in-out">
+                <div className="fixed top-0 left-0 right-0 z-9999 bg-red-500/30 backdrop-blur-sm text-white text-center py-1.5 text-xs font-semibold shadow-lg transition-all duration-500 ease-in-out">
                     <div className="flex items-center justify-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
                         {connectionStatus === 'Connecting' ? 'Reconnecting ...' : 'Offline - 10 seconds retry...'}

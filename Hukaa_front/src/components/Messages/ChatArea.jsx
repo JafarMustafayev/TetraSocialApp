@@ -252,7 +252,11 @@ const ChatArea = ({ selectedId, setSelectedId, initialMessage, setInitialMessage
                         </div>
                         <div className="ml-4">
                             <h3 className="text-base font-bold text-gray-800 dark:text-gray-100 m-0">{activeChat.user.userName}</h3>
-                            <span className="text-[12px] text-green-500 font-medium">{activeChat.online ? 'Online' : ''}</span>
+                            {activeChat.user.isOnline ? (
+                                <span className="text-[12px] text-green-500 font-medium">Online</span>
+                            ) : (
+                                <span className="text-[12px] text-gray-500 font-medium">Last seen recently</span>
+                            )}
                         </div>
                     </Link>
                 </div>

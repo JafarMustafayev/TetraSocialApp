@@ -160,10 +160,6 @@ export const ChatProvider = ({ children }) => {
     const markAsRead = useCallback(async (conversationId) => {
         if (!conversationId || conversationId.startsWith('new_')) return;
 
-        // Find conversation in ref to check if it actually has unread messages
-        const conv = conversationsRef.current.find(c => c.conversationId === conversationId);
-        if (!conv || conv.unreadMessagesCount === 0) return;
-
         try {
             await signalRService.invoke('chat', 'MarkAsRead', { conversationId });
         } catch (err) {
@@ -196,7 +192,53 @@ export const ChatProvider = ({ children }) => {
                 };
             });
         }
-    }, [selectedId, markAsRead]);
+    }, [selectedId]);
+
+    const handleUserOnline = useCallback((userId) => {
+        setConversations(prev => prev.map(conv => {
+            if (conv.user.id === userId) {
+                return {
+                    ...conv,
+                    user: { ...conv.user, isOnline: true }
+                };
+            }
+            return conv;
+        }));
+    }, []);
+
+    const handleUserOffline = useCallback((userId) => {
+        setConversations(prev => prev.map(conv => {
+            if (conv.user.id === userId) {
+                return {
+                    ...conv,
+                    user: { ...conv.user, isOnline: false }
+                };
+            }
+            return conv;
+        }));
+    }, []);
+
+    const handleDeleteConversation = useCallback((data) => {
+        const { conversationId } = data;
+        if (!conversationId) return;
+
+        setConversations(prev => prev.filter(conv => conv.conversationId !== conversationId));
+        setMessages(prev => {
+            const newState = { ...prev };
+            delete newState[conversationId];
+            return newState;
+        });
+
+        if (selectedId === conversationId) {
+            setSelectedId(null);
+        }
+
+        setMessagesHasMore(prev => {
+            const newState = { ...prev };
+            delete newState[conversationId];
+            return newState;
+        });
+    }, [selectedId]);
 
     const handleReceiveMessage = useCallback((message) => {
         const tempIdFromMsg = message.tempConversationId || message.TempConversationId;
@@ -306,7 +348,12 @@ export const ChatProvider = ({ children }) => {
             }
             return prev;
         });
-    }, [conversations, selectedId, tempChat, fetchConversations, messages]);
+
+        // If this new message is for the currently open chat and it's not our own message, mark it as read immediately
+        if ((targetId === selectedId || (tempIdFromMsg && tempIdFromMsg === selectedId)) && !message.isOwner) {
+            markAsRead(targetId);
+        }
+    }, [conversations, selectedId, tempChat, fetchConversations, messages, markAsRead]);
 
     // Hub Connection
     useEffect(() => {
@@ -325,12 +372,18 @@ export const ChatProvider = ({ children }) => {
         if (user) {
             signalRService.on('chat', 'ReceiveMessage', handleReceiveMessage);
             signalRService.on('chat', 'MessagesRead', handleMessagesRead);
+            signalRService.on('chat', 'DeleteConversation', handleDeleteConversation);
+            signalRService.on('chat', 'UserOnline', handleUserOnline);
+            signalRService.on('chat', 'UserOffline', handleUserOffline);
             return () => {
                 signalRService.off('chat', 'ReceiveMessage', handleReceiveMessage);
                 signalRService.off('chat', 'MessagesRead', handleMessagesRead);
+                signalRService.off('chat', 'DeleteConversation', handleDeleteConversation);
+                signalRService.off('chat', 'UserOnline', handleUserOnline);
+                signalRService.off('chat', 'UserOffline', handleUserOffline);
             };
         }
-    }, [user, handleReceiveMessage, handleMessagesRead]);
+    }, [user, handleReceiveMessage, handleMessagesRead, handleDeleteConversation, handleUserOnline, handleUserOffline]);
 
     // Initial fetch
     useEffect(() => {
