@@ -107,6 +107,7 @@ export const NotificationProvider = ({ children }) => {
                 showToast(response?.message || 'Failed to accept request', 'error');
             }
         } catch (err) {
+            markAsRead(notificationId);
             showToast('Failed to accept request', 'error');
         } finally {
             // Remove from lists regardless of outcome as requested
@@ -128,6 +129,7 @@ export const NotificationProvider = ({ children }) => {
                 showToast(response?.message || 'Failed to reject request', 'error');
             }
         } catch (err) {
+            markAsRead(notificationId);
             showToast('Failed to reject request', 'error');
         } finally {
             // Remove from lists regardless of outcome as requested
@@ -162,12 +164,12 @@ export const NotificationProvider = ({ children }) => {
 
         // 3. Map Payload Fields to Unified UI Format
         const unified = {
-            ByUserId: payload.ByUserId || payload.byUserId || payload.userId || payload.SenderId || payload.senderId || payload.reactedByUserId || payload.commentedByUserId || payload.followerId || payload.requesterId || payload.sharedByUserId,
-            ByUserName: payload.ByUserName || payload.byUserName || payload.userName || payload.SenderUserName || payload.senderUserName || payload.reactedByUserName || payload.commentedByUserName || payload.followerUserName || payload.requesterUserName || payload.sharedByUserName,
-            ByUserProfileImageUrl: payload.ByUserProfileImageUrl || payload.byUserProfileImageUrl || payload.profileImageUrl || payload.SenderProfileImageUrl || payload.senderProfileImageUrl || payload.reactedByUserProfileImageUrl || payload.commentedByUserProfileImageUrl || payload.followerUserProfileImageUrl || payload.requesterProfileImageUrl || payload.sharedByUserProfileImageUrl,
-            PostId: payload.PostId || payload.postId,
-            CommentId: payload.CommentId || payload.commentId,
-            CommentBody: payload.CommentBody || payload.commentBody || payload.content
+            ByUserId: payload.byUserId || payload.userId || payload.SenderId || payload.senderId || payload.reactedByUserId || payload.commentedByUserId || payload.followerId || payload.requesterId || payload.sharedByUserId,
+            ByUserName: payload.byUserName || payload.userName || payload.SenderUserName || payload.senderUserName || payload.reactedByUserName || payload.commentedByUserName || payload.followerUserName || payload.requesterUserName || payload.sharedByUserName,
+            ByUserProfileImageUrl: payload.byUserProfileImageUrl || payload.profileImageUrl || payload.SenderProfileImageUrl || payload.senderProfileImageUrl || payload.reactedByUserProfileImageUrl || payload.commentedByUserProfileImageUrl || payload.followerUserProfileImageUrl || payload.requesterProfileImageUrl || payload.sharedByUserProfileImageUrl,
+            PostId: payload.postId,
+            CommentId: payload.commentId,
+            CommentBody: payload.commentBody || payload.content
         };
 
         // 4. Combine and Re-stringify
