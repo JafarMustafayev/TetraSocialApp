@@ -11,12 +11,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Hukaa.Infrastructure\Hukaa.Infrastructure.csproj" />
-      <ProjectReference Include="..\Hukaa.Persistence\Hukaa.Persistence.csproj" />
+        <ProjectReference Include="..\Hukaa.Infrastructure\Hukaa.Infrastructure.csproj"/>
+        <ProjectReference Include="..\Hukaa.Persistence\Hukaa.Persistence.csproj"/>
     </ItemGroup>
 
 </Project>
