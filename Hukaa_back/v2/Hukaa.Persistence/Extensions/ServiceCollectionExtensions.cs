@@ -9,8 +9,8 @@ public static class ServiceCollectionExtensions
             services.AddSqlServer(configuration);
             services.AddServicesCollection(configuration);
             services.AddRepositoriesCollection(configuration);
+            services.AddIdentityParameters();
         }
-
 
         private void AddRepositoriesCollection(IConfiguration configuration)
         {
@@ -38,6 +38,38 @@ public static class ServiceCollectionExtensions
                 var connections = appConfig.GetSection<ConnectionStrings>();
                 options.UseSqlServer(connections.SqlServerConnectionString);
             });
+        }
+
+        private void AddIdentityParameters()
+        {
+            var provider = services.BuildServiceProvider();
+            var appConfig = provider.GetRequiredService<IAppConfig>();
+            var identityOptions = appConfig.GetSection<IdentityConfigOptions>();
+
+
+            services.AddIdentityCore<User>(options =>
+                {
+                    options.Password.RequireDigit = identityOptions.Password.RequireDigit;
+                    options.Password.RequireLowercase = identityOptions.Password.RequireLowercase;
+                    options.Password.RequireUppercase = identityOptions.Password.RequireUppercase;
+                    options.Password.RequireNonAlphanumeric = identityOptions.Password.RequireNonAlphanumeric;
+                    options.Password.RequiredLength = identityOptions.Password.RequiredLength;
+                    options.Password.RequiredUniqueChars = identityOptions.Password.RequiredUniqueChars;
+
+                    options.User.RequireUniqueEmail = identityOptions.User.RequireUniqueEmail;
+                    options.User.AllowedUserNameCharacters = identityOptions.User.AllowedUserNameCharacters;
+
+                    options.SignIn.RequireConfirmedEmail = identityOptions.SignIn.RequireConfirmedEmail;
+                    options.SignIn.RequireConfirmedAccount = identityOptions.SignIn.RequireConfirmedAccount;
+                    options.SignIn.RequireConfirmedPhoneNumber = identityOptions.SignIn.RequireConfirmedPhoneNumber;
+
+                    options.Lockout.DefaultLockoutTimeSpan = identityOptions.Lockout.DefaultLockoutTimeSpan;
+                    options.Lockout.MaxFailedAccessAttempts = identityOptions.Lockout.MaxFailedAccessAttempts;
+                    options.Lockout.AllowedForNewUsers = identityOptions.Lockout.AllowedForNewUsers;
+                })
+                .AddRoles<Role>()
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddRoleManager<RoleManager<Role>>();
         }
     }
 }
