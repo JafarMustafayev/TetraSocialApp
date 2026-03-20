@@ -10,6 +10,7 @@ public static class ServiceCollectionExtensions
             services.AddOpenApi();
 
             services.AddPersistenceServiceCollection(configuration);
+            services.AddInfrastructureServiceCollection(configuration);
         }
     }
 }
