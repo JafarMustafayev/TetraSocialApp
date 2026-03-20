@@ -2,3 +2,8 @@
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Hukaa.Persistence.Context;
+global using Hukaa.Domain.Entities.Identities;
+global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+global using Hukaa.Application.Abstractions.Common;
+global using Hukaa.Infrastructure.Options;
+global using Microsoft.AspNetCore.Identity;

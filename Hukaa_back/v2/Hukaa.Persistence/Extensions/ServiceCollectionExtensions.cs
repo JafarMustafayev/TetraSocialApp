@@ -6,6 +6,7 @@ public static class ServiceCollectionExtensions
     {
         public void AddPersistenceServiceCollection(IConfiguration configuration)
         {
+            services.AddSqlServer(configuration);
             services.AddServicesCollection(configuration);
             services.AddRepositoriesCollection(configuration);
         }
@@ -31,9 +32,11 @@ public static class ServiceCollectionExtensions
 
         private void AddSqlServer(IConfiguration configuration)
         {
-            services.AddDbContext<AppDbContext>(options =>
+            services.AddDbContext<AppDbContext>((sp, options) =>
             {
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+                var appConfig = sp.GetRequiredService<IAppConfig>();
+                var connections = appConfig.GetSection<ConnectionStrings>();
+                options.UseSqlServer(connections.SqlServerConnectionString);
             });
         }
     }
