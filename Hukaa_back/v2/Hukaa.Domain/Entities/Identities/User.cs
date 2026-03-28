@@ -6,4 +6,5 @@ public class User : IdentityUser<string>
     public string LastName { get; set; } = string.Empty;
     public override string Email { get; set; } = string.Empty;
     public override string UserName { get; set; } = string.Empty;
+    public string PreferredLanguage { get; set; } = "en";
 }
