@@ -12,6 +12,7 @@ public static class ServiceCollectionExtensions
         private void AddServicesCollection(IConfiguration configuration)
         {
             services.AddSingleton<IAppConfig, AppConfig>();
+            services.AddScoped<ILocalizationService, LocalizationService>();
         }
     }
 }

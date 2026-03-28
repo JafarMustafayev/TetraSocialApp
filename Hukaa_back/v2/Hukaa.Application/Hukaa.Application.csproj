@@ -10,4 +10,8 @@
         <ProjectReference Include="..\Hukaa.Domain\Hukaa.Domain.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <AdditionalFiles Include="Resources\Localization\SharedResource.az.resx"/>
+        <AdditionalFiles Include="Resources\Localization\SharedResource.resx"/>
+    </ItemGroup>
 </Project>

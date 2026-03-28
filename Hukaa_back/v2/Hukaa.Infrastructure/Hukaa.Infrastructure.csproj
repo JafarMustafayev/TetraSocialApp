@@ -7,7 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Hukaa.Application\Hukaa.Application.csproj" />
+        <ProjectReference Include="..\Hukaa.Application\Hukaa.Application.csproj"/>
+        <PackageReference Include="Microsoft.Extensions.Localization" Version="*"/>
     </ItemGroup>
 
 </Project>
