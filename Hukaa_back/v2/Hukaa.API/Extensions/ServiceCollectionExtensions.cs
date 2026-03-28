@@ -6,7 +6,8 @@ public static class ServiceCollectionExtensions
     {
         public void AppServiceCollections(IConfiguration configuration)
         {
-            services.AddControllers();
+            services.AddLocalization(options => { options.ResourcesPath = "Resources"; });
+            services.AddControllers().AddDataAnnotationsLocalization();
             services.AddOpenApi();
 
             services.AddInfrastructureServiceCollection(configuration);
