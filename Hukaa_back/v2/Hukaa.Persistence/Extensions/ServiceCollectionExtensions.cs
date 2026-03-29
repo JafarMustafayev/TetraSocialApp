@@ -46,7 +46,6 @@ public static class ServiceCollectionExtensions
             var appConfig = provider.GetRequiredService<IAppConfig>();
             var identityOptions = appConfig.GetSection<IdentityConfigOptions>();
 
-
             services.AddIdentityCore<User>(options =>
                 {
                     options.Password.RequireDigit = identityOptions.Password.RequireDigit;
@@ -69,6 +68,7 @@ public static class ServiceCollectionExtensions
                 })
                 .AddRoles<Role>()
                 .AddEntityFrameworkStores<AppDbContext>()
+                .AddSignInManager<SignInManager<User>>()
                 .AddRoleManager<RoleManager<Role>>();
         }
     }

@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
         {
             services.AddSingleton<IAppConfig, AppConfig>();
             services.AddScoped<ILocalizationService, LocalizationService>();
+            services.AddScoped<IAuthService, AuthService>();
         }
     }
 }
