@@ -1,4 +1,4 @@
-﻿namespace Hukaa.Infrastructure.Options;
+﻿namespace Hukaa.Application.Options;
 
 public class IdentityConfigOptions
 {

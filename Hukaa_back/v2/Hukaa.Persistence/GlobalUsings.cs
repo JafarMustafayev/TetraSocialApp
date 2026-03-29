@@ -5,7 +5,7 @@ global using Hukaa.Persistence.Context;
 global using Hukaa.Domain.Entities.Identities;
 global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 global using Hukaa.Application.Abstractions.Common;
-global using Hukaa.Infrastructure.Options;
+global using Hukaa.Application.Options;
 global using Microsoft.AspNetCore.Identity;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using Hukaa.Persistence.Configurations;
