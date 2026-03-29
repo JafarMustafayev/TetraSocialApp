@@ -9,3 +9,4 @@ global using Hukaa.Application.Options;
 global using Microsoft.AspNetCore.Identity;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using Hukaa.Persistence.Configurations;
+global using Hukaa.Domain.Consts;

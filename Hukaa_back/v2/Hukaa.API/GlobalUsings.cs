@@ -10,3 +10,8 @@ global using Hukaa.API.Middlewares;
 global using System.Text.Json;
 global using Hukaa.Application.DTOs.Wrappers;
 global using Hukaa.Application.Exceptions;
+global using Hukaa.Persistence.Seed;
+global using Microsoft.AspNetCore.Http;
+global using Microsoft.AspNetCore.Mvc;
+global using Hukaa.Application.Abstractions.Services.Auth;
+global using Hukaa.Application.DTOs.Auth;
