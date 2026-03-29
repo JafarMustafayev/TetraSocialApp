@@ -6,3 +6,7 @@ global using Hukaa.Persistence.Context;
 global using Microsoft.AspNetCore.Localization;
 global using Microsoft.EntityFrameworkCore;
 global using Hukaa.Application.Extensions;
+global using Hukaa.API.Middlewares;
+global using System.Text.Json;
+global using Hukaa.Application.DTOs.Wrappers;
+global using Hukaa.Application.Exceptions;
