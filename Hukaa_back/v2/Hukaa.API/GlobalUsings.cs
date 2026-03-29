@@ -5,3 +5,4 @@ global using System.Globalization;
 global using Hukaa.Persistence.Context;
 global using Microsoft.AspNetCore.Localization;
 global using Microsoft.EntityFrameworkCore;
+global using Hukaa.Application.Extensions;

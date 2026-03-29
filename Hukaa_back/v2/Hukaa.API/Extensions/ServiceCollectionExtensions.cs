@@ -7,9 +7,13 @@ public static class ServiceCollectionExtensions
         public void AppServiceCollections(IConfiguration configuration)
         {
             services.AddLocalization(options => { options.ResourcesPath = "Resources"; });
-            services.AddControllers().AddDataAnnotationsLocalization();
+            services.AddControllers(options =>
+            {
+                options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+            }).AddDataAnnotationsLocalization();
             services.AddOpenApi();
 
+            services.AddApplicationServiceCollection(configuration);
             services.AddInfrastructureServiceCollection(configuration);
             services.AddPersistenceServiceCollection(configuration);
         }

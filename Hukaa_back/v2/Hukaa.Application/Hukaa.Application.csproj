@@ -11,7 +11,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <AdditionalFiles Include="Resources\Localization\SharedResource.az.resx"/>
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1"/>
+        <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1"/>
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1"/>
+    </ItemGroup>
+
+    <ItemGroup>
         <AdditionalFiles Include="Resources\Localization\SharedResource.resx"/>
     </ItemGroup>
 </Project>
