@@ -2,5 +2,7 @@
 
 public interface ILocalizationService
 {
-    string Get(string key);
+    string Get(string key,
+        string? propertyName = null,
+        Dictionary<string, object>? parameters = null);
 }
