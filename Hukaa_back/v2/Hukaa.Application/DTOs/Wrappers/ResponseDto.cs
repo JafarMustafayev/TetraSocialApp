@@ -8,18 +8,23 @@ public class ResponseDto<T>
     public T? Data { get; set; }
     public List<string>? Errors { get; set; }
 
-    public static ResponseDto<T> OkResponse(T data, string message)
+    public static ResponseDto<T> OkResponse(
+        string message,
+        T data)
     {
         return new ResponseDto<T>
         {
             Success = true,
             Message = message,
             Data = data,
-            StatusCode = 200
+            StatusCode = StatusCodes.Status200OK
         };
     }
 
-    public static ResponseDto<T> FailResponse(string message, int statusCode = 400, List<string>? errors = null)
+    public static ResponseDto<T> FailResponse(
+        string message,
+        int statusCode = StatusCodes.Status400BadRequest,
+        List<string>? errors = null)
     {
         return new ResponseDto<T>
         {
@@ -30,14 +35,16 @@ public class ResponseDto<T>
         };
     }
 
-    public static ResponseDto<T> CreatedResponse(T data, string message)
+    public static ResponseDto<T> CreatedResponse(
+        string message,
+        T data)
     {
         return new ResponseDto<T>
         {
             Success = true,
             Message = message,
             Data = data,
-            StatusCode = 201
+            StatusCode = StatusCodes.Status201Created
         };
     }
 }
@@ -51,11 +58,14 @@ public class ResponseDto : ResponseDto<object>
         {
             Success = true,
             Message = message,
-            StatusCode = 200
+            StatusCode = StatusCodes.Status200OK
         };
     }
 
-    public new static ResponseDto FailResponse(string message, int statusCode = 400, List<string>? errors = null)
+    public new static ResponseDto FailResponse(
+        string message,
+        int statusCode = StatusCodes.Status400BadRequest,
+        List<string>? errors = null)
     {
         return new ResponseDto
         {
@@ -66,14 +76,16 @@ public class ResponseDto : ResponseDto<object>
         };
     }
 
-    public new static ResponseDto CreatedResponse(object data, string message)
+    public new static ResponseDto CreatedResponse(
+        string message,
+        object? data = null)
     {
         return new ResponseDto
         {
             Success = true,
             Message = message,
             Data = data,
-            StatusCode = 201
+            StatusCode = StatusCodes.Status201Created
         };
     }
 }
