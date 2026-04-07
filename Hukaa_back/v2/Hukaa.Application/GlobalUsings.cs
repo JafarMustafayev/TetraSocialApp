@@ -16,3 +16,4 @@ global using Microsoft.Extensions.DependencyInjection;
 global using Hukaa.Domain.Enums;
 global using Hukaa.Domain.Entities.Common;
 global using System.Linq.Expressions;
+global using Hukaa.Application.Abstractions.Repositories.Base;
