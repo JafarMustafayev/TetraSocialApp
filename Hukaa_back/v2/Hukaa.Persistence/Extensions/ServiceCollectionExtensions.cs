@@ -20,10 +20,12 @@ public static class ServiceCollectionExtensions
 
         private void AddWriteRepositoriesCollection(IConfiguration configuration)
         {
+            services.AddScoped<IRefreshTokenWriteRepository, RefreshTokenWriteRepository>();
         }
 
         private void AddReadRepositoriesCollection(IConfiguration configuration)
         {
+            services.AddScoped<IRefreshTokenReadRepository, RefreshTokenReadRepository>();
         }
 
         private void AddServicesCollection(IConfiguration configuration)

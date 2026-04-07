@@ -14,3 +14,7 @@ global using System.Linq.Expressions;
 global using Hukaa.Application.Abstractions.Repositories.Base;
 global using Hukaa.Domain.Entities.Common;
 global using Hukaa.Application.Abstractions.Repositories.UnitOfWork;
+global using Hukaa.Domain.Entities.Auth;
+global using Hukaa.Application.Abstractions.Repositories.RefreshToken;
+global using Hukaa.Persistence.Repositories.Base;
+global using Hukaa.Persistence.Repositories.RefreshToken;
