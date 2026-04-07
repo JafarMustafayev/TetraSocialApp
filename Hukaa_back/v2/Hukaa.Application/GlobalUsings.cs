@@ -14,3 +14,5 @@ global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Hukaa.Domain.Enums;
+global using Hukaa.Domain.Entities.Common;
+global using System.Linq.Expressions;

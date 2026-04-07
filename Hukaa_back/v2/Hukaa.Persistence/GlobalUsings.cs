@@ -10,3 +10,7 @@ global using Microsoft.AspNetCore.Identity;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using Hukaa.Persistence.Configurations;
 global using Hukaa.Domain.Consts;
+global using System.Linq.Expressions;
+global using Hukaa.Application.Abstractions.Repositories.Base;
+global using Hukaa.Domain.Entities.Common;
+global using Hukaa.Application.Abstractions.Repositories.UnitOfWork;
