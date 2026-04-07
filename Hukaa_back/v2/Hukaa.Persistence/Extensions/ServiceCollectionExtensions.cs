@@ -14,6 +14,7 @@ public static class ServiceCollectionExtensions
 
         private void AddRepositoriesCollection(IConfiguration configuration)
         {
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddWriteRepositoriesCollection(configuration);
             services.AddReadRepositoriesCollection(configuration);
         }

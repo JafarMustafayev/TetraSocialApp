@@ -18,3 +18,4 @@ global using Hukaa.Domain.Entities.Auth;
 global using Hukaa.Application.Abstractions.Repositories.RefreshToken;
 global using Hukaa.Persistence.Repositories.Base;
 global using Hukaa.Persistence.Repositories.RefreshToken;
+global using Hukaa.Persistence.Repositories.UnitOfWork;
