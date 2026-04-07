@@ -10,4 +10,6 @@ public class User : IdentityUser<string>
     public string PreferredLanguage { get; set; } = "en";
     public UserStatus Status { get; set; }
     public DateTime CreatedAt { get; set; }
+
+    public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 }

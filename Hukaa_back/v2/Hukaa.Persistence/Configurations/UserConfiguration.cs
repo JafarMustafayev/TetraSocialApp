@@ -34,34 +34,24 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.CreatedAt)
             .IsRequired();
 
-        builder.HasIndex(x => new
-            {
-                x.Id
-            }).IsUnique()
+        builder.HasIndex(x => x.Id)
+            .IsUnique()
             .HasName("IdIndex");
 
-        builder.HasIndex(x => new
-            {
-                x.Email
-            }).IsUnique()
+        builder.HasIndex(x => x.Email)
+            .IsUnique()
             .HasName("EmailIndex");
 
-        builder.HasIndex(x => new
-            {
-                x.UserName
-            }).IsUnique()
+        builder.HasIndex(x => x.UserName)
+            .IsUnique()
             .HasName("UserNameIndex");
 
-        builder.HasIndex(x => new
-            {
-                x.NormalizedEmail
-            }).IsUnique()
+        builder.HasIndex(x => x.NormalizedEmail)
+            .IsUnique()
             .HasName("NormalizedEmailIndex");
 
-        builder.HasIndex(x => new
-            {
-                x.NormalizedUserName
-            }).IsUnique()
+        builder.HasIndex(x => x.NormalizedUserName)
+            .IsUnique()
             .HasName("NormalizedUserNameIndex");
     }
 }
