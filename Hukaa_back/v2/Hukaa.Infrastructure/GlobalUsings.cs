@@ -15,7 +15,7 @@ global using Hukaa.Domain.Consts;
 global using Hukaa.Infrastructure.Services.Auth;
 global using System.Security.Cryptography;
 global using System.Text;
-global using Hukaa.Application.Abstractions.Repositories.RefreshToken;
+global using Hukaa.Application.Abstractions.Repositories.RefreshTokenRepos;
 global using Hukaa.Application.Abstractions.Repositories.UnitOfWork;
 global using Hukaa.Domain.Entities.Auth;
 global using System.IdentityModel.Tokens.Jwt;
