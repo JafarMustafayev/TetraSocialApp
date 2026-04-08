@@ -22,11 +22,13 @@ public static class ServiceCollectionExtensions
         private void AddWriteRepositoriesCollection(IConfiguration configuration)
         {
             services.AddScoped<IRefreshTokenWriteRepository, RefreshTokenWriteRepository>();
+            services.AddScoped<IAuthSessionWriteRepository, AuthSessionWriteRepository>();
         }
 
         private void AddReadRepositoriesCollection(IConfiguration configuration)
         {
             services.AddScoped<IRefreshTokenReadRepository, RefreshTokenReadRepository>();
+            services.AddScoped<IAuthSessionReadRepository, AuthSessionReadRepository>();
         }
 
         private void AddServicesCollection(IConfiguration configuration)
