@@ -19,3 +19,4 @@ global using Hukaa.Application.Abstractions.Repositories.RefreshTokenRepos;
 global using Hukaa.Persistence.Repositories.Base;
 global using Hukaa.Persistence.Repositories.RefreshTokenRepos;
 global using Hukaa.Persistence.Repositories.UnitOfWork;
+global using Hukaa.Application.Abstractions.Repositories.AuthSessionRepos;
