@@ -11,5 +11,5 @@ public class User : IdentityUser<string>
     public UserStatus Status { get; set; }
     public DateTime CreatedAt { get; set; }
 
-    public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+    public HashSet<AuthSession> AuthSessions { get; set; } = new();
 }

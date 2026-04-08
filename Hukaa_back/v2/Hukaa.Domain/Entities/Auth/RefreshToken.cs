@@ -2,29 +2,65 @@
 
 public class RefreshToken : BaseEntity
 {
-    public string TokenHash { get; set; } = string.Empty;
+    public string TokenHash { get; set; } = null!;
+
     public DateTime ExpiresAt { get; set; }
-    public bool IsUsed { get; set; } = false;
-    public DateTime? RevokedAt { get; set; }
-    public string? ReplacedByTokenId { get; set; }
 
-    public string CreatedByIp { get; set; } = string.Empty;
-    public string? RevokedByIp { get; set; }
+    public string CreatedByIp { get; set; } = null!;
 
-    public string UserId { get; set; } = string.Empty;
-    public User User { get; set; }
+    public bool IsUsed { get; private set; }
+    public DateTime? UsedAt { get; private set; }
+
+    public string? ReplacedByTokenId { get; private set; }
     public RefreshToken? ReplacedByToken { get; set; }
+    public string? ReplacedByIp { get; private set; }
 
-    public void Revoke(string ip, string? replacedByTokenId = null)
+    public bool IsRevoked { get; private set; }
+    public DateTime? RevokedAt { get; private set; }
+    public string? RevokedByIp { get; private set; }
+
+    public string AuthSessionId { get; set; } = null!;
+    public AuthSession AuthSession { get; set; } = null!;
+
+    //  Computed
+    public bool IsExpired => ExpiresAt <= DateTime.UtcNow;
+
+    public bool IsActive => !IsRevoked && !IsExpired && !IsUsed;
+
+    //  Behaviors
+    public void Revoke(string ip)
+    {
+        if(IsRevoked)
+        {
+            throw new InvalidOperationException("Token already revoked");
+        }
+
+        IsRevoked = true;
+        RevokedAt = DateTime.UtcNow;
+        RevokedByIp = ip;
+    }
+
+    public void MarkAsUsed(string ip, string? replacedByTokenId)
     {
         if(IsUsed)
         {
-            return;
+            throw new InvalidOperationException("Token already used");
+        }
+
+        if(IsRevoked)
+        {
+            throw new InvalidOperationException("Token is revoked");
+        }
+
+        if(IsExpired)
+        {
+            throw new InvalidOperationException("Token is expired");
         }
 
         IsUsed = true;
-        RevokedAt = DateTime.UtcNow;
-        RevokedByIp = ip;
+        UsedAt = DateTime.UtcNow;
+
         ReplacedByTokenId = replacedByTokenId;
+        ReplacedByIp = ip;
     }
 }

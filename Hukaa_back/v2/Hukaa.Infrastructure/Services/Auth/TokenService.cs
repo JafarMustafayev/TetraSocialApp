@@ -80,10 +80,9 @@ public class TokenService(
     {
         return new RefreshToken
         {
-            UserId = userId,
+            //UserId = userId,
             CreatedByIp = "127.0.0.1", //todo: IP elde etmek ucun servis yazildiqdan sonra burada deyisiklik edilecek.
             TokenHash = token,
-            IsUsed = false,
             CreatedAt = DateTime.UtcNow,
             ExpiresAt = DateTime.UtcNow.AddMinutes(
                 _tokenOptions.Lifetime.RefreshToken.TotalMinutes)
