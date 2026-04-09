@@ -17,6 +17,8 @@ public static class ServiceCollectionExtensions
             services.AddScoped<IRefreshTokenHasher, RefreshTokenHasher>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthSessionService, AuthSessionService>();
+            services.AddScoped<IClientIpResolver, ClientIpResolver>();
+            services.AddScoped<IUserAgentParser, UserAgentParser>();
         }
     }
 }

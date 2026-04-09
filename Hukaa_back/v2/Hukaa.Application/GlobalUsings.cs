@@ -18,3 +18,4 @@ global using Hukaa.Domain.Entities.Common;
 global using System.Linq.Expressions;
 global using Hukaa.Application.Abstractions.Repositories.Base;
 global using Hukaa.Domain.Entities.Auth;
+global using Hukaa.Application.DTOs.UserDevice;

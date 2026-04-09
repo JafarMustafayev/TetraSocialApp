@@ -21,3 +21,7 @@ global using Hukaa.Domain.Entities.Auth;
 global using System.IdentityModel.Tokens.Jwt;
 global using System.Security.Claims;
 global using Microsoft.IdentityModel.Tokens;
+global using Hukaa.Application.Abstractions.Repositories.AuthSessionRepos;
+global using Hukaa.Application.DTOs.UserDevice;
+global using Microsoft.AspNetCore.Http;
+global using System.Text.RegularExpressions;

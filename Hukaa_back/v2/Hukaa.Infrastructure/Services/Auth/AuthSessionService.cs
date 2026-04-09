@@ -1,6 +1,4 @@
-﻿using Hukaa.Application.Abstractions.Repositories.AuthSessionRepos;
-
-namespace Hukaa.Infrastructure.Services.Auth;
+﻿namespace Hukaa.Infrastructure.Services.Auth;
 
 public class AuthSessionService(
     IAuthSessionReadRepository readRepo,

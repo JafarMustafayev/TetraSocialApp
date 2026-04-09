@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace Hukaa.Infrastructure.Services.Common;
+﻿namespace Hukaa.Infrastructure.Services.Common;
 
 public class LocalizationService(
     IStringLocalizer<SharedResource> localizer
