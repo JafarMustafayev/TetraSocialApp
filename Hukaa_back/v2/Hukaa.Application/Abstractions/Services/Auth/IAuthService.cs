@@ -3,5 +3,5 @@
 public interface IAuthService
 {
     public Task<ResponseDto> RegisterAsync(RegisterRequestDto request);
-    public Task<JwtTokenResponse> LoginAsync(LoginRequestDto request);
+    public Task<AuthTokenResponse> LoginAsync(LoginRequestDto request);
 }

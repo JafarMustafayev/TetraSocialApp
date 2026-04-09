@@ -46,7 +46,7 @@ public class AuthService(
         return ResponseDto.CreatedResponse(localizer.Get("Auth.Registration.Success.CheckEmail"));
     }
 
-    public async Task<JwtTokenResponse> LoginAsync(LoginRequestDto request)
+    public async Task<AuthTokenResponse> LoginAsync(LoginRequestDto request)
     {
         var user = Regex.IsMatch(request.EmailOrUsername, @"[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+")
             ? await userManager.FindByEmailAsync(request.EmailOrUsername) ?? null
@@ -71,7 +71,7 @@ public class AuthService(
         var refreshToken = await tokenService.GenerateRefreshTokenAsync(sessionId);
         var accessToken = tokenService.GenerateAccessToken(user.Id, sessionId, roles);
 
-        return new JwtTokenResponse
+        return new AuthTokenResponse
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken

@@ -1,6 +1,6 @@
 ﻿namespace Hukaa.Application.DTOs.Auth;
 
-public class JwtTokenResponse
+public class AuthTokenResponse
 {
     public AccessTokenResponse AccessToken { get; set; } = new();
     public RefreshTokenResponse RefreshToken { get; set; } = new();
