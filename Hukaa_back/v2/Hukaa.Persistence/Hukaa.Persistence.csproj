@@ -8,7 +8,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Hukaa.Application\Hukaa.Application.csproj"/>
-        <ProjectReference Include="..\Hukaa.Infrastructure\Hukaa.Infrastructure.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

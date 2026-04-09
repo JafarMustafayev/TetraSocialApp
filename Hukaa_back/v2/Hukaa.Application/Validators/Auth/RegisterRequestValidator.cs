@@ -12,6 +12,7 @@ public class RegisterRequestValidator : AbstractValidator<RegisterRequestDto>
             .Cascade(CascadeMode.Stop)
             .NotEmpty().When(_ => rules.Email.Required)
             .WithMessage(localizer.Get("Validation.Common.Required", "Email"))
+            .EmailAddress().WithMessage(localizer.Get("Validation.Common.InvalidEmail"))
             .MinimumLength(rules.Email.MinLength ?? 0).When(_ => rules.Email.Required)
             .WithMessage(
                 localizer.Get("Validation.Common.MinLength", "Email", new Dictionary<string, object>

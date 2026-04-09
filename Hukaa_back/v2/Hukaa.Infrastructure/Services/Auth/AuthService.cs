@@ -6,7 +6,9 @@ public class AuthService(
     RoleManager<Role> roleManager,
     IAppConfig appConfig,
     IMapper mapper,
-    ILocalizationService localizer
+    ILocalizationService localizer,
+    ITokenService tokenService,
+    IAuthSessionService authSessionService
 ) : IAuthService
 {
     public async Task<ResponseDto> RegisterAsync(RegisterRequestDto request)
@@ -42,5 +44,50 @@ public class AuthService(
         }
 
         return ResponseDto.CreatedResponse(localizer.Get("Auth.Registration.Success.CheckEmail"));
+    }
+
+    public async Task<JwtTokenResponse> LoginAsync(LoginRequestDto request)
+    {
+        var user = Regex.IsMatch(request.EmailOrUsername, @"[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+")
+            ? await userManager.FindByEmailAsync(request.EmailOrUsername) ?? null
+            : await userManager.FindByNameAsync(request.EmailOrUsername) ?? null;
+
+        if(user == null)
+        {
+            throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.Common"));
+        }
+
+        await ValidateUserStatusAsync(user);
+
+        var result = await signInManager.PasswordSignInAsync(user, request.Password, false, false);
+
+        if(!result.Succeeded && !result.RequiresTwoFactor)
+        {
+            throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.Common"));
+        }
+
+        var roles = await userManager.GetRolesAsync(user);
+        var sessionId = await authSessionService.CreateSessionAsync(user.Id);
+        var refreshToken = await tokenService.GenerateRefreshTokenAsync(sessionId);
+        var accessToken = tokenService.GenerateAccessToken(user.Id, sessionId, roles);
+
+        return new JwtTokenResponse
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
+        };
+    }
+
+    private async Task ValidateUserStatusAsync(User user)
+    {
+        if(user.Status == UserStatus.Banned)
+        {
+            throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.UserBanned"));
+        }
+
+        if(await userManager.IsLockedOutAsync(user))
+        {
+            throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.UserLockedOut"));
+        }
     }
 }

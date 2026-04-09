@@ -51,7 +51,7 @@ public static class ServiceCollectionExtensions
             var appConfig = provider.GetRequiredService<IAppConfig>();
             var identityOptions = appConfig.GetSection<IdentityConfigOptions>();
 
-            services.AddIdentityCore<User>(options =>
+            services.AddIdentity<User, Role>(options =>
                 {
                     options.Password.RequireDigit = identityOptions.Password.RequireDigit;
                     options.Password.RequireLowercase = identityOptions.Password.RequireLowercase;
@@ -74,7 +74,8 @@ public static class ServiceCollectionExtensions
                 .AddRoles<Role>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddSignInManager<SignInManager<User>>()
-                .AddRoleManager<RoleManager<Role>>();
+                .AddRoleManager<RoleManager<Role>>()
+                .AddDefaultTokenProviders();
         }
     }
 }

@@ -26,3 +26,4 @@ global using Hukaa.Application.DTOs.UserDevice;
 global using Microsoft.AspNetCore.Http;
 global using System.Text.RegularExpressions;
 global using System.Text.Json;
+global using Hukaa.Domain.Enums;
