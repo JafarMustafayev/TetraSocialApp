@@ -29,3 +29,5 @@ global using System.Text.Json;
 global using Hukaa.Domain.Enums;
 global using Hukaa.Application.Abstractions.Services.Account;
 global using Hukaa.Application.Abstractions.Services.Profile;
+global using Hukaa.Infrastructure.Services.Account;
+global using Hukaa.Infrastructure.Services.Profile;

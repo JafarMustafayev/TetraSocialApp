@@ -11,14 +11,26 @@ public static class ServiceCollectionExtensions
 
         private void AddServicesCollection(IConfiguration configuration)
         {
-            services.AddSingleton<IAppConfig, AppConfig>();
-            services.AddScoped<ILocalizationService, LocalizationService>();
-            services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IRefreshTokenHasher, RefreshTokenHasher>();
-            services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<ISessionService, SessionService>();
+            //Common
             services.AddScoped<IClientIpResolver, ClientIpResolver>();
+            services.AddScoped<ILocalizationService, LocalizationService>();
+            services.AddScoped<IRefreshTokenHasher, RefreshTokenHasher>();
             services.AddScoped<IUserAgentParser, UserAgentParser>();
+            services.AddSingleton<IAppConfig, AppConfig>();
+
+            //Account
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IPasswordService, PasswordService>();
+            services.AddScoped<IUserManagementService, UserManagementService>();
+
+            //Auth
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ISessionService, SessionService>();
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<ITwoFactorService, TwoFactorService>();
+
+            //Profile
+            services.AddScoped<IProfileService, ProfileService>();
         }
     }
 }
