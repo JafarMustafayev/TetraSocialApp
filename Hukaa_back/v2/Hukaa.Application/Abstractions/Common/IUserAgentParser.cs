@@ -2,5 +2,5 @@
 
 public interface IUserAgentParser
 {
-    UserDeviceSnapshot Parse(string userAgent);
+    UserDeviceSnapshot Parse();
 }

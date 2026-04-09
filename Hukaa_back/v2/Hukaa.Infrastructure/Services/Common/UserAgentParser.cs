@@ -1,11 +1,13 @@
 ﻿namespace Hukaa.Infrastructure.Services.Common;
 
-public class UserAgentParser : IUserAgentParser
+public class UserAgentParser(
+    IHttpContextAccessor accessor) : IUserAgentParser
 {
     private const string Unknown = "UNKNOWN";
 
-    public UserDeviceSnapshot Parse(string ua)
+    public UserDeviceSnapshot Parse()
     {
+        var ua = accessor.HttpContext?.Request.Headers["User-Agent"];
         if(string.IsNullOrWhiteSpace(ua))
         {
             return new UserDeviceSnapshot();
