@@ -1,5 +1,5 @@
 ﻿global using Hukaa.Application.Abstractions.Common;
-global using Hukaa.Infrastructure.Services.Common;
+global using Hukaa.Infrastructure.Common;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Hukaa.Application.Localization;
@@ -27,3 +27,5 @@ global using Microsoft.AspNetCore.Http;
 global using System.Text.RegularExpressions;
 global using System.Text.Json;
 global using Hukaa.Domain.Enums;
+global using Hukaa.Application.Abstractions.Services.Account;
+global using Hukaa.Application.Abstractions.Services.Profile;

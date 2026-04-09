@@ -8,7 +8,7 @@ public class AuthService(
     IMapper mapper,
     ILocalizationService localizer,
     ITokenService tokenService,
-    IAuthSessionService authSessionService
+    ISessionService sessionService
 ) : IAuthService
 {
     public async Task<ResponseDto> RegisterAsync(RegisterRequestDto request)
@@ -67,7 +67,7 @@ public class AuthService(
         }
 
         var roles = await userManager.GetRolesAsync(user);
-        var sessionId = await authSessionService.CreateSessionAsync(user.Id);
+        var sessionId = await sessionService.CreateSessionAsync(user.Id);
         var refreshToken = await tokenService.GenerateRefreshTokenAsync(sessionId);
         var accessToken = tokenService.GenerateAccessToken(user.Id, sessionId, roles);
 

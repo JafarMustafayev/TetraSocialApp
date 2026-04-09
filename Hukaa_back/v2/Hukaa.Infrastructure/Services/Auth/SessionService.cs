@@ -1,11 +1,11 @@
 ﻿namespace Hukaa.Infrastructure.Services.Auth;
 
-public class AuthSessionService(
+public class SessionService(
     IAuthSessionReadRepository readRepo,
     IAuthSessionWriteRepository writeRepo,
     IUnitOfWork unitOfWork,
     IClientIpResolver ipResolver,
-    IUserAgentParser agentParser) : IAuthSessionService
+    IUserAgentParser agentParser) : ISessionService
 {
     public ResponseDto GetMyActiveSessions()
     {

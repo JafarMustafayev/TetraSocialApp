@@ -2,6 +2,11 @@
 
 public interface IAuthService
 {
-    public Task<ResponseDto> RegisterAsync(RegisterRequestDto request);
-    public Task<AuthTokenResponse> LoginAsync(LoginRequestDto request);
+    Task<ResponseDto> RegisterAsync(RegisterRequestDto request);
+    Task<AuthTokenResponse> LoginAsync(LoginRequestDto request);
+
+    //Task<AuthTokenResponse> RefreshTokenAsync(string refreshToken);
+    //Task<ResponseDto> LogoutAsync();
+
+    //Task<AuthTokenResponse> LoginWithTwoFactorAsync(TwoFactorVerifyRequest request);
 }

@@ -1,4 +1,4 @@
-﻿namespace Hukaa.Infrastructure.Services.Common;
+﻿namespace Hukaa.Infrastructure.Common;
 
 public class LocalizationService(
     IStringLocalizer<SharedResource> localizer
@@ -23,7 +23,9 @@ public class LocalizationService(
         if(parameters is not null)
         {
             foreach (var parameter in parameters)
+            {
                 values[parameter.Key] = parameter.Value;
+            }
         }
 
         return LocalizationService.PlaceholderRegex.Replace(message, match =>

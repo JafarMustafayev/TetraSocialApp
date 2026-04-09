@@ -1,4 +1,4 @@
-﻿namespace Hukaa.Infrastructure.Services.Common;
+﻿namespace Hukaa.Infrastructure.Common;
 
 public class ClientIpResolver(
     IHttpContextAccessor accessor) : IClientIpResolver
