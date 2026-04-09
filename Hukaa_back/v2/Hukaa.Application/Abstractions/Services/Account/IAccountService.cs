@@ -4,4 +4,6 @@ public interface IAccountService
 {
     //Task<ResponseDto> ChangeEmailAsync(ChangeEmailRequest request);
     //Task<ResponseDto> ChangeUsernameAsync(ChangeUsernameRequest request);
+    //Task<ResponseDto> DeleteMyAccountAsync(string userId);
+    //Task<ResponseDto> SuspendMyAccountAsync(string userId);
 }

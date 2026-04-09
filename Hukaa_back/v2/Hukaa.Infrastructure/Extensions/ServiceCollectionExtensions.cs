@@ -20,8 +20,8 @@ public static class ServiceCollectionExtensions
 
             //Account
             services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<IPasswordService, PasswordService>();
-            services.AddScoped<IUserManagementService, UserManagementService>();
+            services.AddScoped<IEmailVerificationService, EmailVerificationService>();
+            services.AddScoped<IPasswordManagementService, PasswordManagementService>();
 
             //Auth
             services.AddScoped<IAuthService, AuthService>();

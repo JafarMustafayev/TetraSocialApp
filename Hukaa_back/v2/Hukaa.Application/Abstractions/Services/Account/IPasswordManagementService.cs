@@ -1,6 +1,6 @@
 ﻿namespace Hukaa.Application.Abstractions.Services.Account;
 
-public interface IPasswordService
+public interface IPasswordManagementService
 {
     //Task<ResponseDto> ForgotPasswordAsync(string email);
     //Task<ResponseDto> ResetPasswordAsync(ResetPasswordRequest request);
