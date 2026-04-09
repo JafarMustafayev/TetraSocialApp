@@ -25,3 +25,4 @@ global using Hukaa.Application.Abstractions.Repositories.AuthSessionRepos;
 global using Hukaa.Application.DTOs.UserDevice;
 global using Microsoft.AspNetCore.Http;
 global using System.Text.RegularExpressions;
+global using System.Text.Json;

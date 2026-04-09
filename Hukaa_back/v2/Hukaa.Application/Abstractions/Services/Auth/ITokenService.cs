@@ -2,6 +2,10 @@
 
 public interface ITokenService
 {
-    Task<RefreshTokenResponse> GenerateRefreshTokenAsync(string userId);
-    public AccessTokenResponse GenerateAccessToken(string userId, IList<string> roles);
+    Task<RefreshTokenResponse> GenerateRefreshTokenAsync(string sessionId);
+
+    public AccessTokenResponse GenerateAccessToken(
+        string userId,
+        string sessionId,
+        IList<string> roles);
 }

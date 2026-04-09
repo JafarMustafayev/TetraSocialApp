@@ -7,16 +7,17 @@ public class TokenService(
     IRefreshTokenHasher hasher,
     IRefreshTokenReadRepository readRepo,
     IRefreshTokenWriteRepository writeRepo,
-    IUnitOfWork unitOfWork) : ITokenService
+    IUnitOfWork unitOfWork,
+    IClientIpResolver ipResolver) : ITokenService
 {
     private readonly TokenOptions _tokenOptions = config.GetSection<TokenOptions>();
 
-    public async Task<RefreshTokenResponse> GenerateRefreshTokenAsync(string userId)
+    public async Task<RefreshTokenResponse> GenerateRefreshTokenAsync(string sessionId)
     {
         var plainToken = GeneratePlainToken();
         var hash = HashRefreshToken(plainToken);
 
-        var entity = CreateRefreshToken(hash, userId);
+        var entity = CreateRefreshToken(hash, sessionId);
         await writeRepo.AddAsync(entity);
         await unitOfWork.SaveChangesAsync();
 
@@ -27,7 +28,10 @@ public class TokenService(
         };
     }
 
-    public AccessTokenResponse GenerateAccessToken(string userId, IList<string> roles)
+    public AccessTokenResponse GenerateAccessToken(
+        string userId,
+        string sessionId,
+        IList<string> roles)
     {
         var securityKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(_tokenOptions.SecurityKey));
@@ -37,6 +41,7 @@ public class TokenService(
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, userId),
+            new("sessionId", sessionId),
 
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.Iat,
@@ -76,12 +81,12 @@ public class TokenService(
         return hasher.Hash(token, _tokenOptions.SecurityKey);
     }
 
-    private RefreshToken CreateRefreshToken(string token, string userId)
+    private RefreshToken CreateRefreshToken(string token, string sessionId)
     {
         return new RefreshToken
         {
-            //UserId = userId,
-            CreatedByIp = "127.0.0.1", //todo: IP elde etmek ucun servis yazildiqdan sonra burada deyisiklik edilecek.
+            AuthSessionId = sessionId,
+            CreatedByIp = ipResolver.GetClientIpV4(),
             TokenHash = token,
             CreatedAt = DateTime.UtcNow,
             ExpiresAt = DateTime.UtcNow.AddMinutes(

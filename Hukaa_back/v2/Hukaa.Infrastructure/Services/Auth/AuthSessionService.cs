@@ -3,7 +3,9 @@
 public class AuthSessionService(
     IAuthSessionReadRepository readRepo,
     IAuthSessionWriteRepository writeRepo,
-    IUnitOfWork unitOfWork) : IAuthSessionService
+    IUnitOfWork unitOfWork,
+    IClientIpResolver ipResolver,
+    IUserAgentParser agentParser) : IAuthSessionService
 {
     public ResponseDto GetMyActiveSessions()
     {
@@ -17,12 +19,14 @@ public class AuthSessionService(
 
     public async Task<string> CreateSessionAsync(string userId)
     {
-        //todo: IP, location, device info datalarini topla 
+        //todo: location datalarini topla 
 
         var session = new AuthSession
         {
             UserId = userId,
-            CreatedByIp = "127.0.0.1" //todo: ip servisini elave etdikden sonra deyis
+            CreatedByIp = ipResolver.GetClientIpV4(),
+            DeviceInfo = JsonSerializer.Serialize(
+                agentParser.Parse())
         };
 
         await writeRepo.AddAsync(session);
