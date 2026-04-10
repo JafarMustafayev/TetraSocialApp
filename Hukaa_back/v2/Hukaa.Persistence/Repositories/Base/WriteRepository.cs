@@ -17,6 +17,11 @@ public class WriteRepository<T>(AppDbContext context) : IWriteRepository<T> wher
         context.Set<T>().Update(entity);
     }
 
+    public void UpdateRange(List<T> entities)
+    {
+        context.Set<T>().UpdateRange(entities);
+    }
+
     public void Remove(T entity)
     {
         context.Set<T>().Remove(entity);
