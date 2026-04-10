@@ -78,6 +78,20 @@ public class AuthService(
         };
     }
 
+    public async Task<AuthTokenResponse> RefreshTokenAsync(string refreshToken)
+    {
+        var validToken = await tokenService.ValidateRefreshTokenAsync(refreshToken);
+        var user = await userManager.FindByIdAsync(validToken.AuthSession.UserId);
+
+        var roles = await userManager.GetRolesAsync(user);
+
+        return await tokenService.RotateRefreshTokenAsync(
+            refreshToken,
+            user.Id,
+            roles.ToList()
+        );
+    }
+
     private async Task ValidateUserStatusAsync(User user)
     {
         if(user.Status == UserStatus.Banned)

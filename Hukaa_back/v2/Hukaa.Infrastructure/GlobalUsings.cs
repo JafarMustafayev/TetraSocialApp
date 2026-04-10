@@ -31,3 +31,5 @@ global using Hukaa.Application.Abstractions.Services.Account;
 global using Hukaa.Application.Abstractions.Services.Profile;
 global using Hukaa.Infrastructure.Services.Account;
 global using Hukaa.Infrastructure.Services.Profile;
+global using Microsoft.EntityFrameworkCore;
+global using System.Linq.Expressions;

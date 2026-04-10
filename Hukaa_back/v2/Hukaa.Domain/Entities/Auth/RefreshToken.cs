@@ -32,7 +32,7 @@ public class RefreshToken : BaseEntity
     {
         if(IsRevoked)
         {
-            throw new InvalidOperationException("Token already revoked");
+            return;
         }
 
         IsRevoked = true;

@@ -8,18 +8,15 @@ public class TokenService(
     IRefreshTokenReadRepository readRepo,
     IRefreshTokenWriteRepository writeRepo,
     IUnitOfWork unitOfWork,
-    IClientIpResolver ipResolver) : ITokenService
+    IClientIpResolver ipResolver,
+    IJwtClaimsReader claimsReader,
+    ILocalizationService localizer) : ITokenService
 {
     private readonly TokenOptions _tokenOptions = config.GetSection<TokenOptions>();
 
     public async Task<RefreshTokenResponse> GenerateRefreshTokenAsync(string sessionId)
     {
-        var plainToken = GeneratePlainToken();
-        var hash = HashRefreshToken(plainToken);
-
-        var entity = CreateRefreshToken(hash, sessionId);
-        await writeRepo.AddAsync(entity);
-        await unitOfWork.SaveChangesAsync();
+        var (plainToken, entity) = await CreateRefreshTokenInternalAsync(sessionId);
 
         return new RefreshTokenResponse
         {
@@ -28,10 +25,7 @@ public class TokenService(
         };
     }
 
-    public AccessTokenResponse GenerateAccessToken(
-        string userId,
-        string sessionId,
-        IList<string> roles)
+    public AccessTokenResponse GenerateAccessToken(string userId, string sessionId, IList<string> roles)
     {
         var securityKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(_tokenOptions.SecurityKey));
@@ -42,72 +36,173 @@ public class TokenService(
         {
             new(ClaimTypes.NameIdentifier, userId),
             new("sessionId", sessionId),
-
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.Iat,
                 DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
                 ClaimValueTypes.Integer64)
         };
 
-        foreach (var role in roles)
-        {
-            claims.Add(new Claim(ClaimTypes.Role, role));
-        }
+        claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
         var token = new JwtSecurityToken(
             _tokenOptions.Jwt.Issuer,
             _tokenOptions.Jwt.Audience,
             claims,
             DateTime.UtcNow,
-            DateTime.UtcNow
-                .AddMinutes(_tokenOptions.Lifetime.AccessToken.TotalMinutes),
+            DateTime.UtcNow.AddMinutes(_tokenOptions.Lifetime.AccessToken.TotalMinutes),
             credentials);
-        var handler = new JwtSecurityTokenHandler();
 
         return new AccessTokenResponse
         {
-            AccessToken = handler.WriteToken(token),
+            AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
             AccessTokenExpiresAt = token.ValidTo
         };
     }
 
-    public async Task<bool> ValidateRefreshTokenAsync(string refreshToken)
+    public async Task<RefreshToken> ValidateRefreshTokenAsync(string refreshToken)
     {
-        if(string.IsNullOrWhiteSpace(refreshToken))
+        var token = await GetTokenAsync(refreshToken, true);
+
+        if(token == null)
         {
-            return false;
+            throw new NotFoundException(localizer.Get("Error.Token.Get.NotFound"));
         }
 
-        var hash = HashRefreshToken(refreshToken);
-        var token = await readRepo.FirstOrDefaultAsync(x => x.TokenHash == hash);
-        if(token == null || !token.IsActive)
+        if(!token.IsActive)
         {
-            return false;
+            if(token.IsRevoked)
+            {
+                throw new BadRequestException(localizer.Get("Error.Token.Validate.Revoked"));
+            }
+
+            if(token.IsUsed)
+            {
+                throw new BadRequestException(localizer.Get("Error.Token.Validate.Used"));
+            }
+
+            if(token.IsExpired)
+            {
+                throw new BadRequestException(localizer.Get("Error.Token.Validate.Expired"));
+            }
+
+            throw new BadRequestException(localizer.Get("Error.Token.Validate.Invalid"));
         }
 
-        return true;
+        return token;
     }
 
-    private string GeneratePlainToken()
+    public async Task RevokeRefreshTokenAsync(string refreshToken)
     {
-        return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        var token = await GetTokenAsync(refreshToken, true);
+        if(token == null)
+        {
+            throw new NotFoundException(localizer.Get("Error.Token.Get.NotFound"));
+        }
+
+        token.Revoke(ipResolver.GetClientIpV4());
+        writeRepo.Update(token);
+        await unitOfWork.SaveChangesAsync();
     }
+
+    public async Task<AuthTokenResponse> RotateRefreshTokenAsync(
+        string oldPlainToken,
+        string userId,
+        List<string> roles)
+    {
+        var existingToken = await GetTokenAsync(oldPlainToken, true);
+
+        if(existingToken == null)
+        {
+            throw new NotFoundException(localizer.Get("Error.Token.Get.NotFound"));
+        }
+
+        var (plainToken, entity) = await CreateRefreshTokenInternalAsync(existingToken.AuthSessionId);
+        var accessToken = GenerateAccessToken(userId, existingToken.AuthSessionId, roles);
+        existingToken.MarkAsUsed(ipResolver.GetClientIpV4(), entity.Id);
+        writeRepo.Update(existingToken);
+        await unitOfWork.SaveChangesAsync();
+
+        return new AuthTokenResponse
+        {
+            AccessToken = accessToken,
+            RefreshToken = new RefreshTokenResponse
+            {
+                RefreshToken = plainToken,
+                RefreshTokenExpiresAt = entity.ExpiresAt
+            }
+        };
+    }
+
+    public async Task RevokeAllRefreshTokens(string? currentPlainToken)
+    {
+        var userId = "4093e8ae-4bff-4f0b-8d2f-287b629849c0";
+        var tokens = await readRepo.Where(x =>
+                x.AuthSession.UserId == userId &&
+                !x.IsUsed &&
+                !x.IsRevoked)
+            .Include(x => x.AuthSession)
+            .AsTracking()
+            .ToListAsync();
+
+        if(!string.IsNullOrWhiteSpace(currentPlainToken))
+        {
+            var hash = HashRefreshToken(currentPlainToken);
+            tokens = tokens.Where(x => x.TokenHash != hash).ToList();
+        }
+
+        tokens.ForEach(t => t.Revoke(ipResolver.GetClientIpV4()));
+
+        writeRepo.UpdateRange(tokens);
+        await unitOfWork.SaveChangesAsync();
+    }
+
+    // Helpers 
 
     private string HashRefreshToken(string token)
     {
         return hasher.Hash(token, _tokenOptions.SecurityKey);
     }
 
-    private RefreshToken CreateRefreshToken(string token, string sessionId)
+    private async Task<RefreshToken?> GetTokenAsync(string refreshToken, bool throwIfEmpty = false)
     {
-        return new RefreshToken
+        if(string.IsNullOrWhiteSpace(refreshToken))
+        {
+            if(throwIfEmpty)
+            {
+                throw new BadRequestException(
+                    localizer.Get("Validation.Common.Validation.Required", "RefreshToken"));
+            }
+
+            return null;
+        }
+
+        var hash = HashRefreshToken(refreshToken);
+        var includes = new List<Expression<Func<RefreshToken, object>>>
+        {
+            x => x.AuthSession
+        };
+        return await readRepo.FirstOrDefaultAsync(
+            x => x.TokenHash == hash, false, includes);
+    }
+
+    private async Task<(string plainToken, RefreshToken entity)> CreateRefreshTokenInternalAsync(string sessionId)
+    {
+        var plainToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        var hash = HashRefreshToken(plainToken);
+
+        var entity = new RefreshToken
         {
             AuthSessionId = sessionId,
             CreatedByIp = ipResolver.GetClientIpV4(),
-            TokenHash = token,
+            TokenHash = hash,
             CreatedAt = DateTime.UtcNow,
             ExpiresAt = DateTime.UtcNow.AddMinutes(
                 _tokenOptions.Lifetime.RefreshToken.TotalMinutes)
         };
+
+        await writeRepo.AddAsync(entity);
+        await unitOfWork.SaveChangesAsync();
+
+        return (plainToken, entity);
     }
 }

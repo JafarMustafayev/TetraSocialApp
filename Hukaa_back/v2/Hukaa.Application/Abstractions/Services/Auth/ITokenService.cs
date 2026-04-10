@@ -4,11 +4,11 @@ public interface ITokenService
 {
     AccessTokenResponse GenerateAccessToken(string userId, string sessionId, IList<string> roles);
     Task<RefreshTokenResponse> GenerateRefreshTokenAsync(string sessionId);
-    Task<bool> ValidateRefreshTokenAsync(string refreshToken);
+    Task<RefreshToken> ValidateRefreshTokenAsync(string refreshToken);
+    Task RevokeRefreshTokenAsync(string refreshToken);
+    Task<AuthTokenResponse> RotateRefreshTokenAsync(string oldPlainToken, string userId, List<string> roles);
+    Task RevokeAllRefreshTokens(string? currentPlainToken = null);
 
-    //Task<AuthTokenResponse> RotateRefreshTokenAsync(string oldPlainToken);
-    //Task RevokeRefreshTokenAsync(string userId, string refreshToken);
-    //Task RevokeAllRefreshTokensAsync(string userId); // ★ yeni: userId üzrə tam silmə
     //string GenerateOtpToken(int length = 6);
     //string GenerateTemporaryToken();
 }
