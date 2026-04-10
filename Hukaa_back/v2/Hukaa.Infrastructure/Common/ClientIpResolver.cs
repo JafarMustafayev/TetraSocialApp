@@ -4,6 +4,7 @@ public class ClientIpResolver(
     IHttpContextAccessor accessor) : IClientIpResolver
 {
     private const string Unknown = "UNKNOWN";
+    private const string Localhost = "127.0.0.1";
 
     public string GetClientIpV4()
     {
@@ -17,7 +18,7 @@ public class ClientIpResolver(
                  context.Connection.RemoteIpAddress?.MapToIPv4().ToString();
         return string.IsNullOrWhiteSpace(ip)
             ? ClientIpResolver.Unknown
-            : ip;
+            : ClientIpResolver.NormalizeIp(ip);
     }
 
     public string GetClientIpV6()
@@ -32,7 +33,7 @@ public class ClientIpResolver(
                  context.Connection.RemoteIpAddress?.MapToIPv6().ToString();
         return string.IsNullOrWhiteSpace(ip)
             ? ClientIpResolver.Unknown
-            : ip;
+            : ClientIpResolver.NormalizeIp(ip);
     }
 
     private static string? GetIpFromHeaders(HttpContext context)
@@ -45,5 +46,12 @@ public class ClientIpResolver(
         }
 
         return HeaderIp("X-Forwarded-For") ?? HeaderIp("X-Real-IP");
+    }
+
+    private static string NormalizeIp(string ip)
+    {
+        return ip == "::1" || ip == "0.0.0.1"
+            ? ClientIpResolver.Localhost
+            : ip;
     }
 }
