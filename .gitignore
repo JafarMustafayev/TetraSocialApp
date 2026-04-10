@@ -1,9 +1,8 @@
-template
-
 .vs
 obj
 *.http
 bin
 .idea
-/Hukaa_back/Controller/TestController.cs
 wwwroot/
+Hukaa_Back/v2/Hukaa_back.sln.DotSettings.user
+Hukaa_Back/v2/Hukaa.API/Controllers/TestController.cs
