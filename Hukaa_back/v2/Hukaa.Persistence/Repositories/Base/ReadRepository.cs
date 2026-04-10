@@ -42,7 +42,7 @@ public class ReadRepository<T>(AppDbContext context) : IReadRepository<T> where 
         return await query.FirstOrDefaultAsync(predicate);
     }
 
-    public IQueryable<T> WhereAsync(
+    public IQueryable<T> Where(
         Expression<Func<T, bool>> predicate,
         bool asTracking = false,
         IReadOnlyList<Expression<Func<T, object>>>? includes = null

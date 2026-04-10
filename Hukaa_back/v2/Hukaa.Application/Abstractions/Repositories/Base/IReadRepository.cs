@@ -21,7 +21,7 @@ public interface IReadRepository<T> where T : BaseEntity
         IReadOnlyList<Expression<Func<T, object>>>? includes = null
     );
 
-    IQueryable<T> WhereAsync(Expression<Func<T, bool>> predicate,
+    IQueryable<T> Where(Expression<Func<T, bool>> predicate,
         bool asTracking = false,
         IReadOnlyList<Expression<Func<T, object>>>? includes = null);
 
