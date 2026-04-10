@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
         {
             //Common
             services.AddScoped<IClientIpResolver, ClientIpResolver>();
+            services.AddScoped<IJwtClaimsReader, JwtClaimsReader>();
             services.AddScoped<ILocalizationService, LocalizationService>();
             services.AddScoped<IRefreshTokenHasher, RefreshTokenHasher>();
             services.AddScoped<IUserAgentParser, UserAgentParser>();
