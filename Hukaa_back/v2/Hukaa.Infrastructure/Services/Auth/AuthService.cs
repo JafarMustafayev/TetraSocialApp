@@ -15,12 +15,12 @@ public class AuthService(
     {
         if(await userManager.FindByNameAsync(request.Username) != null)
         {
-            throw new ConflictException(localizer.Get("Validation.Common.AlreadyExists", "Username"));
+            throw new ConflictException(localizer.Get("Validation.Common.Validation.AlreadyExists", "Username"));
         }
 
         if(await userManager.FindByEmailAsync(request.Email) != null)
         {
-            throw new ConflictException(localizer.Get("Validation.Common.AlreadyExists", "Email"));
+            throw new ConflictException(localizer.Get("Validation.Common.Validation.AlreadyExists", "Email"));
         }
 
         var user = mapper.Map<User>(request);
@@ -30,7 +30,7 @@ public class AuthService(
         {
             var errors = res.Errors.Select(x => x.Description).ToList();
             throw new BadRequestException(
-                localizer.Get("Validation.Common.OperationFailed"), errors);
+                localizer.Get("Validation.Common.Validation.Failure"), errors);
         }
 
         res = await userManager.AddToRoleAsync(user, UserRoles.User);
@@ -40,7 +40,7 @@ public class AuthService(
             await userManager.DeleteAsync(user);
 
             var errors = res.Errors.Select(x => x.Description).ToList();
-            throw new BadRequestException(localizer.Get("Validation.Common.OperationFailed"), errors);
+            throw new BadRequestException(localizer.Get("Validation.Common.Validation.Failure"), errors);
         }
 
         return ResponseDto.CreatedResponse(localizer.Get("Auth.Registration.Success.CheckEmail"));
@@ -54,7 +54,7 @@ public class AuthService(
 
         if(user == null)
         {
-            throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.Common"));
+            throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.Invalid"));
         }
 
         await ValidateUserStatusAsync(user);
@@ -63,7 +63,7 @@ public class AuthService(
 
         if(!result.Succeeded && !result.RequiresTwoFactor)
         {
-            throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.Common"));
+            throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.Invalid"));
         }
 
         var roles = await userManager.GetRolesAsync(user);
@@ -82,12 +82,12 @@ public class AuthService(
     {
         if(user.Status == UserStatus.Banned)
         {
-            throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.UserBanned"));
+            throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.Banned"));
         }
 
         if(await userManager.IsLockedOutAsync(user))
         {
-            throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.UserLockedOut"));
+            throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.Locked"));
         }
     }
 }

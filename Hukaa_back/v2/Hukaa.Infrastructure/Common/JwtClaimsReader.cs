@@ -10,7 +10,7 @@ public class JwtClaimsReader(
 
         if(string.IsNullOrWhiteSpace(userId))
         {
-            throw new UnauthorizedException(localizer.Get("Error.Unauthorized.MissingUserId"));
+            throw new UnauthorizedException(localizer.Get("Error.Authorization.Failure.MissingUserId"));
         }
 
         return userId;
@@ -22,7 +22,7 @@ public class JwtClaimsReader(
 
         if(string.IsNullOrWhiteSpace(sessionId))
         {
-            throw new UnauthorizedException(localizer.Get("Error.Unauthorized.MissingSessionId"));
+            throw new UnauthorizedException(localizer.Get("Error.Authorization.Failure.MissingSessionId"));
         }
 
         return sessionId;
@@ -33,7 +33,7 @@ public class JwtClaimsReader(
         var roles = GetClaimValues("roles");
         if(roles == null || roles.Count == 0)
         {
-            throw new UnauthorizedException(localizer.Get("Error.Unauthorized.MissingRoles"));
+            throw new UnauthorizedException(localizer.Get("Error.Authorization.Failure.MissingRoles"));
         }
 
         return roles;
@@ -45,7 +45,7 @@ public class JwtClaimsReader(
 
         if(string.IsNullOrWhiteSpace(value))
         {
-            throw new BadRequestException(localizer.Get("Validation.Common.OperationFailed"));
+            throw new BadRequestException(localizer.Get("Validation.Common.Validation.Failure"));
         }
 
         return value;

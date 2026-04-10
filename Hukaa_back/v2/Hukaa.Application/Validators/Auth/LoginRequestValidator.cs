@@ -12,31 +12,31 @@ public class LoginRequestValidator : AbstractValidator<LoginRequestDto>
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .When(_ => rules.EmailOrUsername.Required)
-            .WithMessage(localizer.Get("Validation.Common.Required", "EmailOrUsername"))
+            .WithMessage(localizer.Get("Validation.Common.Validation.Required", "EmailOrUsername"))
             .MinimumLength(rules.EmailOrUsername.MinLength ?? 0)
             .When(_ => rules.EmailOrUsername.Required)
-            .WithMessage(localizer.Get("Validation.Common.MinLength", "EmailOrUsername",
+            .WithMessage(localizer.Get("Validation.Common.Validation.MinLength", "EmailOrUsername",
                 new Dictionary<string, object> { ["MinLength"] = rules.EmailOrUsername.MinLength ?? 5 }))
             .MaximumLength(rules.EmailOrUsername.MaxLength ?? int.MaxValue)
             .When(_ => rules.EmailOrUsername.Required)
-            .WithMessage(localizer.Get("Validation.Common.MaxLength", "EmailOrUsername",
+            .WithMessage(localizer.Get("Validation.Common.Validation.MaxLength", "EmailOrUsername",
                 new Dictionary<string, object> { ["MaxLength"] = rules.EmailOrUsername.MaxLength ?? int.MaxValue }))
             .Must(BeValidEmailOrUsername)
-            .WithMessage(localizer.Get("Validation.Common.InvalidEmailOrUsername"));
+            .WithMessage(localizer.Get("Validation.Common.Validation.InvalidEmailOrUsername"));
 
         RuleFor(x => x.Password)
             .Cascade(CascadeMode.Stop)
             .NotEmpty().When(_ => rules.Password.Required)
-            .WithMessage(localizer.Get("Validation.Common.Required", "Password"))
+            .WithMessage(localizer.Get("Validation.Common.Validation.Required", "Password"))
             .MinimumLength(rules.Password.MinLength ?? 0).When(_ => rules.Password.Required)
             .WithMessage(
-                localizer.Get("Validation.Common.MinLength", "Password", new Dictionary<string, object>
+                localizer.Get("Validation.Common.Validation.MinLength", "Password", new Dictionary<string, object>
                 {
                     ["MinLength"] = rules.Password.MinLength ?? 0
                 }))
             .MaximumLength(rules.Password.MaxLength ?? int.MaxValue).When(_ => rules.Password.Required)
             .WithMessage(
-                localizer.Get("Validation.Common.MaxLength", "Password", new Dictionary<string, object>
+                localizer.Get("Validation.Common.Validation.MaxLength", "Password", new Dictionary<string, object>
                 {
                     ["MaxLength"] = rules.Password.MaxLength ?? int.MaxValue
                 }));
