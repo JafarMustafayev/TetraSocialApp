@@ -71,6 +71,23 @@ public class TokenService(
         };
     }
 
+    public async Task<bool> ValidateRefreshTokenAsync(string refreshToken)
+    {
+        if(string.IsNullOrWhiteSpace(refreshToken))
+        {
+            return false;
+        }
+
+        var hash = HashRefreshToken(refreshToken);
+        var token = await readRepo.FirstOrDefaultAsync(x => x.TokenHash == hash);
+        if(token == null || !token.IsActive)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     private string GeneratePlainToken()
     {
         return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
