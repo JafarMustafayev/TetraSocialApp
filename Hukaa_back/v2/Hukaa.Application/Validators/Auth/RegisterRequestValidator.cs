@@ -60,6 +60,11 @@ public class RegisterRequestValidator : AbstractValidator<RegisterRequestDto>
                     ["MaxLength"] = rules.Password.MaxLength ?? int.MaxValue
                 }));
 
+        RuleFor(x => x.DateOfBirth)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty().When(_ => rules.DateOfBirth.Required)
+            .WithMessage(localizer.Get("Validation.Common.Validation.Required", "DateOfBirth"));
+
         RuleFor(x => x.FirstName)
             .Cascade(CascadeMode.Stop)
             .NotEmpty().When(_ => rules.FirstName.Required)
