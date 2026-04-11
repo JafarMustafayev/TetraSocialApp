@@ -157,6 +157,17 @@ Backend response format:
 
 ---
 
+## Responsive Design Rules (CRITICAL)
+
+- All UI components must be fully responsive
+- Mobile-first approach must be followed
+- Layout must adapt to different screen sizes (mobile, tablet, desktop)
+- Tailwind responsive utilities must be used (sm, md, lg, xl)
+- No fixed widths that break responsiveness
+- Overflow and layout breaking issues must be avoided
+- Components must be tested across common screen sizes
+
+--
 ## UI/UX Rules
 
 - Use Tailwind classes inline

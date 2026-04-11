@@ -1,3 +1,66 @@
+@import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
+
+@import "remixicon/fonts/remixicon.css";
+
+@theme {
+  /* Colors from v1 */
+  --color-main: #3644D9;
+  --color-main-hover: #0484ec;
+
+  --color-optional: #2E3AB8;
+  --color-black: #515355;
+  --color-paragraph: #6B7C8F;
+
+  --color-input-border: #F4F7FC;
+  --color-input-bg: #1f3244;
+
+  /* Fonts from v1 */
+  --font-main: "Open Sans", sans-serif;
+  --font-heading: "Montserrat", sans-serif;
+}
+
+/* Base Styles from v1 */
+@layer base {
+  body {
+    @apply font-main m-0 p-0 bg-[#F4F7FC] text-black;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading font-semibold text-black;
+  }
+
+  a {
+    @apply no-underline transition-all duration-400 text-black hover:text-main;
+  }
+}
+
+.profile-authentication-area {
+  background-image: url("./assets/images/auth-background.jpg");
+  background-color: var(--color-black);
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* Dark Mode Overrides from v1 */
+html.dark .profile-authentication-area {
+  background-color: #0b0f1a !important;
+}
+
+html.dark body {
+  background-color: #0b0f1a !important;
+  color: #e2e8f0 !important;
+}
+
 :root {
   --text: #6b6375;
   --text-h: #08060d;
@@ -55,11 +118,8 @@ body {
 }
 
 #root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
+  width: 100%;
   text-align: center;
-  border-inline: 1px solid var(--border);
   min-height: 100svh;
   display: flex;
   flex-direction: column;
