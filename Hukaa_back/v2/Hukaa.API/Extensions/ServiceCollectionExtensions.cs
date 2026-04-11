@@ -16,6 +16,24 @@ public static class ServiceCollectionExtensions
             services.AddApplicationServiceCollection(configuration);
             services.AddInfrastructureServiceCollection(configuration);
             services.AddPersistenceServiceCollection(configuration);
+            services.AddCorsPolicy();
+        }
+
+        private void AddCorsPolicy()
+        {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", policy =>
+                {
+                    policy.WithOrigins(new[]
+                        {
+                            "http://localhost:5173"
+                        })
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+            });
         }
     }
 }
