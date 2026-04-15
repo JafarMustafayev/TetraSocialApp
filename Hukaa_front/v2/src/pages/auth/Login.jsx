@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '../../assets/images/logo.png';
+import { login } from '../../api/auth.api';
+import { toast } from 'react-hot-toast';
 
 const Login = () => {
     const [credentials, setCredentials] = useState({
         UsernameOrEmail: '',
         Password: ''
     });
+    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         document.title = "Login";
@@ -20,9 +24,42 @@ const Login = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Functional logic omitted as requested
+        
+        const payload = {
+            EmailOrUsername: credentials.UsernameOrEmail.trim(),
+            Password: credentials.Password
+        };
+
+        setIsLoading(true);
+        try {
+            const result = await login(payload);
+            
+            // Check for success: either standard format { Success: true } or direct token object
+            const isSuccess = result.Success || result.success || (result.accessToken && result.refreshToken);
+            
+            if (isSuccess) {
+                const tokenData = result.Data || result.data || result;
+                
+                // Store tokens as per project rules
+                localStorage.setItem('token', tokenData.accessToken?.accessToken || tokenData.accessToken);
+                localStorage.setItem('refreshToken', tokenData.refreshToken?.refreshToken || tokenData.refreshToken);
+                
+                // Optional: Store some basic user info if available
+                localStorage.setItem('user', JSON.stringify({
+                    userName: credentials.UsernameOrEmail.split('@')[0] // Fallback if no user info in response
+                }));
+
+                toast.success('Successfully logged in!');
+                navigate('/home');
+            }
+        } catch (error) {
+            console.error('Login Error:', error);
+            // Error toasts are handled by client.js
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -72,9 +109,10 @@ const Login = () => {
 
                                 <button
                                     type="submit"
-                                    className="mt-5 bg-[#0072d2] text-white p-[15px] w-full rounded-[5px] hover:bg-main-hover transition duration-400 font-medium border-none cursor-pointer"
+                                    disabled={isLoading}
+                                    className="mt-5 bg-[#0072d2] text-white p-[15px] w-full rounded-[5px] hover:bg-main-hover transition duration-400 font-medium border-none cursor-pointer disabled:bg-gray-600 disabled:cursor-not-allowed"
                                 >
-                                    LOGIN
+                                    {isLoading ? 'Wait...' : 'LOGIN'}
                                 </button>
 
                                 <div className="my-[15px] text-center">

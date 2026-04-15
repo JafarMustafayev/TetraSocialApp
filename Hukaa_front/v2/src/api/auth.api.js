@@ -12,3 +12,14 @@ export const register = async (userData) => {
         body: JSON.stringify(userData)
     });
 };
+/**
+ * Log in a user.
+ * @param {object} credentials - The login credentials (EmailOrUsername, Password).
+ * @returns {Promise<object>} The server response.
+ */
+export const login = async (credentials) => {
+    return fetchClient('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify(credentials)
+    });
+};
