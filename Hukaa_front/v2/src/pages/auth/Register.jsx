@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '../../assets/images/logo.png';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { validateEmail, isAtLeast16 } from '../../utily/validation';
+import { checkUsername, checkEmail } from '../../api/account.api';
+import { register } from '../../api/auth.api';
+import { toast } from 'react-hot-toast';
 
 const Register = () => {
     const [currentStep, setCurrentStep] = useState(1);
@@ -16,16 +19,77 @@ const Register = () => {
         password: '',
         confirmPassword: ''
     });
-    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
+
+    const [availability, setAvailability] = useState({
+        username: { isAvailable: true, message: '', checking: false },
+        email: { isAvailable: true, message: '', checking: false }
+    });
 
     useEffect(() => {
         document.title = "Register";
     }, []);
 
+    useEffect(() => {
+        if (currentStep !== 3 || !formData.username.trim()) return;
+
+        setAvailability(prev => ({ ...prev, username: { ...prev.username, checking: true, isAvailable: true, message: '' } }));
+
+        const timer = setTimeout(async () => {
+            const result = await checkUsername(formData.username.trim());
+            if (result.success || result.Success) {
+                const isAvailable = result.data?.isAvailable ?? result.Data?.isAvailable ?? true;
+                setAvailability(prev => ({
+                    ...prev,
+                    username: {
+                        isAvailable: isAvailable,
+                        message: isAvailable ? '' : 'This username is already taken.',
+                        checking: false
+                    }
+                }));
+            } else {
+                setAvailability(prev => ({
+                    ...prev,
+                    username: { isAvailable: false, message: result.message || result.Message || 'Error checking username.', checking: false }
+                }));
+            }
+        }, 750);
+
+        return () => clearTimeout(timer);
+    }, [formData.username, currentStep]);
+
+    useEffect(() => {
+        if (currentStep !== 4 || !formData.email.trim() || !validateEmail(formData.email)) return;
+
+        setAvailability(prev => ({ ...prev, email: { ...prev.email, checking: true, isAvailable: true, message: '' } }));
+
+        const timer = setTimeout(async () => {
+            const result = await checkEmail(formData.email.trim());
+            if (result.success || result.Success) {
+                const isAvailable = result.data?.isAvailable ?? result.Data?.isAvailable ?? true;
+                setAvailability(prev => ({
+                    ...prev,
+                    email: {
+                        isAvailable: isAvailable,
+                        message: isAvailable ? '' : 'This email is already registered.',
+                        checking: false
+                    }
+                }));
+            } else {
+                setAvailability(prev => ({
+                    ...prev,
+                    email: { isAvailable: false, message: result.message || result.Message || 'Error checking email.', checking: false }
+                }));
+            }
+        }, 750);
+
+        return () => clearTimeout(timer);
+    }, [formData.email, currentStep]);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-        if (error) setError('');
     };
 
     const nextStep = () => {
@@ -38,30 +102,46 @@ const Register = () => {
 
         if (currentStep === 1) {
             if (!data.firstName || !data.lastName) {
-                setError('Please enter both first and last name.');
+                toast.error('Please enter both first and last name.');
                 return;
             }
         } else if (currentStep === 2) {
             if (!formData.birthDate) {
-                setError('Please select your birth date.');
+                toast.error('Please select your birth date.');
                 return;
             }
             if (!isAtLeast16(formData.birthDate)) {
-                setError('You must be at least 16 years old to register.');
+                toast.error('You must be at least 16 years old to register.');
                 return;
             }
         } else if (currentStep === 3) {
             if (!data.username) {
-                setError('Please enter a username.');
+                toast.error('Please enter a username.');
+                return;
+            }
+            if (!availability.username.isAvailable) {
+                toast.error(availability.username.message || 'This username is not available.');
+                return;
+            }
+            if (availability.username.checking) {
+                toast.error('Please wait while we check username availability.');
                 return;
             }
         } else if (currentStep === 4) {
             if (!data.email) {
-                setError('Please enter your email.');
+                toast.error('Please enter your email.');
                 return;
             }
             if (!validateEmail(data.email)) {
-                setError('Please enter a valid email address.');
+                toast.error('Please enter a valid email address.');
+                return;
+            }
+            if (!availability.email.isAvailable) {
+                toast.error(availability.email.message || 'This email is already in use.');
+                return;
+            }
+            if (availability.email.checking) {
+                toast.error('Please wait while we check email availability.');
                 return;
             }
         }
@@ -71,23 +151,38 @@ const Register = () => {
 
     const prevStep = () => {
         setCurrentStep(prev => prev - 1);
-        setError('');
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
         if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match.');
+            toast.error('Passwords do not match.');
             return;
         }
-        // Functional logic for API omitted as requested
-        console.log('Final Form Data:', {
-            ...formData,
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            username: formData.username,
-            email: formData.email
-        });
+
+        const payload = {
+            UserName: formData.username.trim(),
+            email: formData.email.trim(),
+            password: formData.password.trim(),
+            DateOfBirth: formData.birthDate ? formData.birthDate.toISOString() : null,
+            FirstName: formData.firstName.trim(),
+            LastName: formData.lastName.trim()
+        };
+
+        setIsLoading(true);
+        try {
+            const result = await register(payload);
+
+            if (result.success || result.Success) {
+                toast.success(result.message || result.Message || 'Successfully registered.');
+
+            }
+        } catch (error) {
+            console.error('Registration failed:', error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const renderStep = () => {
@@ -127,12 +222,12 @@ const Register = () => {
                             selected={formData.birthDate}
                             onChange={(date) => {
                                 setFormData(prev => ({ ...prev, birthDate: date }));
-                                if (error) setError('');
                             }}
                             dateFormat="dd/MM/yyyy"
                             showYearDropdown
                             scrollableYearDropdown
                             yearDropdownItemNumber={100}
+                            autoComplete='on'
                             placeholderText="DD/MM/YYYY"
                             className="h-[60px] px-[25px] py-[15px] text-paragraph rounded-[5px] text-base w-full border border-input-border bg-input-bg focus:border-main focus:outline-none transition duration-400"
                             wrapperClassName="w-full"
@@ -147,11 +242,16 @@ const Register = () => {
                         <input
                             type="text"
                             name="username"
-                            className="h-[60px] px-[25px] py-[15px] text-paragraph rounded-[5px] text-base w-full border border-input-border bg-input-bg focus:border-main focus:outline-none transition duration-400"
+                            className={`h-[60px] px-[25px] py-[15px] text-paragraph rounded-[5px] text-base w-full border ${!availability.username.isAvailable ? 'border-red-500' : 'border-input-border'} bg-input-bg focus:border-main focus:outline-none transition duration-400`}
                             value={formData.username.trim()}
                             onChange={handleChange}
                             required
                         />
+                        {!availability.username.isAvailable && (
+                            <span className="text-red-500 text-xs mt-1 block font-light">
+                                {availability.username.message}
+                            </span>
+                        )}
                     </div>
                 );
             case 4:
@@ -161,11 +261,16 @@ const Register = () => {
                         <input
                             type="email"
                             name="email"
-                            className="h-[60px] px-[25px] py-[15px] text-paragraph rounded-[5px] text-base w-full border border-input-border bg-input-bg focus:border-main focus:outline-none transition duration-400"
+                            className={`h-[60px] px-[25px] py-[15px] text-paragraph rounded-[5px] text-base w-full border ${!availability.email.isAvailable ? 'border-red-500' : 'border-input-border'} bg-input-bg focus:border-main focus:outline-none transition duration-400`}
                             value={formData.email.trim()}
                             onChange={handleChange}
                             required
                         />
+                        {!availability.email.isAvailable && (
+                            <span className="text-red-500 text-xs mt-1 block font-light">
+                                {availability.email.message}
+                            </span>
+                        )}
                     </div>
                 );
             case 5:
@@ -187,7 +292,7 @@ const Register = () => {
                             <input
                                 type="password"
                                 name="confirmPassword"
-                                className="h-[60px] px-[25px] py-[15px] text-paragraph rounded-[5px] text-base w-full border border-[#F4F7FC] bg-[#1f3244] focus:border-main focus:outline-none transition duration-400"
+                                className="h-[60px] px-[25px] py-[15px] text-paragraph rounded-[5px] text-base w-full border border-input-border bg-input-bg focus:border-main focus:outline-none transition duration-400"
                                 value={formData.confirmPassword.trim()}
                                 onChange={handleChange}
                                 required
@@ -215,11 +320,6 @@ const Register = () => {
                             </div>
 
                             <form onSubmit={handleSubmit} className="w-full">
-                                {error && (
-                                    <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
-                                        {error}
-                                    </div>
-                                )}
 
                                 {renderStep()}
 
@@ -237,17 +337,23 @@ const Register = () => {
                                     {currentStep < 5 ? (
                                         <button
                                             type="button"
+                                            disabled={
+                                                (currentStep === 3 && (!availability.username.isAvailable || availability.username.checking))
+                                                || (currentStep === 4 && (!availability.email.isAvailable || availability.email.checking))
+
+                                            }
                                             onClick={nextStep}
-                                            className="bg-[#0072d2] text-white p-[15px] w-full rounded-[5px] hover:bg-main-hover transition duration-400 font-medium border-none cursor-pointer"
+                                            className="bg-[#0072d2] text-white p-[15px] w-full rounded-[5px] hover:bg-main-hover transition duration-400 font-medium border-none cursor-pointer disabled:bg-gray-600 disabled:cursor-not-allowed"
                                         >
                                             NEXT
                                         </button>
                                     ) : (
                                         <button
                                             type="submit"
-                                            className="bg-[#0072d2] text-white p-[15px] w-full rounded-[5px] hover:bg-main-hover transition duration-400 font-medium border-none cursor-pointer"
+                                            disabled={isLoading}
+                                            className="bg-[#0072d2] text-white p-[15px] w-full rounded-[5px] hover:bg-main-hover transition duration-400 font-medium border-none cursor-pointer disabled:bg-gray-600 disabled:cursor-not-allowed"
                                         >
-                                            REGISTER
+                                            {isLoading ? 'REGISTERING...' : 'REGISTER'}
                                         </button>
                                     )}
                                 </div>

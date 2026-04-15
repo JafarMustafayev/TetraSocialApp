@@ -4,13 +4,15 @@ public class AuthService(
     UserManager<User> userManager,
     SignInManager<User> signInManager,
     RoleManager<Role> roleManager,
-    IAppConfig appConfig,
+    IAppConfig config,
     IMapper mapper,
     ILocalizationService localizer,
     ITokenService tokenService,
     ISessionService sessionService
 ) : IAuthService
 {
+    private readonly IdentityConfigOptions _identityConfigOptions = config.GetSection<IdentityConfigOptions>();
+
     public async Task<ResponseDto> RegisterAsync(RegisterRequestDto request)
     {
         if(await userManager.FindByNameAsync(request.Username) != null)
@@ -43,7 +45,13 @@ public class AuthService(
             throw new BadRequestException(localizer.Get("Validation.Common.Validation.Failure"), errors);
         }
 
-        return ResponseDto.CreatedResponse(localizer.Get("Auth.Registration.Success.CheckEmail"));
+        return ResponseDto.CreatedResponse(_identityConfigOptions.SignIn.RequireConfirmedEmail
+                ? localizer.Get("Auth.Registration.Success.Pending")
+                : localizer.Get("Auth.Registration.Success.Success"),
+            new
+            {
+                IsVerifiedEmailRequired = _identityConfigOptions.SignIn.RequireConfirmedEmail
+            });
     }
 
     public async Task<AuthTokenResponse> LoginAsync(LoginRequestDto request)
@@ -83,13 +91,18 @@ public class AuthService(
         var validToken = await tokenService.ValidateRefreshTokenAsync(refreshToken);
         var user = await userManager.FindByIdAsync(validToken.AuthSession.UserId);
 
-        var roles = await userManager.GetRolesAsync(user);
+        if(user != null)
+        {
+            var roles = await userManager.GetRolesAsync(user);
 
-        return await tokenService.RotateRefreshTokenAsync(
-            refreshToken,
-            user.Id,
-            roles.ToList()
-        );
+            return await tokenService.RotateRefreshTokenAsync(
+                refreshToken,
+                user.Id,
+                roles.ToList()
+            );
+        }
+
+        throw new UnauthorizedException(localizer.Get("Validation.Common.Validation.Failure"));
     }
 
     private async Task ValidateUserStatusAsync(User user)

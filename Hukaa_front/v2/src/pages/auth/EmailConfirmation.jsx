@@ -1,11 +1,21 @@
-import { useNavigate, useEffect } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/images/logo.png';
+import Countdown from 'react-countdown';
 
 const EmailConfirmation = () => {
     const navigate = useNavigate();
 
+    const redirectSeconds = 5;
+
     useEffect(() => {
         document.title = "Email Confirmation";
+
+        const timer = setTimeout(() => {
+            navigate('/auth/login');
+        }, redirectSeconds * 1000);
+
+        return () => clearTimeout(timer);
     }, []);
 
     return (
@@ -32,7 +42,16 @@ const EmailConfirmation = () => {
                                     className="mt-5 bg-[#0072d2] text-white p-[15px] w-full rounded-[5px] hover:bg-main-hover transition duration-400 font-medium border-none cursor-pointer"
                                     onClick={() => navigate('/auth/login')}
                                 >
-                                    Go to Login
+                                    <div>
+                                        Go to Login
+                                    </div>
+
+                                    <span className="text-xs">
+
+                                        redirecting to login in {
+                                            <Countdown date={Date.now() + (redirectSeconds * 1000)} renderer={({ seconds }) => <span>{seconds}</span>} />
+                                        } seconds
+                                    </span>
                                 </button>
                             </div>
                         </div>
