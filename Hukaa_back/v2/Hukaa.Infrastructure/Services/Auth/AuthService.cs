@@ -8,7 +8,8 @@ public class AuthService(
     IMapper mapper,
     ILocalizationService localizer,
     ITokenService tokenService,
-    ISessionService sessionService
+    ISessionService sessionService,
+    IJwtClaimsReader claimsReader
 ) : IAuthService
 {
     private readonly IdentityConfigOptions _identityConfigOptions = config.GetSection<IdentityConfigOptions>();
@@ -67,7 +68,7 @@ public class AuthService(
 
         await ValidateUserStatusAsync(user);
 
-        var result = await signInManager.PasswordSignInAsync(user, request.Password, false, false);
+        var result = await signInManager.CheckPasswordSignInAsync(user, request.Password, true);
 
         if(!result.Succeeded && !result.RequiresTwoFactor)
         {
@@ -103,6 +104,14 @@ public class AuthService(
         }
 
         throw new UnauthorizedException(localizer.Get("Validation.Common.Validation.Failure"));
+    }
+
+    public async Task<ResponseDto> LogoutAsync()
+    {
+        var sessionId = claimsReader.GetSessionId();
+
+        await sessionService.RevokeSessionAsync(sessionId);
+        return ResponseDto.OkResponse(localizer.Get("Auth.Logout.Success"));
     }
 
     private async Task ValidateUserStatusAsync(User user)

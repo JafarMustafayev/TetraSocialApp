@@ -18,4 +18,16 @@ public class AuthSession : BaseEntity
 
     public virtual User User { get; set; } = null!;
     public virtual HashSet<RefreshToken> RefreshTokens { get; set; } = new();
+
+    public void Revoke(string revokedByIp)
+    {
+        if(IsRevoked)
+        {
+            return;
+        }
+
+        IsRevoked = true;
+        RevokedAt = DateTime.UtcNow;
+        RevokedByIp = revokedByIp;
+    }
 }

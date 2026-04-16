@@ -21,3 +21,4 @@ global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.IdentityModel.Tokens;
 global using Hukaa.Application.Options;
 global using Hukaa.Application.Abstractions.Common;
+global using Microsoft.AspNetCore.Authorization;

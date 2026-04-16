@@ -6,7 +6,7 @@ public interface ISessionService
 
     //Task<ResponseDto> GetSessionByIdAsync(string sessionId);
     //ResponseDto GetMyActiveSessions();
-    //Task<ResponseDto> RevokeSessionAsync(string sessionId);
+    Task<ResponseDto> RevokeSessionAsync(string sessionId);
     //Task<ResponseDto> RevokeAllExceptCurrentAsync(string currentSessionId);
     //Task<ResponseDto> RevokeAllSessionsAsync();
     //void RevokeOldestSession(); // ★ limitə çatdıqda

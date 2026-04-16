@@ -104,9 +104,26 @@ public class TokenService(
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task<AuthTokenResponse> RotateRefreshTokenAsync(
-        string oldPlainToken,
-        string userId,
+    public async Task RevokeRefreshTokenBySessionIdAsync(string sessionId)
+    {
+        var token = await readRepo.FirstOrDefaultAsync(x =>
+            x.AuthSessionId == sessionId &&
+            !x.IsUsed &&
+            !x.IsRevoked &&
+            x.ExpiresAt > DateTimeOffset.UtcNow);
+
+        if(token == null)
+        {
+            throw new NotFoundException(localizer.Get("Error.Token.Get.NotFound"));
+        }
+
+        token.Revoke(ipResolver.GetClientIpV4());
+        writeRepo.Update(token);
+        await unitOfWork.SaveChangesAsync();
+        // todo: redis inteqrasiyasin olandan sonra refresh token redis daxilinde blackList-e elave edilmelidir 
+    }
+
+    public async Task<AuthTokenResponse> RotateRefreshTokenAsync(string oldPlainToken, string userId,
         List<string> roles)
     {
         var existingToken = await GetTokenAsync(oldPlainToken, true);
@@ -133,9 +150,9 @@ public class TokenService(
         };
     }
 
-    public async Task RevokeAllRefreshTokens(string? currentPlainToken)
+    public async Task RevokeAllRefreshTokens(string? currentSessionId = null)
     {
-        var userId = "4093e8ae-4bff-4f0b-8d2f-287b629849c0";
+        var userId = claimsReader.GetUserId();
         var tokens = await readRepo.Where(x =>
                 x.AuthSession.UserId == userId &&
                 !x.IsUsed &&
@@ -144,10 +161,9 @@ public class TokenService(
             .AsTracking()
             .ToListAsync();
 
-        if(!string.IsNullOrWhiteSpace(currentPlainToken))
+        if(!string.IsNullOrWhiteSpace(currentSessionId))
         {
-            var hash = HashRefreshToken(currentPlainToken);
-            tokens = tokens.Where(x => x.TokenHash != hash).ToList();
+            tokens = tokens.Where(x => x.AuthSessionId != currentSessionId).ToList();
         }
 
         tokens.ForEach(t => t.Revoke(ipResolver.GetClientIpV4()));
@@ -157,7 +173,6 @@ public class TokenService(
     }
 
     // Helpers 
-
     private string HashRefreshToken(string token)
     {
         return hasher.Hash(token, _tokenOptions.SecurityKey);

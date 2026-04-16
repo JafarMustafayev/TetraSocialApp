@@ -6,6 +6,7 @@ public interface ITokenService
     Task<RefreshTokenResponse> GenerateRefreshTokenAsync(string sessionId);
     Task<RefreshToken> ValidateRefreshTokenAsync(string refreshToken);
     Task RevokeRefreshTokenAsync(string refreshToken);
+    Task RevokeRefreshTokenBySessionIdAsync(string sessionId);
     Task<AuthTokenResponse> RotateRefreshTokenAsync(string oldPlainToken, string userId, List<string> roles);
     Task RevokeAllRefreshTokens(string? currentPlainToken = null);
 
