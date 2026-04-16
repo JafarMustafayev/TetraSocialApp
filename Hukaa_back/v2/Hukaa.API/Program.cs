@@ -3,6 +3,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AppServiceCollections(builder.Configuration);
 
 var app = builder.Build();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 if(app.Environment.IsDevelopment())
 {
     using (var scope = app.Services.CreateScope())
@@ -11,7 +12,6 @@ if(app.Environment.IsDevelopment())
     }
 }
 
-app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.ConfigureApp();
 app.MapControllers();
 app.Run();
