@@ -23,3 +23,13 @@ export const login = async (credentials) => {
         body: JSON.stringify(credentials)
     });
 };
+
+/**
+ * Log out the current user.
+ * @returns {Promise<object>} The server response.
+ */
+export const logout = async () => {
+    return fetchClient('/api/auth/logout', {
+        method: 'POST'
+    });
+};

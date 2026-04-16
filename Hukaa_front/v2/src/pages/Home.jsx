@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { logout } from '../api/auth.api';
 
 const Home = () => {
     useEffect(() => {
@@ -12,17 +13,18 @@ const Home = () => {
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
                 Welcome back, <span className="text-[#0072d2]">{user.userName || 'User'}</span>!
             </h1>
-            <p className="text-paragraph text-lg md:text-xl max-w-2xl mx-auto">
-                This is your personalized home dashboard. Only authenticated users can see this content.
-            </p>
-            
+
             <div className="mt-10">
-                <button 
-                    onClick={() => {
-                        localStorage.removeItem('token');
-                        localStorage.removeItem('refreshToken');
-                        localStorage.removeItem('user');
-                        window.location.href = '/auth/login';
+                <button
+                    onClick={async () => {
+                        var res = await logout();
+                        if (res.success || res.Success) {
+                            localStorage.removeItem('token');
+                            localStorage.removeItem('refreshToken');
+                            window.location.href = '/auth/login';
+                        } else {
+                            toast.error(res.message || res.Message || 'Error logging out.');
+                        }
                     }}
                     className="bg-red-600 text-white px-8 py-3 rounded-[5px] hover:bg-red-700 transition duration-400 font-medium border-none cursor-pointer"
                 >
