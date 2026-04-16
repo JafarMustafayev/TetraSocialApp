@@ -62,6 +62,7 @@ public class RegisterRequestValidator : AbstractValidator<RegisterRequestDto>
 
         RuleFor(x => x.DateOfBirth)
             .Cascade(CascadeMode.Stop)
+            .LessThan(x => DateTime.Now.Date).When(_ => rules.DateOfBirth.Required)
             .NotEmpty().When(_ => rules.DateOfBirth.Required)
             .WithMessage(localizer.Get("Validation.Common.Validation.Required", "DateOfBirth"));
 

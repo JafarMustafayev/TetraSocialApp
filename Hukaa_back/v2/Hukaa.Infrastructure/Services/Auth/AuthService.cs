@@ -86,9 +86,9 @@ public class AuthService(
         };
     }
 
-    public async Task<AuthTokenResponse> RefreshTokenAsync(string refreshToken)
+    public async Task<AuthTokenResponse> RefreshTokenAsync(RotateTokenRequestDto request)
     {
-        var validToken = await tokenService.ValidateRefreshTokenAsync(refreshToken);
+        var validToken = await tokenService.ValidateRefreshTokenAsync(request.RefreshToken);
         var user = await userManager.FindByIdAsync(validToken.AuthSession.UserId);
 
         if(user != null)
@@ -96,7 +96,7 @@ public class AuthService(
             var roles = await userManager.GetRolesAsync(user);
 
             return await tokenService.RotateRefreshTokenAsync(
-                refreshToken,
+                request.RefreshToken,
                 user.Id,
                 roles.ToList()
             );

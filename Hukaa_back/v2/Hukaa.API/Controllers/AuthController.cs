@@ -19,9 +19,9 @@ public class AuthController(IAuthService authService) : ControllerBase
     }
 
     [HttpPost("refresh-token")]
-    public async Task<IActionResult> RefreshToken([FromBody] string refreshToken)
+    public async Task<IActionResult> RefreshToken([FromBody] RotateTokenRequestDto request)
     {
-        var res = await authService.RefreshTokenAsync(refreshToken);
+        var res = await authService.RefreshTokenAsync(request);
         return Ok(res);
     }
 }
