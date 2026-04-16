@@ -7,16 +7,6 @@ public class SessionService(
     IClientIpResolver ipResolver,
     IUserAgentParser agentParser) : ISessionService
 {
-    public ResponseDto GetMyActiveSessions()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<ResponseDto> GetUserSessionByIdAsync(string sessionId)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<string> CreateSessionAsync(string userId)
     {
         //todo: location datalarini topla 
@@ -25,22 +15,12 @@ public class SessionService(
         {
             UserId = userId,
             CreatedByIp = ipResolver.GetClientIpV4(),
-            DeviceInfo = JsonSerializer.Serialize(
+            UserAgent = JsonSerializer.Serialize(
                 agentParser.Parse())
         };
 
         await writeRepo.AddAsync(session);
         await unitOfWork.SaveChangesAsync();
         return session.Id;
-    }
-
-    public Task<ResponseDto> RevokeSessionAsync(string sessionId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<ResponseDto> RevokeAllSessionsAsync()
-    {
-        throw new NotImplementedException();
     }
 }
