@@ -2,30 +2,42 @@
 import { API_BASE_URL } from './api-config';
 import { toast } from 'react-hot-toast';
 
+let isRefreshing = false;
+let failedQueue = [];
+
+/**
+ * Standardized logout with redirection to login page and current path as redirect param.
+ */
+const logoutWithRedirect = () => {
+    const currentPath = window.location.pathname + window.location.search;
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+    
+    // Use window.location for hard redirect to ensure app state is cleared
+    const loginUrl = `/auth/login?redirect=${encodeURIComponent(currentPath)}`;
+    window.location.href = loginUrl;
+};
+
+/**
+ * Processes the queue of failed requests after a token refresh.
+ */
+const processQueue = (error, token = null) => {
+    failedQueue.forEach(prom => {
+        if (error) {
+            prom.reject(error);
+        } else {
+            prom.resolve(token);
+        }
+    });
+    failedQueue = [];
+};
+
 /**
  * Handles the response from the fetch call, parsing JSON and managing errors.
- * @param {Response} response 
- * @returns {Promise<object>} Standardized response object.
+ * Note: 401 errors are now intercepted in fetchClient before reaching here.
  */
 const handleResponse = async (response) => {
-    // 401 Unauthorized handling
-    if (response.status === 401) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        // Redirect to login if on protected route (optional based on app structure)
-       
-        window.location.href = '/auth/login';
-        
-        toast.error('Session expired. Please login again.');
-        return { 
-            Success: false, 
-            StatusCode: 401, 
-            Message: 'Session expired. Please login again.' 
-        };
-    }
-
     try {
-        // Handle empty responses (like 204 No Content)
         const contentType = response.headers.get('content-type');
         if (response.status === 204 || !contentType || !contentType.includes('application/json')) {
             return {
@@ -37,10 +49,12 @@ const handleResponse = async (response) => {
 
         const data = await response.json();
 
-        // If response is not ok (4xx or 5xx), standardize the error output
         if (!response.ok) {
             const message = data.Message || data.message || 'An error occurred during the request.';
-            toast.error(message);
+            // Only show toast if it's not a 401 (since 401 is handled by refresh flow)
+            if (response.status !== 401) {
+                toast.error(message);
+            }
             return {
                 Success: false,
                 StatusCode: response.status,
@@ -50,7 +64,6 @@ const handleResponse = async (response) => {
             };
         }
 
-        // Return successful data (expecting backend format: { Success, StatusCode, Message, Data, Errors })
         return data;
     } catch (error) {
         console.error('API Response Parsing Error:', error);
@@ -64,15 +77,10 @@ const handleResponse = async (response) => {
 };
 
 /**
- * Custom fetch wrapper to handle base URL, auth headers, and common API logic.
- * @param {string} endpoint - The API endpoint (starts with /).
- * @param {object} options - Fetch options (method, body, headers, etc.).
- * @returns {Promise<object>} Standardized response.
+ * Custom fetch wrapper with automatic token refresh and request queuing.
  */
 export const fetchClient = async (endpoint, options = {}) => {
     const token = localStorage.getItem('token');
-    
-    // Ensure the endpoint starts with /
     const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
     const url = `${API_BASE_URL}${cleanEndpoint}`;
 
@@ -81,23 +89,87 @@ export const fetchClient = async (endpoint, options = {}) => {
         ...options.headers,
     };
 
-    // Add Content-Type unless it's FormData
     if (!(options.body instanceof FormData)) {
         headers['Content-Type'] = 'application/json';
     }
 
-    // Add Authorization header if token exists
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const config = {
-        ...options,
-        headers,
-    };
+    const config = { ...options, headers };
 
     try {
         const response = await fetch(url, config);
+
+        // Intercept 401 Unauthorized
+        if (response.status === 401) {
+            const refreshToken = localStorage.getItem('refreshToken');
+
+            if (!refreshToken) {
+                logoutWithRedirect();
+                return { Success: false, StatusCode: 401, Message: 'Session expired.' };
+            }
+
+            if (isRefreshing) {
+                // Return a promise that will resolve when the refresh finishes
+                return new Promise((resolve, reject) => {
+                    failedQueue.push({ resolve, reject });
+                }).then(newToken => {
+                    config.headers['Authorization'] = `Bearer ${newToken}`;
+                    return fetch(url, config).then(handleResponse);
+                }).catch(err => {
+                    return { Success: false, StatusCode: 401, Message: 'Session expired.' };
+                });
+            }
+
+            isRefreshing = true;
+
+            try {
+                // Background refresh request
+                const refreshRes = await fetch(`${API_BASE_URL}/api/auth/refresh-token`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ refreshToken })
+                });
+                debugger;
+                console.log(refreshRes);
+
+                if (refreshRes.ok) {
+                    console.log("refreshRes is ok");
+                    const data = await refreshRes.json();
+
+                    // Handle potential backend format variations
+                    const newToken = data.accessToken?.accessToken || data.accessToken || data.Data?.accessToken?.accessToken;
+                    const newRefreshToken = data.refreshToken?.refreshToken || data.refreshToken || data.Data?.refreshToken?.refreshToken;
+
+                    if (newToken) {
+                        localStorage.setItem('token', newToken);
+                        if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
+                        
+                        processQueue(null, newToken);
+                        isRefreshing = false;
+
+                        // Retry original request
+                        config.headers['Authorization'] = `Bearer ${newToken}`;
+                        const retryResponse = await fetch(url, config);
+                        return await handleResponse(retryResponse);
+                    }
+                }
+
+                console.log("refreshRes is not ok");
+                
+                // If refresh fails
+                throw new Error('Refresh failed');
+
+            } catch (err) {
+                isRefreshing = false;
+                processQueue(err, null);
+                logoutWithRedirect();
+                return { Success: false, StatusCode: 401, Message: 'Session expired.' };
+            }
+        }
+
         return await handleResponse(response);
     } catch (error) {
         console.error('Network/Request Error:', error);

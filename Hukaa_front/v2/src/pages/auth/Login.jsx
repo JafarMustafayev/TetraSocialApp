@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import logo from '../../assets/images/logo.png';
 import { login } from '../../api/auth.api';
 import { toast } from 'react-hot-toast';
@@ -11,6 +11,7 @@ const Login = () => {
     });
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         document.title = "Login";
@@ -26,7 +27,7 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         const payload = {
             EmailOrUsername: credentials.UsernameOrEmail.trim(),
             Password: credentials.Password
@@ -35,24 +36,24 @@ const Login = () => {
         setIsLoading(true);
         try {
             const result = await login(payload);
-            
+
             // Check for success: either standard format { Success: true } or direct token object
             const isSuccess = result.Success || result.success || (result.accessToken && result.refreshToken);
-            
+
             if (isSuccess) {
                 const tokenData = result.Data || result.data || result;
-                
+
                 // Store tokens as per project rules
                 localStorage.setItem('token', tokenData.accessToken?.accessToken || tokenData.accessToken);
                 localStorage.setItem('refreshToken', tokenData.refreshToken?.refreshToken || tokenData.refreshToken);
-                
-                // Optional: Store some basic user info if available
-                localStorage.setItem('user', JSON.stringify({
-                    userName: credentials.UsernameOrEmail.split('@')[0] // Fallback if no user info in response
-                }));
 
                 toast.success('Successfully logged in!');
-                navigate('/home');
+
+                // Prioritize the redirect parameter if it exists
+                const queryParams = new URLSearchParams(location.search);
+                const redirectPath = queryParams.get('redirect') || '/home';
+
+                navigate(redirectPath);
             }
         } catch (error) {
             console.error('Login Error:', error);
