@@ -33,7 +33,11 @@ global using Hukaa.Infrastructure.Services.Account;
 global using Hukaa.Infrastructure.Services.Profile;
 global using Microsoft.EntityFrameworkCore;
 global using System.Linq.Expressions;
-global using Hukaa.Application.Options;
+global using Hukaa.Application.Options.Mail;
+global using Hukaa.Application.Abstractions.Services.Mail;
+global using Hukaa.Infrastructure.Services.Mail;
+global using System.Net;
+global using System.Net.Mail;
 
 //--------------
 global using IdentityOptions = Hukaa.Application.Options.Identity.IdentityOptions;

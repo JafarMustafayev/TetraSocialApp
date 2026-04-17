@@ -32,6 +32,10 @@ public static class ServiceCollectionExtensions
 
             //Profile
             services.AddScoped<IProfileService, ProfileService>();
+
+            //Mail
+            services.AddScoped<IMailSender, MailSender>();
+            services.AddScoped<IMailService, MailService>();
         }
     }
 }
