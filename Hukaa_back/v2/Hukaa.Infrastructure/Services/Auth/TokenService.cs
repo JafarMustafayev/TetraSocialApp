@@ -1,6 +1,4 @@
-﻿using TokenOptions = Hukaa.Application.Options.TokenOptions;
-
-namespace Hukaa.Infrastructure.Services.Auth;
+﻿namespace Hukaa.Infrastructure.Services.Auth;
 
 public class TokenService(
     IAppConfig config,

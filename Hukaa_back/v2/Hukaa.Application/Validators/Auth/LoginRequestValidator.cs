@@ -1,50 +1,38 @@
 ﻿namespace Hukaa.Application.Validators.Auth;
 
-public class LoginRequestValidator : AbstractValidator<LoginRequestDto>
+public sealed class LoginRequestValidator : AbstractValidator<LoginRequestDto>
 {
     public LoginRequestValidator(
         ILocalizationService localizer,
         IAppConfig appConfig)
     {
-        var rules = appConfig.GetSection<ValidationRulesOptions>().Auth.Login;
+        var rules = appConfig.GetSection<ValidationOptions>().Auth.Login;
 
-        RuleFor(request => request.EmailOrUsername)
+        RuleFor(x => x.EmailOrUsername)
             .Cascade(CascadeMode.Stop)
-            .NotEmpty()
-            .When(_ => rules.EmailOrUsername.Required)
-            .WithMessage(localizer.Get("Validation.Common.Validation.Required", "EmailOrUsername"))
-            .MinimumLength(rules.EmailOrUsername.MinLength ?? 0)
-            .When(_ => rules.EmailOrUsername.Required)
-            .WithMessage(localizer.Get("Validation.Common.Validation.MinLength", "EmailOrUsername",
-                new Dictionary<string, object> { ["MinLength"] = rules.EmailOrUsername.MinLength ?? 5 }))
-            .MaximumLength(rules.EmailOrUsername.MaxLength ?? int.MaxValue)
-            .When(_ => rules.EmailOrUsername.Required)
-            .WithMessage(localizer.Get("Validation.Common.Validation.MaxLength", "EmailOrUsername",
-                new Dictionary<string, object> { ["MaxLength"] = rules.EmailOrUsername.MaxLength ?? int.MaxValue }))
-            .Must(BeValidEmailOrUsername)
+            .ApplyStringValidation(
+                rules.EmailOrUsername,
+                localizer,
+                "EmailOrUsername")
+            .Must(LoginRequestValidator.BeValidEmailOrUsername)
             .WithMessage(localizer.Get("Validation.Common.Validation.InvalidEmailOrUsername"));
 
         RuleFor(x => x.Password)
             .Cascade(CascadeMode.Stop)
-            .NotEmpty().When(_ => rules.Password.Required)
-            .WithMessage(localizer.Get("Validation.Common.Validation.Required", "Password"))
-            .MinimumLength(rules.Password.MinLength ?? 0).When(_ => rules.Password.Required)
-            .WithMessage(
-                localizer.Get("Validation.Common.Validation.MinLength", "Password", new Dictionary<string, object>
-                {
-                    ["MinLength"] = rules.Password.MinLength ?? 0
-                }))
-            .MaximumLength(rules.Password.MaxLength ?? int.MaxValue).When(_ => rules.Password.Required)
-            .WithMessage(
-                localizer.Get("Validation.Common.Validation.MaxLength", "Password", new Dictionary<string, object>
-                {
-                    ["MaxLength"] = rules.Password.MaxLength ?? int.MaxValue
-                }));
+            .ApplyStringValidation(
+                rules.Password,
+                localizer,
+                "Password");
     }
 
-    private bool BeValidEmailOrUsername(string emailOrUsername)
+    private static bool BeValidEmailOrUsername(string? emailOrUsername)
     {
-        if(Regex.IsMatch(emailOrUsername, @"[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+"))
+        if(string.IsNullOrWhiteSpace(emailOrUsername))
+        {
+            return false;
+        }
+
+        if(Regex.IsMatch(emailOrUsername, @"[^@\s]+@[^@\s]+\.[^@\s]+"))
         {
             return true;
         }

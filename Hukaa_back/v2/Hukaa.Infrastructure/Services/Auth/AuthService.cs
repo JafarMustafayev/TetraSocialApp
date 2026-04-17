@@ -12,7 +12,7 @@ public class AuthService(
     IJwtClaimsReader claimsReader
 ) : IAuthService
 {
-    private readonly IdentityConfigOptions _identityConfigOptions = config.GetSection<IdentityConfigOptions>();
+    private readonly IdentityOptions _identityOptions = config.GetSection<IdentityOptions>();
 
     public async Task<ResponseDto> RegisterAsync(RegisterRequestDto request)
     {
@@ -46,12 +46,12 @@ public class AuthService(
             throw new BadRequestException(localizer.Get("Validation.Common.Validation.Failure"), errors);
         }
 
-        return ResponseDto.CreatedResponse(_identityConfigOptions.SignIn.RequireConfirmedEmail
+        return ResponseDto.CreatedResponse(_identityOptions.SignIn.RequireConfirmedEmail
                 ? localizer.Get("Auth.Registration.Success.Pending")
                 : localizer.Get("Auth.Registration.Success.Success"),
             new
             {
-                IsVerifiedEmailRequired = _identityConfigOptions.SignIn.RequireConfirmedEmail
+                IsVerifiedEmailRequired = _identityOptions.SignIn.RequireConfirmedEmail
             });
     }
 

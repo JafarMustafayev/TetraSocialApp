@@ -1,6 +1,4 @@
-﻿using TokenOptions = Hukaa.Application.Options.TokenOptions;
-
-namespace Hukaa.Persistence.Extensions;
+﻿namespace Hukaa.Persistence.Extensions;
 
 public static class ServiceCollectionExtensions
 {
@@ -42,7 +40,7 @@ public static class ServiceCollectionExtensions
             services.AddDbContext<AppDbContext>((sp, options) =>
             {
                 var appConfig = sp.GetRequiredService<IAppConfig>();
-                var connections = appConfig.GetSection<ConnectionStrings>();
+                var connections = appConfig.GetSection<DatabaseOptions>();
                 options.UseSqlServer(connections.SqlServerConnectionString);
             });
         }
@@ -51,7 +49,7 @@ public static class ServiceCollectionExtensions
         {
             var provider = services.BuildServiceProvider();
             var appConfig = provider.GetRequiredService<IAppConfig>();
-            var identityOptions = appConfig.GetSection<IdentityConfigOptions>();
+            var identityOptions = appConfig.GetSection<IdentityOptions>();
 
             var tokenOptions = appConfig.GetSection<TokenOptions>();
 

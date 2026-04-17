@@ -180,11 +180,29 @@
   <data name="Validation.Common.Validation.InvalidEmailOrUsername" xml:space="preserve">
     <value>The email or username provided is invalid.</value>
   </data>
+  <data name="Validation.Common.Validation.MaxDate" xml:space="preserve">
+    <value>{PropertyName} must not be later than {MaxDate}.</value>
+  </data>
   <data name="Validation.Common.Validation.MaxLength" xml:space="preserve">
     <value>{PropertyName} must not exceed {MaxLength} characters.</value>
   </data>
+  <data name="Validation.Common.Validation.MaxValue" xml:space="preserve">
+    <value>{PropertyName} must be less than {MaxValue}.</value>
+  </data>
+  <data name="Validation.Common.Validation.MinDate" xml:space="preserve">
+    <value>{PropertyName} must not be earlier than {MinDate}.</value>
+  </data>
   <data name="Validation.Common.Validation.MinLength" xml:space="preserve">
     <value>{PropertyName} must be at least {MinLength} characters long.</value>
+  </data>
+  <data name="Validation.Common.Validation.MinValue" xml:space="preserve">
+    <value>{PropertyName} must be greater than {MinValue}.</value>
+  </data>
+  <data name="Validation.Common.Validation.MustBeFuture" xml:space="preserve">
+    <value>{PropertyName} must be in the future.</value>
+  </data>
+  <data name="Validation.Common.Validation.MustBePast" xml:space="preserve">
+    <value>{PropertyName} must be in the past.</value>
   </data>
   <data name="Validation.Common.Validation.Required" xml:space="preserve">
     <value>{PropertyName} is required.</value>

@@ -1,12 +1,11 @@
-﻿global using Hukaa.Application.Options.ValidationRules.FieldRuleOptions;
-global using Hukaa.Application.Options.ValidationRules.FieldRuleOptions;
-global using Hukaa.Application.Options.ValidationRules.Auth;
-global using FluentValidation;
+﻿global using FluentValidation;
 global using Hukaa.Application.DTOs.Auth;
 global using AutoMapper;
 global using Hukaa.Domain.Entities.Identities;
 global using Hukaa.Application.Abstractions.Common;
-global using Hukaa.Application.Options;
+global using Hukaa.Application.Options.Validation;
+global using Hukaa.Application.Options.Validation.Auth;
+global using Hukaa.Application.Options.Validation.Common;
 global using Hukaa.Application.DTOs.Wrappers;
 global using FluentValidation.AspNetCore;
 global using Microsoft.AspNetCore.Http;

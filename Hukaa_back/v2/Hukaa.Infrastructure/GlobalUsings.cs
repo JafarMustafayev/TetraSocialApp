@@ -34,3 +34,7 @@ global using Hukaa.Infrastructure.Services.Profile;
 global using Microsoft.EntityFrameworkCore;
 global using System.Linq.Expressions;
 global using Hukaa.Application.Options;
+
+//--------------
+global using IdentityOptions = Hukaa.Application.Options.Identity.IdentityOptions;
+global using TokenOptions = Hukaa.Application.Options.Token.TokenOptions;
