@@ -57,10 +57,10 @@ public static class ServiceCollectionExtensions
 
                     opt.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateAudience = true,
-                        ValidateIssuer = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
+                        ValidateAudience = tokenOptions.Validation.ValidateAudience,
+                        ValidateIssuer = tokenOptions.Validation.ValidateIssuer,
+                        ValidateLifetime = tokenOptions.Validation.ValidateLifetime,
+                        ValidateIssuerSigningKey = tokenOptions.Validation.ValidateSigningKey,
 
                         IssuerSigningKey = new SymmetricSecurityKey(
                             Encoding.UTF8.GetBytes(tokenOptions.SecurityKey)),
@@ -68,11 +68,7 @@ public static class ServiceCollectionExtensions
                         ValidIssuer = tokenOptions.Jwt.Issuer,
                         ValidAudience = tokenOptions.Jwt.Audience,
 
-                        LifetimeValidator = (before, expires, token, param) =>
-                        {
-                            var now = DateTime.UtcNow;
-                            return expires > now;
-                        }
+                        LifetimeValidator = (_, expires, _, _) => { return expires > DateTime.UtcNow; }
                     };
 
                     opt.Events = new JwtBearerEvents

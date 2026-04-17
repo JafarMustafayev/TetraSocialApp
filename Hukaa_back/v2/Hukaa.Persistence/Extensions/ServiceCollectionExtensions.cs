@@ -1,4 +1,6 @@
-﻿namespace Hukaa.Persistence.Extensions;
+﻿using TokenOptions = Hukaa.Application.Options.TokenOptions;
+
+namespace Hukaa.Persistence.Extensions;
 
 public static class ServiceCollectionExtensions
 {
@@ -51,6 +53,8 @@ public static class ServiceCollectionExtensions
             var appConfig = provider.GetRequiredService<IAppConfig>();
             var identityOptions = appConfig.GetSection<IdentityConfigOptions>();
 
+            var tokenOptions = appConfig.GetSection<TokenOptions>();
+
             services.AddIdentity<User, Role>(options =>
                 {
                     options.Password.RequireDigit = identityOptions.Password.RequireDigit;
@@ -76,6 +80,11 @@ public static class ServiceCollectionExtensions
                 .AddSignInManager<SignInManager<User>>()
                 .AddRoleManager<RoleManager<Role>>()
                 .AddDefaultTokenProviders();
+
+            services.Configure<DataProtectionTokenProviderOptions>(options =>
+            {
+                options.TokenLifespan = tokenOptions.Lifetime.ConfirmationToken;
+            });
         }
     }
 }
