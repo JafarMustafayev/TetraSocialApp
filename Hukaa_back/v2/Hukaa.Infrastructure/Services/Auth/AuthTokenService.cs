@@ -1,6 +1,6 @@
 ﻿namespace Hukaa.Infrastructure.Services.Auth;
 
-public class TokenService(
+public class AuthTokenService(
     IAppConfig config,
     IRefreshTokenHasher hasher,
     IRefreshTokenReadRepository readRepo,
@@ -8,7 +8,7 @@ public class TokenService(
     IUnitOfWork unitOfWork,
     IClientIpResolver ipResolver,
     IJwtClaimsReader claimsReader,
-    ILocalizationService localizer) : ITokenService
+    ILocalizationService localizer) : IAuthTokenService
 {
     private readonly TokenOptions _tokenOptions = config.GetSection<TokenOptions>();
 
@@ -121,7 +121,7 @@ public class TokenService(
         // todo: redis inteqrasiyasin olandan sonra refresh token redis daxilinde blackList-e elave edilmelidir 
     }
 
-    public async Task<AuthTokenResponse> RotateRefreshTokenAsync(string oldPlainToken, string userId,
+    public async Task<AuthTokenResponse> RotateValidatedRefreshTokenAsync(string oldPlainToken, string userId,
         List<string> roles)
     {
         var existingToken = await GetTokenAsync(oldPlainToken, true);

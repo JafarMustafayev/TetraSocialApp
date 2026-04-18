@@ -7,7 +7,7 @@ public class AuthService(
     IAppConfig config,
     IMapper mapper,
     ILocalizationService localizer,
-    ITokenService tokenService,
+    IAuthTokenService authTokenService,
     ISessionService sessionService,
     IJwtClaimsReader claimsReader
 ) : IAuthService
@@ -77,8 +77,8 @@ public class AuthService(
 
         var roles = await userManager.GetRolesAsync(user);
         var sessionId = await sessionService.CreateSessionAsync(user.Id);
-        var refreshToken = await tokenService.GenerateRefreshTokenAsync(sessionId);
-        var accessToken = tokenService.GenerateAccessToken(user.Id, sessionId, roles);
+        var refreshToken = await authTokenService.GenerateRefreshTokenAsync(sessionId);
+        var accessToken = authTokenService.GenerateAccessToken(user.Id, sessionId, roles);
 
         return new AuthTokenResponse
         {
@@ -89,14 +89,14 @@ public class AuthService(
 
     public async Task<AuthTokenResponse> RefreshTokenAsync(RotateTokenRequestDto request)
     {
-        var validToken = await tokenService.ValidateRefreshTokenAsync(request.RefreshToken);
+        var validToken = await authTokenService.ValidateRefreshTokenAsync(request.RefreshToken);
         var user = await userManager.FindByIdAsync(validToken.AuthSession.UserId);
 
         if(user != null)
         {
             var roles = await userManager.GetRolesAsync(user);
 
-            return await tokenService.RotateRefreshTokenAsync(
+            return await authTokenService.RotateValidatedRefreshTokenAsync(
                 request.RefreshToken,
                 user.Id,
                 roles.ToList()

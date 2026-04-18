@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
             //Auth
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ISessionService, SessionService>();
-            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IAuthTokenService, AuthTokenService>();
             services.AddScoped<ITwoFactorService, TwoFactorService>();
 
             //Profile

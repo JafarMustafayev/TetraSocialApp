@@ -6,7 +6,7 @@ public class SessionService(
     IUnitOfWork unitOfWork,
     IClientIpResolver ipResolver,
     IUserAgentParser agentParser,
-    ITokenService tokenService,
+    IAuthTokenService authTokenService,
     ILocalizationService localizer) : ISessionService
 {
     public async Task<string> CreateSessionAsync(string userId)
@@ -38,7 +38,7 @@ public class SessionService(
         writeRepo.Update(session);
         await unitOfWork.SaveChangesAsync();
 
-        await tokenService.RevokeRefreshTokenBySessionIdAsync(sessionId);
+        await authTokenService.RevokeRefreshTokenBySessionIdAsync(sessionId);
 
         return ResponseDto.OkResponse(localizer.Get("Auth.Session.Success.Revoked"));
     }
