@@ -13,4 +13,5 @@ public class User : IdentityUser<string>
     public DateTime DateOfBirth { get; set; }
 
     public HashSet<AuthSession> AuthSessions { get; set; } = new();
+    public HashSet<VerificationToken> VerificationTokens { get; set; } = new();
 }

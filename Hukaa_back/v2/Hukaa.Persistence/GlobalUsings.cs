@@ -21,6 +21,8 @@ global using Hukaa.Persistence.Repositories.RefreshTokenRepos;
 global using Hukaa.Persistence.Repositories.UnitOfWork;
 global using Hukaa.Application.Abstractions.Repositories.AuthSessionRepos;
 global using Hukaa.Persistence.Repositories.AuthSessionRepos;
+global using Hukaa.Application.Abstractions.Repositories.VerificationTokenRepos;
+global using Hukaa.Persistence.Repositories.VerificationTokenRepos;
 
 // ---------------
 global using IdentityOptions = Hukaa.Application.Options.Identity.IdentityOptions;

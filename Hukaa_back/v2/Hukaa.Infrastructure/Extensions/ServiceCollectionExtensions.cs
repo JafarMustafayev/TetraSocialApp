@@ -29,6 +29,7 @@ public static class ServiceCollectionExtensions
             services.AddScoped<ISessionService, SessionService>();
             services.AddScoped<IAuthTokenService, AuthTokenService>();
             services.AddScoped<ITwoFactorService, TwoFactorService>();
+            services.AddScoped<IVerificationTokenService, VerificationTokenService>();
 
             //Profile
             services.AddScoped<IProfileService, ProfileService>();

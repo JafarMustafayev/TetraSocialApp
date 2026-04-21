@@ -6,36 +6,33 @@ public static class ServiceCollectionExtensions
     {
         public void AddPersistenceServiceCollection(IConfiguration configuration)
         {
-            services.AddSqlServer(configuration);
-            services.AddServicesCollection(configuration);
-            services.AddRepositoriesCollection(configuration);
+            services.AddSqlServer();
+            services.AddRepositoriesCollection();
             services.AddIdentityParameters();
         }
 
-        private void AddRepositoriesCollection(IConfiguration configuration)
+        private void AddRepositoriesCollection()
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddWriteRepositoriesCollection(configuration);
-            services.AddReadRepositoriesCollection(configuration);
+            services.AddWriteRepositoriesCollection();
+            services.AddReadRepositoriesCollection();
         }
 
-        private void AddWriteRepositoriesCollection(IConfiguration configuration)
+        private void AddWriteRepositoriesCollection()
         {
             services.AddScoped<IRefreshTokenWriteRepository, RefreshTokenWriteRepository>();
             services.AddScoped<IAuthSessionWriteRepository, AuthSessionWriteRepository>();
+            services.AddScoped<IVerificationTokenWriteRepository, VerificationTokenWriteRepository>();
         }
 
-        private void AddReadRepositoriesCollection(IConfiguration configuration)
+        private void AddReadRepositoriesCollection()
         {
             services.AddScoped<IRefreshTokenReadRepository, RefreshTokenReadRepository>();
             services.AddScoped<IAuthSessionReadRepository, AuthSessionReadRepository>();
+            services.AddScoped<IVerificationTokenReadRepository, VerificationTokenReadRepository>();
         }
 
-        private void AddServicesCollection(IConfiguration configuration)
-        {
-        }
-
-        private void AddSqlServer(IConfiguration configuration)
+        private void AddSqlServer()
         {
             services.AddDbContext<AppDbContext>((sp, options) =>
             {
