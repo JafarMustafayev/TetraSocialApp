@@ -6,7 +6,7 @@ public static class ServiceCollectionExtensions
     {
         public void AddApplicationServiceCollection(IConfiguration configuration)
         {
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddFluentValidation();
             services.AddServices(configuration);
