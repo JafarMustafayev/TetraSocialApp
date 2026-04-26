@@ -66,15 +66,12 @@ public class VerificationTokenConfiguration : IEntityTypeConfiguration<Verificat
             .HasName("TokenHashIndex");
 
         builder.HasIndex(x => x.IsUsed)
-            .IsUnique()
             .HasName("IsUsedIndex");
 
         builder.HasIndex(x => x.IsRevoked)
-            .IsUnique()
             .HasName("IsRevokedIndex");
 
         builder.HasIndex(x => x.UserId)
-            .IsUnique()
             .HasName("UserIdIndex");
 
         // Ignore computed properties
