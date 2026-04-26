@@ -30,6 +30,7 @@ public static class ServiceCollectionExtensions
             services.AddScoped<IAuthTokenService, AuthTokenService>();
             services.AddScoped<ITwoFactorService, TwoFactorService>();
             services.AddScoped<IVerificationTokenService, VerificationTokenService>();
+            services.AddScoped<IAccountVerificationService, AccountVerificationService>();
 
             //Profile
             services.AddScoped<IProfileService, ProfileService>();
