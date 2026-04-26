@@ -2,8 +2,8 @@
 
 public enum VerificationTokenRevocationReason
 {
-    Superseded = 1, // resend zamanı
-    EmailChanged,
-    PasswordChanged,
-    SecurityAction
+    Manual = 1,
+    Superseded,
+    Security,
+    UserRequested
 }

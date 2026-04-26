@@ -75,9 +75,19 @@ public class VerificationToken : BaseEntity
 
     public void Supersede(string ip, VerificationTokenRevocationReason reason, string newTokenId)
     {
+        if(IsUsed)
+        {
+            throw new InvalidOperationException("Token already used");
+        }
+
         if(IsRevoked)
         {
-            return;
+            throw new InvalidOperationException("Token is revoked");
+        }
+
+        if(IsExpired)
+        {
+            throw new InvalidOperationException("Token is expired");
         }
 
         IsRevoked = true;

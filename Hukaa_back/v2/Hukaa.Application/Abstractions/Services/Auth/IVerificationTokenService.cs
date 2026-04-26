@@ -2,13 +2,10 @@
 
 public interface IVerificationTokenService
 {
-    Task<string> GenerateTokenAsync(string userId, VerificationTokenPurpose purpose, string? email = null);
-
-    Task<VerificationToken> ValidateTokenAsync(string token, VerificationTokenPurpose purpose);
-
+    Task<string> GenerateTokenAsync(string userId, VerificationTokenPurpose purpose, string? target = null);
+    Task<VerificationToken> ValidateTokenAsync(string plainToken, VerificationTokenPurpose purpose);
     Task ConsumeTokenAsync(VerificationToken token);
-
-    Task RevokeTokenAsync(VerificationToken token);
-
-    Task SupersedeTokenAsync(string userId, VerificationTokenPurpose purpose);
+    Task<string> SupersedeTokenAsync(string userId, VerificationTokenPurpose purpose, string? target = null);
+    Task RevokeTokenAsync(VerificationToken token,
+        VerificationTokenRevocationReason reason = VerificationTokenRevocationReason.Manual);
 }
