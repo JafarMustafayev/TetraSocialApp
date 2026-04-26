@@ -75,11 +75,6 @@ public static class ServiceCollectionExtensions
                 .AddSignInManager<SignInManager<User>>()
                 .AddRoleManager<RoleManager<Role>>()
                 .AddDefaultTokenProviders();
-
-            services.Configure<DataProtectionTokenProviderOptions>(options =>
-            {
-                options.TokenLifespan = tokenOptions.Lifetime.ConfirmationToken;
-            });
         }
     }
 }
