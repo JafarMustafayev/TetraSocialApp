@@ -2,7 +2,7 @@
 
 public class AuthTokenService(
     IAppConfig config,
-    IRefreshTokenHasher hasher,
+    ITokenHasher hasher,
     IRefreshTokenReadRepository readRepo,
     IRefreshTokenWriteRepository writeRepo,
     IUnitOfWork unitOfWork,
