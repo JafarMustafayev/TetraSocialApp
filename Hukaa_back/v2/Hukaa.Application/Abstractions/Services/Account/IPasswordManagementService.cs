@@ -2,7 +2,7 @@
 
 public interface IPasswordManagementService
 {
-    //Task<ResponseDto> ForgotPasswordAsync(string email);
-    //Task<ResponseDto> ResetPasswordAsync(ResetPasswordRequest request);
-    //Task<ResponseDto> ChangePasswordAsync(ChangePasswordRequest request);
+    Task<ResponseDto<object>> ForgotPasswordAsync(ForgotPasswordRequestDto request);
+    Task<ResponseDto> ResetPasswordAsync(ResetPasswordRequestDto request);
+    Task<ResponseDto> ChangePasswordAsync(ChangePasswordRequestDto request);
 }

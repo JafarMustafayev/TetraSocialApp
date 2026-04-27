@@ -44,6 +44,7 @@ global using Hukaa.Application.Options.Client;
 global using Hukaa.Infrastructure.Services.Client;
 global using Hukaa.Application.DTOs.Auth.EmailVerification;
 global using Hukaa.Application.DTOs.Auth.Token;
+global using Hukaa.Application.DTOs.Auth.Password;
 
 //--------------
 global using IdentityOptions = Hukaa.Application.Options.Identity.IdentityOptions;

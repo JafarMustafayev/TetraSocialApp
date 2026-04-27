@@ -14,7 +14,7 @@ public class AccountVerificationService(
         return new VerificationTokenResultDto
         {
             PlainToken = res.plainToken,
-            ExpiresAt = res.entity.ExpiresAt.Date.ToShortTimeString()
+            ExpiresAt = res.entity.ExpiresAt.ToString("HH:mm")
         };
     }
 
@@ -28,7 +28,7 @@ public class AccountVerificationService(
         var test = new VerificationTokenResultDto
         {
             PlainToken = res.plainToken,
-            ExpiresAt = res.entity.ExpiresAt.ToShortTimeString()
+            ExpiresAt = res.entity.ExpiresAt.ToString("HH:mm")
         };
         return test;
     }
@@ -71,7 +71,7 @@ public class AccountVerificationService(
         return new VerificationTokenResultDto
         {
             PlainToken = res.plainToken,
-            ExpiresAt = res.entity.ExpiresAt.Date.ToShortTimeString()
+            ExpiresAt = res.entity.ExpiresAt.ToString("HH:mm")
         };
     }
 
@@ -85,7 +85,7 @@ public class AccountVerificationService(
         return new VerificationTokenResultDto
         {
             PlainToken = res.plainToken,
-            ExpiresAt = res.entity.ExpiresAt.Date.ToShortTimeString()
+            ExpiresAt = res.entity.ExpiresAt.ToString("HH:mm")
         };
     }
 

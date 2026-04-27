@@ -2,6 +2,7 @@
 global using Hukaa.Application.DTOs.Auth;
 global using Hukaa.Application.DTOs.Auth.Token;
 global using Hukaa.Application.DTOs.Auth.EmailVerification;
+global using Hukaa.Application.DTOs.Auth.Password;
 global using AutoMapper;
 global using Hukaa.Domain.Entities.Identities;
 global using Hukaa.Application.Abstractions.Common;
