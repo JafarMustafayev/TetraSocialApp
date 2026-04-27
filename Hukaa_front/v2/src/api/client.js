@@ -10,9 +10,16 @@ let failedQueue = [];
  */
 const logoutWithRedirect = () => {
     const currentPath = window.location.pathname + window.location.search;
+    
+    // Clear tokens
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
     
+    // Avoid redirecting if already on the login page to prevent refresh loops
+    if (window.location.pathname.includes('/auth/login')) {
+        return;
+    }
+
     // Use window.location for hard redirect to ensure app state is cleared
     const loginUrl = `/auth/login?redirect=${encodeURIComponent(currentPath)}`;
     window.location.href = loginUrl;
@@ -36,7 +43,7 @@ const processQueue = (error, token = null) => {
  * Handles the response from the fetch call, parsing JSON and managing errors.
  * Note: 401 errors are now intercepted in fetchClient before reaching here.
  */
-const handleResponse = async (response) => {
+const handleResponse = async (response, isLogin = false) => {
     try {
         const contentType = response.headers.get('content-type');
         if (response.status === 204 || !contentType || !contentType.includes('application/json')) {
@@ -52,7 +59,8 @@ const handleResponse = async (response) => {
         if (!response.ok) {
             const message = data.Message || data.message || 'An error occurred during the request.';
             // Only show toast if it's not a 401 (since 401 is handled by refresh flow)
-            if (response.status !== 401) {
+            // UNLESS it's a login request, in which case we want to see the error
+            if (response.status !== 401 || isLogin) {
                 toast.error(message);
             }
             return {
@@ -102,8 +110,8 @@ export const fetchClient = async (endpoint, options = {}) => {
     try {
         const response = await fetch(url, config);
 
-        // Intercept 401 Unauthorized
-        if (response.status === 401) {
+        // Intercept 401 Unauthorized (except for login endpoint)
+        if (response.status === 401 && cleanEndpoint !== '/api/auth/login') {
             const refreshToken = localStorage.getItem('refreshToken');
 
             if (!refreshToken) {
@@ -170,7 +178,7 @@ export const fetchClient = async (endpoint, options = {}) => {
             }
         }
 
-        return await handleResponse(response);
+        return await handleResponse(response, cleanEndpoint === '/api/auth/login');
     } catch (error) {
         console.error('Network/Request Error:', error);
         toast.error('Network error. Please check your connection.');
