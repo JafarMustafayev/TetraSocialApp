@@ -1,5 +1,7 @@
 ﻿global using FluentValidation;
 global using Hukaa.Application.DTOs.Auth;
+global using Hukaa.Application.DTOs.Auth.Token;
+global using Hukaa.Application.DTOs.Auth.EmailVerification;
 global using AutoMapper;
 global using Hukaa.Domain.Entities.Identities;
 global using Hukaa.Application.Abstractions.Common;
@@ -19,4 +21,3 @@ global using Hukaa.Application.Abstractions.Repositories.Base;
 global using Hukaa.Domain.Entities.Auth;
 global using Hukaa.Application.DTOs.UserDevice;
 global using System.Text.RegularExpressions;
-global using Hukaa.Application.DTOs.Auth.EmailVerification;

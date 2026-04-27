@@ -1,4 +1,4 @@
-﻿namespace Hukaa.Application.DTOs.Auth;
+﻿namespace Hukaa.Application.DTOs.Auth.Token;
 
 public class RotateTokenRequestDto
 {
