@@ -1,24 +1,69 @@
 import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import logo from '../../assets/images/logo.png';
+import { resetPassword } from '../../api/auth.api';
+import { toast } from 'react-hot-toast';
 
 const ResetPassword = () => {
     const [formData, setFormData] = useState({
         password: '',
         confirmPassword: ''
     });
+    const [isLoading, setIsLoading] = useState(false);
+    
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    // Extract userId and token from URL
+    const queryParams = new URLSearchParams(location.search);
+    const userId = queryParams.get('userId');
+    const token = queryParams.get('token');
 
     useEffect(() => {
         document.title = "Reset Password";
-    }, []);
+        if (!userId || !token) {
+            toast.error('Invalid or missing reset token.');
+            navigate('/auth/login');
+        }
+    }, [userId, token, navigate]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Functional logic omitted as requested
+
+        if (formData.password !== formData.confirmPassword) {
+            toast.error('Passwords do not match.');
+            return;
+        }
+
+        if (formData.password.length < 6) {
+            toast.error('Password must be at least 6 characters long.');
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const payload = {
+                UserId: userId,
+                Token: token,
+                NewPassword: formData.password
+            };
+
+            const result = await resetPassword(payload);
+
+            if (result.Success || result.success) {
+                toast.success('Password has been successfully reset.');
+                navigate('/auth/login');
+            }
+        } catch (error) {
+            console.error('Reset Password Error:', error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -42,9 +87,10 @@ const ResetPassword = () => {
                                         type="password"
                                         name="password"
                                         className="h-[60px] px-[25px] py-[15px] text-paragraph rounded-[5px] text-base w-full border border-input-border bg-input-bg focus:border-main focus:outline-none transition duration-400"
-                                        value={formData.password.trim()}
+                                        value={formData.password}
                                         onChange={handleChange}
                                         required
+                                        disabled={isLoading}
                                     />
                                 </div>
                                 <div className="mb-6 text-left">
@@ -53,12 +99,19 @@ const ResetPassword = () => {
                                         type="password"
                                         name="confirmPassword"
                                         className="h-[60px] px-[25px] py-[15px] text-paragraph rounded-[5px] text-base w-full border border-input-border bg-input-bg focus:border-main focus:outline-none transition duration-400"
-                                        value={formData.confirmPassword.trim()}
+                                        value={formData.confirmPassword}
                                         onChange={handleChange}
                                         required
+                                        disabled={isLoading}
                                     />
                                 </div>
-                                <button type="submit" className="mt-5 bg-[#0072d2] text-white p-[15px] w-full rounded-[5px] hover:bg-main-hover transition duration-400 font-medium border-none cursor-pointer">Reset Password</button>
+                                <button 
+                                    type="submit" 
+                                    disabled={isLoading}
+                                    className="mt-5 bg-[#0072d2] text-white p-[15px] w-full rounded-[5px] hover:bg-main-hover transition duration-400 font-medium border-none cursor-pointer disabled:bg-gray-600 disabled:cursor-not-allowed"
+                                >
+                                    {isLoading ? 'Resetting...' : 'Reset Password'}
+                                </button>
                             </form>
                         </div>
                     </div>

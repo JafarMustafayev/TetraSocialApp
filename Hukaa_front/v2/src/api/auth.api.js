@@ -33,3 +33,27 @@ export const logout = async () => {
         method: 'POST'
     });
 };
+
+/**
+ * Requests a password reset recovery link.
+ * @param {object} data - { Email: string }
+ * @returns {Promise<object>}
+ */
+export const forgotPassword = async (data) => {
+    return fetchClient('/api/auth/Password/forgot-password', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    });
+};
+
+/**
+ * Resets the password using a token.
+ * @param {object} data - { UserId, Token, NewPassword }
+ * @returns {Promise<object>}
+ */
+export const resetPassword = async (data) => {
+    return fetchClient('/api/auth/Password/reset-password', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    });
+};
