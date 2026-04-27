@@ -39,6 +39,9 @@ global using Hukaa.Infrastructure.Services.Mail;
 global using System.Net;
 global using System.Net.Mail;
 global using Hukaa.Application.Abstractions.Repositories.VerificationTokenRepos;
+global using Hukaa.Application.Abstractions.Services.Client;
+global using Hukaa.Application.Options.Client;
+global using Hukaa.Infrastructure.Services.Client;
 
 //--------------
 global using IdentityOptions = Hukaa.Application.Options.Identity.IdentityOptions;

@@ -38,6 +38,9 @@ public static class ServiceCollectionExtensions
             //Mail
             services.AddScoped<IMailSender, MailSender>();
             services.AddScoped<IMailService, MailService>();
+
+            //Client
+            services.AddScoped<IClientUrlService, ClientUrlService>();
         }
     }
 }
