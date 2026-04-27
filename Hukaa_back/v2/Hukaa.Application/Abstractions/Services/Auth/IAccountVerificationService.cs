@@ -2,8 +2,10 @@
 
 public interface IAccountVerificationService
 {
-    Task<string> GenerateEmailConfirmationTokenAsync(User user);
+    Task<VerificationTokenResultDto> GenerateEmailConfirmationTokenAsync(User user);
+    Task<VerificationTokenResultDto> RegenerateEmailConfirmationTokenAsync(User user);
     Task ConfirmEmailAsync(User user, string token);
-    Task<string> GeneratePasswordResetTokenAsync(User user);
+    Task<VerificationTokenResultDto> GeneratePasswordResetTokenAsync(User user);
+    Task<VerificationTokenResultDto> RegeneratePasswordResetTokenAsync(User user);
     Task ResetPasswordAsync(User user, string token, string newPassword);
 }

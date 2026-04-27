@@ -5,11 +5,31 @@ public class AccountVerificationService(
     ILocalizationService localizer,
     IVerificationTokenService verificationTokenService) : IAccountVerificationService
 {
-    public async Task<string> GenerateEmailConfirmationTokenAsync(User user)
+    public async Task<VerificationTokenResultDto> GenerateEmailConfirmationTokenAsync(User user)
     {
-        return await verificationTokenService.GenerateTokenAsync(user.Id,
+        var res = await verificationTokenService.GenerateTokenAsync(user.Id,
             VerificationTokenPurpose.EmailConfirmation,
             user.Email);
+
+        return new VerificationTokenResultDto
+        {
+            PlainToken = res.plainToken,
+            ExpiresAt = res.entity.ExpiresAt.Date.ToShortTimeString()
+        };
+    }
+
+    public async Task<VerificationTokenResultDto> RegenerateEmailConfirmationTokenAsync(User user)
+    {
+        var res = await verificationTokenService.SupersedeTokenAsync(
+            user.Id,
+            VerificationTokenPurpose.EmailConfirmation,
+            user.Email);
+
+        return new VerificationTokenResultDto
+        {
+            PlainToken = res.plainToken,
+            ExpiresAt = res.entity.ExpiresAt.Date.ToShortTimeString()
+        };
     }
 
     public async Task ConfirmEmailAsync(User user, string token)
@@ -40,12 +60,32 @@ public class AccountVerificationService(
         await verificationTokenService.ConsumeTokenAsync(verificationToken);
     }
 
-    public async Task<string> GeneratePasswordResetTokenAsync(User user)
+    public async Task<VerificationTokenResultDto> GeneratePasswordResetTokenAsync(User user)
     {
-        return await verificationTokenService.GenerateTokenAsync(
+        var res = await verificationTokenService.GenerateTokenAsync(
             user.Id,
             VerificationTokenPurpose.PasswordReset,
             user.Email);
+
+        return new VerificationTokenResultDto
+        {
+            PlainToken = res.plainToken,
+            ExpiresAt = res.entity.ExpiresAt.Date.ToShortTimeString()
+        };
+    }
+
+    public async Task<VerificationTokenResultDto> RegeneratePasswordResetTokenAsync(User user)
+    {
+        var res = await verificationTokenService.SupersedeTokenAsync(
+            user.Id,
+            VerificationTokenPurpose.PasswordReset,
+            user.Email);
+
+        return new VerificationTokenResultDto
+        {
+            PlainToken = res.plainToken,
+            ExpiresAt = res.entity.ExpiresAt.Date.ToShortTimeString()
+        };
     }
 
     public async Task ResetPasswordAsync(User user, string token, string newPassword)
