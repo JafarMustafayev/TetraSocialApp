@@ -11,18 +11,13 @@ public class VerificationTokenService(
 {
     private readonly TokenOptions _tokenOptions = appConfig.GetSection<TokenOptions>();
 
-    public async Task<string> GenerateTokenAsync(
-        string userId,
-        VerificationTokenPurpose purpose,
-        string? target = null)
+    public async Task<(string plainToken, VerificationToken entity)> GenerateTokenAsync(
+        string userId, VerificationTokenPurpose purpose, string? target = null)
     {
-        var newTokens = await CreateTokenInternalAsync(userId, purpose, target);
-        return newTokens.plainToken;
+        return await CreateTokenInternalAsync(userId, purpose, target);
     }
 
-    public async Task<VerificationToken> ValidateTokenAsync(
-        string plainToken,
-        VerificationTokenPurpose purpose)
+    public async Task<VerificationToken> ValidateTokenAsync(string plainToken, VerificationTokenPurpose purpose)
     {
         var tokenHash = HashToken(plainToken);
 
@@ -64,8 +59,7 @@ public class VerificationTokenService(
     }
 
     public async Task RevokeTokenAsync(
-        VerificationToken token,
-        VerificationTokenRevocationReason reason = VerificationTokenRevocationReason.Manual)
+        VerificationToken token, VerificationTokenRevocationReason reason = VerificationTokenRevocationReason.Manual)
     {
         token.Revoke(ipResolver.GetClientIpV4(), reason);
 
@@ -73,10 +67,8 @@ public class VerificationTokenService(
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task<string> SupersedeTokenAsync(
-        string userId,
-        VerificationTokenPurpose purpose,
-        string? target = null)
+    public async Task<(string plainToken, VerificationToken entity)> SupersedeTokenAsync(
+        string userId, VerificationTokenPurpose purpose, string? target = null)
     {
         var activeToken = await readRepo.GetActiveTokenAsync(userId, purpose);
 
@@ -87,32 +79,23 @@ public class VerificationTokenService(
 
         if(activeToken is null)
         {
-            return newTokens.plainToken;
-        }
-
-        var newToken = await readRepo.GetByHashAndPurposeAsync(newTokens.hasedToken, purpose);
-
-        if(newToken is null)
-        {
-            throw new ValidationException(
-                localizer.Get("Error.Token.Validate.Invalid"));
+            return newTokens;
         }
 
         activeToken.Supersede(
             ipResolver.GetClientIpV4(),
             VerificationTokenRevocationReason.Superseded,
-            newToken.Id);
+            newTokens.entity.Id);
 
         writeRepo.Update(activeToken);
         await unitOfWork.SaveChangesAsync();
 
-        return newTokens.plainToken;
+        return newTokens;
     }
 
-    private async Task<(string plainToken, string hasedToken)> CreateTokenInternalAsync(
-        string userId,
-        VerificationTokenPurpose purpose,
-        string? target = null)
+    //-----------
+    private async Task<(string plainToken, VerificationToken entity)> CreateTokenInternalAsync(
+        string userId, VerificationTokenPurpose purpose, string? target = null)
     {
         var plainToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
         var tokenHash = HashToken(plainToken);
@@ -131,7 +114,7 @@ public class VerificationTokenService(
         await writeRepo.AddAsync(token);
         await unitOfWork.SaveChangesAsync();
 
-        return (plainToken, tokenHash);
+        return (plainToken, token);
     }
 
     private string HashToken(string plainToken)
