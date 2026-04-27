@@ -3,13 +3,15 @@
 public class AuthService(
     UserManager<User> userManager,
     SignInManager<User> signInManager,
-    RoleManager<Role> roleManager,
+    IAccountVerificationService accountVerificationService,
     IAppConfig config,
     IMapper mapper,
     ILocalizationService localizer,
     IAuthTokenService authTokenService,
     ISessionService sessionService,
-    IJwtClaimsReader claimsReader
+    IJwtClaimsReader claimsReader,
+    IMailService mailService,
+    IClientUrlService clientUrlService
 ) : IAuthService
 {
     private readonly IdentityOptions _identityOptions = config.GetSection<IdentityOptions>();
@@ -46,12 +48,28 @@ public class AuthService(
             throw new BadRequestException(localizer.Get("Validation.Common.Validation.Failure"), errors);
         }
 
-        return ResponseDto.CreatedResponse(_identityOptions.SignIn.RequireConfirmedEmail
-                ? localizer.Get("Auth.Registration.Success.Pending")
-                : localizer.Get("Auth.Registration.Success.Success"),
+        if(_identityOptions.SignIn.RequireConfirmedEmail)
+        {
+            var verificationResult = await accountVerificationService.GenerateEmailConfirmationTokenAsync(user);
+
+            var url = clientUrlService.BuildEmailConfirmationUrl(user.Id, verificationResult.PlainToken);
+            
+            // todo: then it will be sent in a professional form with "queue"
+            await mailService.SendConfirmationMail(user.Email, url);
+            return ResponseDto.CreatedResponse(
+                localizer.Get("Auth.Registration.Success.Pending"),
+                new
+                {
+                    IsVerifiedEmailRequired = true,
+                    verificationResult.ExpiresAt
+                });
+        }
+
+        return ResponseDto.CreatedResponse(
+            localizer.Get("Auth.Registration.Success.Success"),
             new
             {
-                IsVerifiedEmailRequired = _identityOptions.SignIn.RequireConfirmedEmail
+                IsVerifiedEmailRequired = false
             });
     }
 
@@ -70,7 +88,7 @@ public class AuthService(
 
         var result = await signInManager.CheckPasswordSignInAsync(user, request.Password, true);
 
-        if(!result.Succeeded && !result.RequiresTwoFactor)
+        if(result is { Succeeded: false, RequiresTwoFactor: false })
         {
             throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.Invalid"));
         }
@@ -94,6 +112,7 @@ public class AuthService(
 
         if(user != null)
         {
+            await ValidateUserStatusAsync(user);
             var roles = await userManager.GetRolesAsync(user);
 
             return await authTokenService.RotateValidatedRefreshTokenAsync(
@@ -114,6 +133,7 @@ public class AuthService(
         return ResponseDto.OkResponse(localizer.Get("Auth.Logout.Success"));
     }
 
+    //------
     private async Task ValidateUserStatusAsync(User user)
     {
         if(user.Status == UserStatus.Banned)

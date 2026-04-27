@@ -7,16 +7,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Hukaa.Domain\Hukaa.Domain.csproj" />
+        <ProjectReference Include="..\Hukaa.Domain\Hukaa.Domain.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="16.1.1" />
-        <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
-        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+        <PackageReference Include="AutoMapper" Version="16.1.1"/>
+        <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1"/>
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1"/>
     </ItemGroup>
 
     <ItemGroup>
-        <AdditionalFiles Include="Resources\Localization\SharedResource.resx" />
+        <AdditionalFiles Include="Resources\Localization\SharedResource.resx"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="DTOs\Account\"/>
+        <Folder Include="Validators\Account\"/>
     </ItemGroup>
 </Project>

@@ -25,11 +25,12 @@ public class AccountVerificationService(
             VerificationTokenPurpose.EmailConfirmation,
             user.Email);
 
-        return new VerificationTokenResultDto
+        var test = new VerificationTokenResultDto
         {
             PlainToken = res.plainToken,
-            ExpiresAt = res.entity.ExpiresAt.Date.ToShortTimeString()
+            ExpiresAt = res.entity.ExpiresAt.ToShortTimeString()
         };
+        return test;
     }
 
     public async Task ConfirmEmailAsync(User user, string token)
