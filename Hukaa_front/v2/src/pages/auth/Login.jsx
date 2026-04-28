@@ -51,7 +51,7 @@ const Login = () => {
 
                 // Prioritize the redirect parameter if it exists
                 const queryParams = new URLSearchParams(location.search);
-                const redirectPath = queryParams.get('redirect') || '/home';
+                const redirectPath = queryParams.get('redirect') || '/feed';
 
                 navigate(redirectPath);
             }
@@ -78,7 +78,7 @@ const Login = () => {
                             </div>
 
                             <form onSubmit={handleSubmit} className="w-full">
-                                <div className="mb-6 text-left">
+                                <div className="mb-5 text-left">
                                     <label className="block mb-2 text-paragraph font-medium text-[15px]">Username or email</label>
                                     <input
                                         type="text"
@@ -90,7 +90,7 @@ const Login = () => {
                                     />
                                 </div>
 
-                                <div className="mb-6 text-left">
+                                <div className="mb-5 text-left">
                                     <label className="block mb-2 text-paragraph font-medium text-[15px]">Password</label>
                                     <input
                                         type="password"

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../../assets/images/logo.png';
 import { forgotPassword } from '../../api/auth.api';
-import { validateEmail } from '../../utily/validation';
+import { validateEmail } from '../../utils/validation';
 import { toast } from 'react-hot-toast';
 
 const ForgotPassword = () => {
@@ -30,7 +30,7 @@ const ForgotPassword = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         const trimmedEmail = email.trim();
         if (!validateEmail(trimmedEmail)) {
             toast.error('Please enter a valid email address.');
@@ -69,8 +69,8 @@ const ForgotPassword = () => {
                                 </div>
                                 <div className="bg-white/5 p-8 rounded-[10px] border border-main/20">
                                     <h2 className="text-white text-2xl font-bold mb-4">Check Your Email</h2>
-                                    <p className="text-paragraph mb-6">
-                                        Password reset link has been sent to <strong>{email}</strong>. 
+                                    <p className="text-paragraph mb-5">
+                                        Password reset link has been sent to <strong>{email}</strong>.
                                         Please check your inbox.
                                     </p>
                                     <div className="bg-main/10 p-4 rounded-[5px] mb-8">
@@ -105,7 +105,7 @@ const ForgotPassword = () => {
                             </div>
 
                             <form onSubmit={handleSubmit} className="w-full">
-                                <div className="mb-6 text-left">
+                                <div className="mb-5 text-left">
                                     <label className="block mb-2 text-paragraph font-medium text-[15px]">Enter your email</label>
                                     <input
                                         type="email"

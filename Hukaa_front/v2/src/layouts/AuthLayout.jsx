@@ -5,7 +5,7 @@ const AuthLayout = () => {
 
     // If token exists, authenticated user should not access login/register pages
     if (token) {
-        return <Navigate to="/home" replace />;
+        return <Navigate to="/feed" replace />;
     }
 
     return (

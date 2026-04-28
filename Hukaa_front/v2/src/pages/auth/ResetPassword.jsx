@@ -10,7 +10,7 @@ const ResetPassword = () => {
         confirmPassword: ''
     });
     const [isLoading, setIsLoading] = useState(false);
-    
+
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -81,7 +81,7 @@ const ResetPassword = () => {
                             </div>
 
                             <form onSubmit={handleSubmit} className="w-full">
-                                <div className="mb-6 text-left">
+                                <div className="mb-5 text-left">
                                     <label className="block mb-2 text-paragraph font-medium text-[15px]">New Password</label>
                                     <input
                                         type="password"
@@ -93,7 +93,7 @@ const ResetPassword = () => {
                                         disabled={isLoading}
                                     />
                                 </div>
-                                <div className="mb-6 text-left">
+                                <div className="mb-5 text-left">
                                     <label className="block mb-2 text-paragraph font-medium text-[15px]">Confirm Password</label>
                                     <input
                                         type="password"
@@ -105,8 +105,8 @@ const ResetPassword = () => {
                                         disabled={isLoading}
                                     />
                                 </div>
-                                <button 
-                                    type="submit" 
+                                <button
+                                    type="submit"
                                     disabled={isLoading}
                                     className="mt-5 bg-[#0072d2] text-white p-[15px] w-full rounded-[5px] hover:bg-main-hover transition duration-400 font-medium border-none cursor-pointer disabled:bg-gray-600 disabled:cursor-not-allowed"
                                 >

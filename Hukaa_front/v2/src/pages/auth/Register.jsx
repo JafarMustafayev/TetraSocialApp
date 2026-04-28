@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import logo from '../../assets/images/logo.png';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { validateEmail, isAtLeast16 } from '../../utily/validation';
+import { validateEmail, isAtLeast16 } from '../../utils/validation';
 import { checkUsername, checkEmail } from '../../api/account.api';
 import { register } from '../../api/auth.api';
 import { toast } from 'react-hot-toast';
@@ -190,7 +190,7 @@ const Register = () => {
             case 1:
                 return (
                     <>
-                        <div className="mb-6 text-left">
+                        <div className="mb-5 text-left">
                             <label className="block mb-2 text-paragraph font-medium text-[15px]">First Name</label>
                             <input
                                 type="text"
@@ -201,7 +201,7 @@ const Register = () => {
                                 required
                             />
                         </div>
-                        <div className="mb-6 text-left">
+                        <div className="mb-5 text-left">
                             <label className="block mb-2 text-paragraph font-medium text-[15px]">Last Name</label>
                             <input
                                 type="text"
@@ -216,7 +216,7 @@ const Register = () => {
                 );
             case 2:
                 return (
-                    <div className="mb-6 text-left relative">
+                    <div className="mb-5 text-left relative">
                         <label className="block mb-2 text-paragraph font-medium text-[15px]">Birth Date</label>
                         <DatePicker
                             selected={formData.birthDate}
@@ -237,7 +237,7 @@ const Register = () => {
                 );
             case 3:
                 return (
-                    <div className="mb-6 text-left">
+                    <div className="mb-5 text-left">
                         <label className="block mb-2 text-paragraph font-medium text-[15px]">Username</label>
                         <input
                             type="text"
@@ -256,7 +256,7 @@ const Register = () => {
                 );
             case 4:
                 return (
-                    <div className="mb-6 text-left">
+                    <div className="mb-5 text-left">
                         <label className="block mb-2 text-paragraph font-medium text-[15px]">Email Address</label>
                         <input
                             type="email"
@@ -276,7 +276,7 @@ const Register = () => {
             case 5:
                 return (
                     <>
-                        <div className="mb-6 text-left">
+                        <div className="mb-5 text-left">
                             <label className="block mb-2 text-paragraph font-medium text-[15px]">Password</label>
                             <input
                                 type="password"
@@ -287,7 +287,7 @@ const Register = () => {
                                 required
                             />
                         </div>
-                        <div className="mb-6 text-left">
+                        <div className="mb-5 text-left">
                             <label className="block mb-2 text-paragraph font-medium text-[15px]">Confirm Password</label>
                             <input
                                 type="password"
