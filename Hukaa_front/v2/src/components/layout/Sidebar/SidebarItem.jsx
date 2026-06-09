@@ -12,7 +12,7 @@ const SidebarItem = ({ item }) => {
                 className={`relative flex flex-col items-center justify-center p-4 rounded-3xl transition-all duration-300 group
                 ${isActive
                         ? 'bg-[#2E40B7] text-white'
-                        : 'text-gray-400 hover:bg-gray-50 hover:text-[#2E40B7]'}`}
+                        : 'text-gray-400 hover:bg-gray-100 hover:text-[#2E40B7]'}`}
             >
                 <i className={`${item.icon} text-2xl mb-2 transition-transform duration-300 group-hover:scale-110`}></i>
                 <span className="text-[11px] font-bold uppercase tracking-wider">{item.label}</span>

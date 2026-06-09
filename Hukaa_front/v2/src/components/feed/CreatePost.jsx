@@ -78,7 +78,7 @@ const CreatePost = ({ onPostCreated }) => {
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                         placeholder={`What's on your mind, ${user.FirstName || 'User'}?`}
-                        className="w-full bg-gray-50 border border-gray-100 dark:border-gray-800 rounded-2xl p-4 text-sm focus:ring-2 transition-all min-h-[100px] text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 outline-none"
+                        className="w-full bg-gray-100 border border-gray-100 dark:border-gray-800 rounded-2xl p-4 text-sm focus:ring-2 transition-all min-h-[100px] text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 outline-none"
                         style={{
                             minHeight: "100px",
                             maxHeight: "400px",
@@ -108,7 +108,7 @@ const CreatePost = ({ onPostCreated }) => {
                             {mediaFiles.length === 0 && (
                                 <button
                                     onClick={() => fileInputRef.current.click()}
-                                    className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-all"
+                                    className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-all"
                                 >
                                     <i className="ri-image-line text-lg text-green-500"></i>
                                     <span className="text-xs font-bold uppercase tracking-wider">Photo / Video</span>

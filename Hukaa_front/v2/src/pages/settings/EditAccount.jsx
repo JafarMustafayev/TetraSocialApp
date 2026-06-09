@@ -17,12 +17,12 @@ const EditAccount = () => {
             </div>
 
             <div className="bg-white dark:bg-[#161a29] rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden mb-6">
-                <div 
+                <div
                     onClick={() => navigate('/settings/edit-account/pictures')}
-                    className="p-6 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#111420] transition-all cursor-pointer"
+                    className="p-6 flex items-center justify-between hover:bg-gray-100 dark:hover:bg-[#111420] transition-all cursor-pointer"
                 >
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-main">
+                        <div className="w-12 h-12 rounded-2xl bg-gray-100 dark:bg-blue-900/20 flex items-center justify-center text-main">
                             <i className="ri-image-edit-line text-2xl"></i>
                         </div>
                         <div>
@@ -39,17 +39,17 @@ const EditAccount = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">First Name</label>
-                            <input type="text" className="w-full bg-gray-50 dark:bg-[#0b0f1a] border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-main focus:border-transparent outline-none transition-all text-gray-800 dark:text-white" placeholder="First Name" />
+                            <input type="text" className="w-full bg-gray-100 dark:bg-[#0b0f1a] border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-main focus:border-transparent outline-none transition-all text-gray-800 dark:text-white" placeholder="First Name" />
                         </div>
                         <div>
                             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Last Name</label>
-                            <input type="text" className="w-full bg-gray-50 dark:bg-[#0b0f1a] border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-main focus:border-transparent outline-none transition-all text-gray-800 dark:text-white" placeholder="Last Name" />
+                            <input type="text" className="w-full bg-gray-100 dark:bg-[#0b0f1a] border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-main focus:border-transparent outline-none transition-all text-gray-800 dark:text-white" placeholder="Last Name" />
                         </div>
                     </div>
-                    
+
                     <div>
                         <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Bio</label>
-                        <textarea className="w-full bg-gray-50 dark:bg-[#0b0f1a] border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-main focus:border-transparent outline-none transition-all resize-y min-h-[120px] text-gray-800 dark:text-white" placeholder="Tell us about yourself..."></textarea>
+                        <textarea className="w-full bg-gray-100 dark:bg-[#0b0f1a] border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-main focus:border-transparent outline-none transition-all resize-y min-h-[120px] text-gray-800 dark:text-white" placeholder="Tell us about yourself..."></textarea>
                     </div>
 
                     <div className="flex justify-end pt-4">

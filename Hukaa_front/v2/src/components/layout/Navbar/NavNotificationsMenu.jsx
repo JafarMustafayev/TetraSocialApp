@@ -19,7 +19,7 @@ const NavNotificationsMenu = ({ notifications = [], isOpen, toggleDropdown }) =>
             </button>
 
             <div className={`absolute right-0 top-full mt-4 w-[320px] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 transform origin-top z-50 ${isOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-4'}`}>
-                <div className="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
+                <div className="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-100">
                     <h3 className="font-bold text-gray-800 text-sm m-0">Notifications</h3>
                     <Link to="/notifications" className="text-[10px] text-main font-bold hover:underline uppercase tracking-wider">View All</Link>
                 </div>
@@ -29,7 +29,7 @@ const NavNotificationsMenu = ({ notifications = [], isOpen, toggleDropdown }) =>
                             <Link
                                 key={notif.Id}
                                 to="/notifications"
-                                className="p-3 flex items-start gap-3 hover:bg-gray-50 rounded-xl transition-colors"
+                                className="p-3 flex items-start gap-3 hover:bg-gray-100 rounded-xl transition-colors"
                             >
                                 <img src={USER_AVATAR} className="w-10 h-10 rounded-full object-cover" alt="user" />
                                 <div className="flex-1 min-w-0">

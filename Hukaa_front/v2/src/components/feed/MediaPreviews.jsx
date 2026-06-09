@@ -29,7 +29,7 @@ const MediaPreviews = ({ files, onRemove, onAddClick, maxFiles = 10 }) => {
                 <button
                     onClick={onAddClick}
                     type="button"
-                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-center text-gray-400 hover:text-main hover:border-main hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all"
+                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-center text-gray-400 hover:text-main hover:border-main hover:bg-gray-100 dark:hover:bg-blue-900/10 transition-all"
                 >
                     <i className="ri-add-line text-2xl"></i>
                 </button>

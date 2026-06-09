@@ -18,7 +18,7 @@ const PostCard = ({ post }) => {
                         <span className="text-[11px] text-gray-400 dark:text-gray-500 font-medium mt-1 block">2 hours ago</span>
                     </div>
                 </div>
-                <button className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-400 transition-all">
+                <button className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 transition-all">
                     <i className="ri-more-2-line text-xl"></i>
                 </button>
             </div>
@@ -40,13 +40,13 @@ const PostCard = ({ post }) => {
                         <span className="text-xs font-bold text-gray-500 dark:text-gray-400 group-hover:text-red-500 transition-colors">12</span>
                     </button>
                     <button className="flex items-center gap-2 group">
-                        <div className="w-9 h-9 flex items-center justify-center rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-500 group-hover:bg-main group-hover:text-white transition-all">
+                        <div className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 dark:bg-blue-900/20 text-blue-500 group-hover:bg-main group-hover:text-white transition-all">
                             <i className="ri-chat-3-line text-lg"></i>
                         </div>
                         <span className="text-xs font-bold text-gray-500 dark:text-gray-400 group-hover:text-main transition-colors">4</span>
                     </button>
                 </div>
-                <button className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-50 dark:bg-[#0b0f1a] text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-all">
+                <button className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 dark:bg-[#0b0f1a] text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-all">
                     <i className="ri-share-forward-line text-lg"></i>
                 </button>
             </div>

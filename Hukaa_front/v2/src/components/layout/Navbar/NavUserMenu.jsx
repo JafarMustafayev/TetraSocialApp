@@ -30,7 +30,7 @@ const NavUserMenu = ({ user, isOpen, toggleDropdown, onLogout }) => {
 
                 {user?.IsAdmin && (
                     <div className="py-2">
-                        <Link to="/dashboard" className="w-[90%] mx-auto flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-all rounded-xl">
+                        <Link to="/dashboard" className="w-[90%] mx-auto flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 transition-all rounded-xl">
                             <i className="ri-dashboard-line mr-3 text-lg"></i>
                             Dashboard
                         </Link>

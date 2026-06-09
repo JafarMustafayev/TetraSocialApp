@@ -89,12 +89,8 @@ html.dark .border-gray-100 {
   @apply border-[#1f1f1f];
 }
 
-html.dark .bg-gray-50 {
-  @apply bg-[#050505];
-}
-
-html.dark .bg-blue-50 {
-  @apply bg-[#111111];
+html.dark .bg-gray-100 {
+  @apply bg-[#0b0f1a];
 }
 
 html.dark ::-webkit-scrollbar-thumb {

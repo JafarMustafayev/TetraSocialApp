@@ -31,7 +31,7 @@ const SettingsList = () => {
                         onClick={() => navigate(section.path)}
                         className="bg-white dark:bg-[#161a29] p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-all text-left flex items-start gap-5 group"
                     >
-                        <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-main group-hover:bg-main group-hover:text-white transition-all">
+                        <div className="w-12 h-12 rounded-2xl bg-gray-100 dark:bg-blue-900/20 flex items-center justify-center text-main group-hover:bg-main group-hover:text-white transition-all">
                             <i className={`${section.icon} text-2xl`}></i>
                         </div>
                         <div className="flex-1">

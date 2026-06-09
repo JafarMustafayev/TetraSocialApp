@@ -28,7 +28,7 @@ const SuggestedUsersWidget = ({ count = 10 }) => {
                                 <p className="text-[10px] text-gray-400 dark:text-gray-500 truncate">@{user.username}</p>
                             </div>
                         </div>
-                        <button className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-50 dark:bg-blue-900/20 text-main hover:bg-main hover:text-white transition-all">
+                        <button className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-blue-900/20 text-main hover:bg-main hover:text-white transition-all">
                             <i className="ri-user-add-line text-sm"></i>
                         </button>
                     </div>

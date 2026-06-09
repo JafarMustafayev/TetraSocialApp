@@ -81,7 +81,7 @@ const NavSearch = ({ isMobileSearchOpen, setIsMobileSearchOpen }) => {
                 {showResults && (
                     <div className="absolute top-full left-0 mt-3 w-full animate-fade-in-up z-50">
                         <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden flex flex-col">
-                            <div className="p-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                            <div className="p-3 border-b border-gray-100 flex justify-between items-center bg-gray-100/50">
                                 <h3 className="font-bold text-gray-800 text-sm">Search Results</h3>
                             </div>
                             <div className="max-h-[350px] overflow-y-auto custom-scrollbar p-2">
@@ -95,7 +95,7 @@ const NavSearch = ({ isMobileSearchOpen, setIsMobileSearchOpen }) => {
                                         <div
                                             key={result.Id}
                                             onClick={() => handleSearchResultClick(result.Id)}
-                                            className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer group"
+                                            className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-xl transition-colors cursor-pointer group"
                                         >
                                             <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-sm shrink-0">
                                                 <img
@@ -147,7 +147,7 @@ const NavSearch = ({ isMobileSearchOpen, setIsMobileSearchOpen }) => {
                         {showResults && (
                             <div className="fixed top-[90px] left-[0.5%] w-[99%] z-50 animate-fade-in-up">
                                 <div className="bg-white w-full rounded-3xl shadow-2xl border border-gray-100 overflow-hidden max-h-[70vh] flex flex-col">
-                                    <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                                    <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-100/50">
                                         <h3 className="font-bold text-gray-800 text-sm">Search Results</h3>
                                     </div>
                                     <div className="overflow-y-auto custom-scrollbar p-2">
@@ -163,7 +163,7 @@ const NavSearch = ({ isMobileSearchOpen, setIsMobileSearchOpen }) => {
                                                 <div
                                                     key={result.Id}
                                                     onClick={() => handleSearchResultClick(result.Id)}
-                                                    className="flex items-center gap-4 p-4 hover:bg-gray-50 rounded-2xl transition-all cursor-pointer group"
+                                                    className="flex items-center gap-4 p-4 hover:bg-gray-100 rounded-2xl transition-all cursor-pointer group"
                                                 >
                                                     <img
                                                         src={result.ProfileImageUrl ? `${API_BASE_URL}/${result.ProfileImageUrl}` : USER_AVATAR}

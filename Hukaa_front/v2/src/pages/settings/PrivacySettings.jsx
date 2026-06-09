@@ -25,7 +25,7 @@ const PrivacySettings = () => {
 
             <div className="bg-white dark:bg-[#161a29] rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
                 {items.map((item, index) => (
-                    <div key={item.id} className={`p-6 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#111420] transition-all cursor-pointer ${index !== items.length - 1 ? 'border-b border-gray-100 dark:border-gray-800' : ''}`}>
+                    <div key={item.id} className={`p-6 flex items-center justify-between hover:bg-gray-100 dark:hover:bg-[#111420] transition-all cursor-pointer ${index !== items.length - 1 ? 'border-b border-gray-100 dark:border-gray-800' : ''}`}>
                         <div>
                             <h3 className="font-bold text-gray-800 dark:text-white text-base">{item.title}</h3>
                         </div>
