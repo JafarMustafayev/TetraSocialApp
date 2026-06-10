@@ -21,7 +21,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="DTOs\Account\"/>
         <Folder Include="Validators\Account\"/>
     </ItemGroup>
 </Project>

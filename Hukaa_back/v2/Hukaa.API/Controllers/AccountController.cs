@@ -5,6 +5,13 @@
 public class AccountController(
     IAccountService accountService) : ControllerBase
 {
+    [HttpGet("me")]
+    public async Task<IActionResult> GetMe()
+    {
+        var res = await accountService.GetCurrentUserAsync();
+        return StatusCode(res.StatusCode, res);
+    }
+
     [HttpGet("check-email")]
     public async Task<IActionResult> CheckEmail([FromQuery] string email)
     {

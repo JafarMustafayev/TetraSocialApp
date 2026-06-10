@@ -48,28 +48,28 @@ public class AuthService(
             throw new BadRequestException(localizer.Get("Validation.Common.Validation.Failure"), errors);
         }
 
-        if(_identityOptions.SignIn.RequireConfirmedEmail)
+        if(!_identityOptions.SignIn.RequireConfirmedEmail)
         {
-            var verificationResult = await accountVerificationService.GenerateEmailConfirmationTokenAsync(user);
-
-            var url = clientUrlService.BuildEmailConfirmationUrl(user.Id, verificationResult.PlainToken);
-            
-            // todo: then it will be sent in a professional form with "queue"
-            await mailService.SendConfirmationMail(user.Email, url);
             return ResponseDto.CreatedResponse(
-                localizer.Get("Auth.Registration.Success.Pending"),
+                localizer.Get("Auth.Registration.Success.Success"),
                 new
                 {
-                    IsVerifiedEmailRequired = true,
-                    verificationResult.ExpiresAt
+                    IsVerifiedEmailRequired = false
                 });
         }
 
+        var verificationResult = await accountVerificationService.GenerateEmailConfirmationTokenAsync(user);
+
+        var url = clientUrlService.BuildEmailConfirmationUrl(user.Id, verificationResult.PlainToken);
+
+        // todo: then it will be sent in a professional form with "queue"
+        await mailService.SendConfirmationMail(user.Email, url);
         return ResponseDto.CreatedResponse(
-            localizer.Get("Auth.Registration.Success.Success"),
+            localizer.Get("Auth.Registration.Success.Pending"),
             new
             {
-                IsVerifiedEmailRequired = false
+                IsVerifiedEmailRequired = true,
+                verificationResult.ExpiresAt
             });
     }
 

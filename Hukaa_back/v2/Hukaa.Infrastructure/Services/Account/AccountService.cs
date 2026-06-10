@@ -2,8 +2,45 @@
 
 public class AccountService(
     UserManager<User> userManager,
+    IJwtClaimsReader claimsReader,
     ILocalizationService localizer) : IAccountService
 {
+    public async Task<ResponseDto> GetCurrentUserAsync()
+    {
+        var userId = claimsReader.GetUserId();
+        var user = await userManager.FindByIdAsync(userId);
+        if(user == null)
+        {
+            throw new NotFoundException(localizer.Get("Error.Common.NotFoundWithParameter", "User",
+                new Dictionary<string, object>
+                {
+                    ["Parameter"] = userId
+                }
+            ));
+        }
+
+        var roles = await userManager.GetRolesAsync(user);
+
+        var userData = new CurrentUserDto
+        {
+            Id = userId,
+            Email = user.Email,
+            Username = user.UserName,
+            AccentHue = 200, // daha sonra dinamik olaraq deyisilecek 
+            AvatarUrl = "",
+            EmailVerified = user.EmailConfirmed,
+            IsAdmin = roles.Contains(UserRoles.Admin),
+            Name = user.FirstName + " " + user.LastName
+        };
+
+        return new ResponseDto
+        {
+            StatusCode = StatusCodes.Status200OK,
+            Success = true,
+            Message = "User retrieved successfully",
+            Data = userData
+        };
+    }
     public async Task<ResponseDto> CheckEmailAvailabilityAsync(string email)
     {
         CheckNullOrEmpty(email, "Email");
