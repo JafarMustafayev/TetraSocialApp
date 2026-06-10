@@ -3,14 +3,23 @@
 
 @import "remixicon/fonts/remixicon.css";
 
-@theme {
-  /* Colors from v1 */
-  --color-main: #3644D9;
-  --color-main-hover: #2E3AB8;
+:root {
+  /* Dynamic primary color hue that can be changed from Settings */
+  --accent-hue: 200;
+  --accent-l: 46%;
+}
 
-  --color-optional: #2E3AB8;
-  --color-black: #515355;
-  --color-paragraph: #6B7C8F;
+.dark {
+  --accent-l: 55%;
+}
+
+@theme {
+  /* Colors from v1 updated with new CSS var based on HSL */
+  --color-main: hsl(var(--accent-hue) 89% var(--accent-l));
+  --color-main-hover: hsl(var(--accent-hue) 89% var(--accent-l) / 80%);
+  --color-optional: hsl(var(--accent-hue) 89% var(--accent-l) / 70%);
+  --color-black: #0f1419;
+  --color-paragraph: #536471;
 
   /* Fonts */
   --font-main: "Open Sans", sans-serif;
@@ -20,7 +29,7 @@
 /* Base Styles */
 @layer base {
   body {
-    @apply font-main m-0 p-0 bg-[#F4F7FC] text-black transition-colors duration-300;
+    @apply font-main m-0 p-0 bg-white text-black transition-colors duration-300;
   }
 
   h1,
@@ -53,7 +62,7 @@
 
 /* Dark Mode Overrides */
 html.dark body {
-  @apply bg-[#0b0f1a];
+  @apply bg-[#09090b];
 }
 
 html.dark h1,
@@ -63,34 +72,6 @@ html.dark h4,
 html.dark h5,
 html.dark h6 {
   @apply text-white;
-}
-
-html.dark .bg-white {
-  @apply bg-[#10172b] border-[#1f1f1f];
-}
-
-html.dark .text-gray-800 {
-  @apply text-gray-100;
-}
-
-html.dark .text-gray-600 {
-  @apply text-gray-300;
-}
-
-html.dark .text-gray-500 {
-  @apply text-gray-400;
-}
-
-html.dark .text-gray-400 {
-  @apply text-gray-500;
-}
-
-html.dark .border-gray-100 {
-  @apply border-[#1f1f1f];
-}
-
-html.dark .bg-gray-100 {
-  @apply bg-[#0b0f1a];
 }
 
 html.dark ::-webkit-scrollbar-thumb {

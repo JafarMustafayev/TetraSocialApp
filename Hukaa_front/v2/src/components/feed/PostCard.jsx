@@ -1,56 +1,109 @@
-// src/components/feed/PostCard.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { API_BASE_URL, USER_AVATAR } from '../../api/api-config';
 
 const PostCard = ({ post }) => {
+    const [expanded, setExpanded] = useState(false);
+
+    // Parse content for @mentions and #hashtags
+    const parseContent = (text) => {
+        if (!text) return null;
+
+        // Split by both @mentions and #hashtags, keeping the match
+        const parts = text.split(/(@\w+|#\w+)/g);
+
+        return parts.map((part, index) => {
+            if (part.startsWith('@') || part.startsWith('#')) {
+                return (
+                    <span key={index} className="text-main hover:underline cursor-pointer">
+                        {part}
+                    </span>
+                );
+            }
+            return part;
+        });
+    };
+
+    const isLongText = post.Content?.length > 280 || (post.Content?.match(/\n/g) || []).length > 4;
+
     return (
-        <div className="bg-white dark:bg-[#161a29] rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 mb-5 overflow-hidden transition-all hover:shadow-md">
-            {/* Post Header */}
-            <div className="p-5 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <img
-                        src={post.UserProfileImageUrl ? `${API_BASE_URL}/${post.UserProfileImageUrl}` : USER_AVATAR}
-                        className="w-11 h-11 rounded-full object-cover border-2 border-white dark:border-gray-800 shadow-sm"
-                        alt={post.ByUserName}
-                    />
-                    <div>
-                        <h4 className="text-sm font-bold text-gray-800 dark:text-white leading-none">{post.ByUserName || 'Anonymous'}</h4>
-                        <span className="text-[11px] text-gray-400 dark:text-gray-500 font-medium mt-1 block">2 hours ago</span>
+        <article className="bg-white dark:bg-[#09090b] border-b border-gray-100 dark:border-[#1f1f1f] p-4 flex gap-3 transition-colors hover:bg-gray-50 dark:hover:bg-[#16181c] cursor-pointer">
+            {/* Avatar */}
+            <div className="shrink-0">
+                <img
+                    src={post.UserProfileImageUrl ? `${API_BASE_URL}/${post.UserProfileImageUrl}` : USER_AVATAR}
+                    className="w-10 h-10 rounded-full object-cover bg-gray-200 dark:bg-gray-800"
+                    alt={post.ByUserName}
+                />
+            </div>
+
+            {/* Right side content */}
+            <div className="flex-1 min-w-0">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1 text-[15px] truncate">
+                        <span className="font-bold text-gray-900 dark:text-white hover:underline truncate">
+                            {post.ByUserName || 'Anonymous'}
+                        </span>
+                        <span className="text-gray-500 truncate hidden sm:inline-block">
+                            @{post.ByUserName?.replace(/\s+/g, '').toLowerCase() || 'user'}
+                        </span>
+                        <span className="text-gray-500">·</span>
+                        <span className="text-gray-500 hover:underline">2h</span>
                     </div>
-                </div>
-                <button className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 transition-all">
-                    <i className="ri-more-2-line text-xl"></i>
-                </button>
-            </div>
-
-            {/* Post Content */}
-            <div className="px-5 pb-4">
-                <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
-                    {post.Content}
-                </p>
-            </div>
-
-            {/* Post Actions */}
-            <div className="px-5 py-4 border-t border-gray-50 dark:border-gray-800 flex items-center justify-between">
-                <div className="flex items-center gap-6">
-                    <button className="flex items-center gap-2 group">
-                        <div className="w-9 h-9 flex items-center justify-center rounded-full bg-red-50 dark:bg-red-900/20 text-red-500 group-hover:bg-red-500 group-hover:text-white transition-all">
-                            <i className="ri-heart-line text-lg"></i>
-                        </div>
-                        <span className="text-xs font-bold text-gray-500 dark:text-gray-400 group-hover:text-red-500 transition-colors">12</span>
-                    </button>
-                    <button className="flex items-center gap-2 group">
-                        <div className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 dark:bg-blue-900/20 text-blue-500 group-hover:bg-main group-hover:text-white transition-all">
-                            <i className="ri-chat-3-line text-lg"></i>
-                        </div>
-                        <span className="text-xs font-bold text-gray-500 dark:text-gray-400 group-hover:text-main transition-colors">4</span>
+                    <button className="w-8 h-8 rounded-full hover:bg-main/10 text-gray-500 hover:text-main flex items-center justify-center transition-colors -mr-2 shrink-0">
+                        <i className="ri-more-line text-xl"></i>
                     </button>
                 </div>
-                <button className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 dark:bg-[#0b0f1a] text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-all">
-                    <i className="ri-share-forward-line text-lg"></i>
-                </button>
+
+                {/* Post Body */}
+                <div className="text-[15px] text-gray-900 dark:text-white mt-0.5 whitespace-pre-wrap leading-normal break-words">
+                    <div className={expanded ? '' : 'line-clamp-4'}>
+                        {parseContent(post.Content)}
+                    </div>
+                    {isLongText && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setExpanded(!expanded);
+                            }}
+                            className="text-main hover:underline mt-1 text-[15px] font-medium block"
+                        >
+                            {expanded ? 'Show less' : 'Show more'}
+                        </button>
+                    )}
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center justify-between mt-3 text-gray-500 max-w-md">
+                    <button className="flex items-center gap-1 group hover:text-main transition-colors">
+                        <div className="w-8 h-8 rounded-full group-hover:bg-main/10 flex items-center justify-center transition-colors">
+                            <i className="ri-chat-1-line text-[18px]"></i>
+                        </div>
+                        <span className="text-[13px]">4</span>
+                    </button>
+
+                    <button className="flex items-center gap-1 group hover:text-red-500 transition-colors">
+                        <div className="w-8 h-8 rounded-full group-hover:bg-red-500/10 flex items-center justify-center transition-colors">
+                            <i className="ri-heart-line text-[18px]"></i>
+                        </div>
+                        <span className="text-[13px]">12</span>
+                    </button>
+
+                    <button className="w-8 h-8 rounded-full hover:bg-main/10 hover:text-main flex items-center justify-center transition-colors">
+                        <i className="ri-bookmark-line text-[18px]"></i>
+                    </button>
+
+
+
+                    <button className="flex items-center gap-1 group hover:text-main transition-colors">
+                        <div className="w-8 h-8 rounded-full group-hover:bg-main/10 flex items-center justify-center transition-colors">
+                            <i className="ri-share-forward-line text-[18px]"></i>
+                        </div>
+                        <span className="text-[13px]">4</span>
+                    </button>
+                </div>
             </div>
-        </div>
+        </article>
     );
 };
 

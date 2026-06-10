@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import logo from '../../assets/images/logo.png';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { validateEmail, isAtLeast16 } from '../../utils/validation';
 import { checkUsername, checkEmail } from '../../api/account.api';
 import { register } from '../../api/auth.api';
 import { toast } from 'react-hot-toast';
+import AuthLayout from '../../components/auth/AuthLayout';
+import AuthCard from '../../components/auth/AuthCard';
+import AuthInput from '../../components/auth/AuthInput';
+import AuthButton from '../../components/auth/AuthButton';
+import RegisterStepIndicator from '../../components/auth/RegisterStepIndicator';
 
 const Register = () => {
     const [currentStep, setCurrentStep] = useState(1);
@@ -176,7 +180,7 @@ const Register = () => {
 
             if (result.success || result.Success) {
                 toast.success(result.message || result.Message || 'Successfully registered.');
-
+                navigate('/auth/login');
             }
         } catch (error) {
             console.error('Registration failed:', error);
@@ -189,116 +193,107 @@ const Register = () => {
         switch (currentStep) {
             case 1:
                 return (
-                    <>
-                        <div className="mb-5 text-left">
-                            <label className="block mb-2 text-paragraph font-medium text-[15px]">First Name</label>
-                            <input
-                                type="text"
-                                name="firstName"
-                                className="h-[60px] px-[25px] py-[15px] text-paragraph rounded-[5px] text-base w-full border border-input-border bg-input-bg focus:border-main focus:outline-none transition duration-400"
-                                value={formData.firstName.trim()}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <div className="mb-5 text-left">
-                            <label className="block mb-2 text-paragraph font-medium text-[15px]">Last Name</label>
-                            <input
-                                type="text"
-                                name="lastName"
-                                className="h-[60px] px-[25px] py-[15px] text-paragraph rounded-[5px] text-base w-full border border-input-border bg-input-bg focus:border-main focus:outline-none transition duration-400"
-                                value={formData.lastName.trim()}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                    </>
+                    <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                        <AuthInput
+                            label="First Name"
+                            name="firstName"
+                            value={formData.firstName}
+                            onChange={handleChange}
+                            required
+                            placeholder="e.g. John"
+                        />
+                        <AuthInput
+                            label="Last Name"
+                            name="lastName"
+                            value={formData.lastName}
+                            onChange={handleChange}
+                            required
+                            placeholder="e.g. Doe"
+                        />
+                    </div>
                 );
             case 2:
                 return (
-                    <div className="mb-5 text-left relative">
-                        <label className="block mb-2 text-paragraph font-medium text-[15px]">Birth Date</label>
-                        <DatePicker
-                            selected={formData.birthDate}
-                            onChange={(date) => {
-                                setFormData(prev => ({ ...prev, birthDate: date }));
-                            }}
-                            dateFormat="dd/MM/yyyy"
-                            showYearDropdown
-                            scrollableYearDropdown
-                            yearDropdownItemNumber={100}
-                            autoComplete='on'
-                            placeholderText="DD/MM/YYYY"
-                            className="h-[60px] px-[25px] py-[15px] text-paragraph rounded-[5px] text-base w-full border border-input-border bg-input-bg focus:border-main focus:outline-none transition duration-400"
-                            wrapperClassName="w-full"
-                            required
-                        />
+                    <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                        <div className="mb-4">
+                            <label className="block text-[14px] font-medium text-gray-700 dark:text-gray-300 mb-1.5 ml-1">
+                                Birth Date
+                            </label>
+                            <DatePicker
+                                selected={formData.birthDate}
+                                onChange={(date) => {
+                                    setFormData(prev => ({ ...prev, birthDate: date }));
+                                }}
+                                dateFormat="dd/MM/yyyy"
+                                showYearDropdown
+                                scrollableYearDropdown
+                                yearDropdownItemNumber={100}
+                                autoComplete='on'
+                                placeholderText="DD/MM/YYYY"
+                                className="w-full h-[46px] px-4 rounded-xl text-[15px] transition-colors bg-gray-50 dark:bg-[#09090b] text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 focus:border-main focus:ring-1 focus:ring-main focus:outline-none placeholder-gray-400 dark:placeholder-gray-600"
+                                wrapperClassName="w-full"
+                                required
+                            />
+                        </div>
                     </div>
                 );
             case 3:
                 return (
-                    <div className="mb-5 text-left">
-                        <label className="block mb-2 text-paragraph font-medium text-[15px]">Username</label>
-                        <input
-                            type="text"
+                    <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                        <AuthInput
+                            label="Username"
                             name="username"
-                            className={`h-[60px] px-[25px] py-[15px] text-paragraph rounded-[5px] text-base w-full border ${!availability.username.isAvailable ? 'border-red-500' : 'border-input-border'} bg-input-bg focus:border-main focus:outline-none transition duration-400`}
-                            value={formData.username.trim()}
+                            value={formData.username}
                             onChange={handleChange}
                             required
+                            placeholder="Choose a username"
+                            error={!availability.username.isAvailable ? availability.username.message : ''}
                         />
-                        {!availability.username.isAvailable && (
-                            <span className="text-red-500 text-xs mt-1 block font-light">
-                                {availability.username.message}
-                            </span>
+                        {availability.username.checking && (
+                            <span className="text-gray-500 text-xs ml-1 block font-light">Checking availability...</span>
                         )}
                     </div>
                 );
             case 4:
                 return (
-                    <div className="mb-5 text-left">
-                        <label className="block mb-2 text-paragraph font-medium text-[15px]">Email Address</label>
-                        <input
+                    <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                        <AuthInput
+                            label="Email Address"
                             type="email"
                             name="email"
-                            className={`h-[60px] px-[25px] py-[15px] text-paragraph rounded-[5px] text-base w-full border ${!availability.email.isAvailable ? 'border-red-500' : 'border-input-border'} bg-input-bg focus:border-main focus:outline-none transition duration-400`}
-                            value={formData.email.trim()}
+                            value={formData.email}
                             onChange={handleChange}
                             required
+                            placeholder="Enter your email"
+                            error={!availability.email.isAvailable ? availability.email.message : ''}
                         />
-                        {!availability.email.isAvailable && (
-                            <span className="text-red-500 text-xs mt-1 block font-light">
-                                {availability.email.message}
-                            </span>
+                        {availability.email.checking && (
+                            <span className="text-gray-500 text-xs ml-1 block font-light">Checking availability...</span>
                         )}
                     </div>
                 );
             case 5:
                 return (
-                    <>
-                        <div className="mb-5 text-left">
-                            <label className="block mb-2 text-paragraph font-medium text-[15px]">Password</label>
-                            <input
-                                type="password"
-                                name="password"
-                                className="h-[60px] px-[25px] py-[15px] text-paragraph rounded-[5px] text-base w-full border border-input-border bg-input-bg focus:border-main focus:outline-none transition duration-400"
-                                value={formData.password.trim()}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <div className="mb-5 text-left">
-                            <label className="block mb-2 text-paragraph font-medium text-[15px]">Confirm Password</label>
-                            <input
-                                type="password"
-                                name="confirmPassword"
-                                className="h-[60px] px-[25px] py-[15px] text-paragraph rounded-[5px] text-base w-full border border-input-border bg-input-bg focus:border-main focus:outline-none transition duration-400"
-                                value={formData.confirmPassword.trim()}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                    </>
+                    <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                        <AuthInput
+                            label="Password"
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            required
+                            placeholder="Create a password"
+                        />
+                        <AuthInput
+                            label="Confirm Password"
+                            type="password"
+                            name="confirmPassword"
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                            required
+                            placeholder="Confirm your password"
+                        />
+                    </div>
                 );
             default:
                 return null;
@@ -306,71 +301,59 @@ const Register = () => {
     };
 
     return (
-        <div className="profile-authentication-area min-h-screen">
-            <div className="container mx-auto px-4">
-                <div className="flex flex-wrap justify-center items-center py-10 md:py-20 min-h-screen">
-                    <div className="w-full">
-                        <div className="max-w-md mx-auto bg-transparent p-6 md:p-10">
-                            <div className="text-center mb-[30px]">
-                                <img
-                                    src={logo}
-                                    alt="Huka Logo"
-                                    className="inline-block max-w-[200px] md:max-w-[240px] h-auto"
-                                />
-                            </div>
+        <AuthLayout>
+            <AuthCard title="Create an account" subtitle="Join Hukaa today.">
+                <RegisterStepIndicator currentStep={currentStep} totalSteps={5} />
+                
+                <form onSubmit={handleSubmit} className="w-full">
+                    {renderStep()}
 
-                            <form onSubmit={handleSubmit} className="w-full">
+                    <div className="flex gap-3 mt-8">
+                        {currentStep > 1 && (
+                            <button
+                                type="button"
+                                onClick={prevStep}
+                                className="w-1/3 h-[46px] rounded-full font-bold text-[15px] flex items-center justify-center transition-all bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
+                            >
+                                Back
+                            </button>
+                        )}
 
-                                {renderStep()}
-
-                                <div className="flex gap-4 mt-8">
-                                    {currentStep > 1 && (
-                                        <button
-                                            type="button"
-                                            onClick={prevStep}
-                                            className="bg-gray-600 text-white p-[15px] w-full rounded-[5px] hover:bg-gray-700 transition duration-400 font-medium border-none cursor-pointer"
-                                        >
-                                            BACK
-                                        </button>
-                                    )}
-
-                                    {currentStep < 5 ? (
-                                        <button
-                                            type="button"
-                                            disabled={
-                                                (currentStep === 3 && (!availability.username.isAvailable || availability.username.checking))
-                                                || (currentStep === 4 && (!availability.email.isAvailable || availability.email.checking))
-
-                                            }
-                                            onClick={nextStep}
-                                            className="bg-[#0072d2] text-white p-[15px] w-full rounded-[5px] hover:bg-main-hover transition duration-400 font-medium border-none cursor-pointer disabled:bg-gray-600 disabled:cursor-not-allowed"
-                                        >
-                                            NEXT
-                                        </button>
-                                    ) : (
-                                        <button
-                                            type="submit"
-                                            disabled={isLoading}
-                                            className="bg-[#0072d2] text-white p-[15px] w-full rounded-[5px] hover:bg-main-hover transition duration-400 font-medium border-none cursor-pointer disabled:bg-gray-600 disabled:cursor-not-allowed"
-                                        >
-                                            {isLoading ? 'REGISTERING...' : 'REGISTER'}
-                                        </button>
-                                    )}
-                                </div>
-
-                                <div className="my-[15px] text-center">
-                                    <span className="text-paragraph text-[15px]">Already have an account?</span>
-                                </div>
-
-                                <button type="button" className="bg-[#0090d2] text-white w-full rounded-[5px] hover:bg-main-hover transition duration-400 border-none cursor-pointer p-0">
-                                    <Link to="/auth/login" className="block w-full h-full p-[15px] text-white hover:text-white"> LOGIN </Link>
-                                </button>
-                            </form>
-                        </div>
+                        {currentStep < 5 ? (
+                            <AuthButton
+                                type="button"
+                                className={currentStep > 1 ? "w-2/3" : "w-full"}
+                                disabled={
+                                    (currentStep === 3 && (!availability.username.isAvailable || availability.username.checking))
+                                    || (currentStep === 4 && (!availability.email.isAvailable || availability.email.checking))
+                                }
+                                onClick={nextStep}
+                            >
+                                Next
+                            </AuthButton>
+                        ) : (
+                            <AuthButton
+                                type="submit"
+                                className={currentStep > 1 ? "w-2/3" : "w-full"}
+                                isLoading={isLoading}
+                            >
+                                Sign up
+                            </AuthButton>
+                        )}
                     </div>
-                </div>
-            </div>
-        </div>
+
+                    <div className="mt-6 text-center">
+                        <span className="text-[14px] text-gray-500">Already have an account? </span>
+                        <Link 
+                            to="/auth/login" 
+                            className="text-[14px] text-main hover:underline font-bold"
+                        >
+                            Log in
+                        </Link>
+                    </div>
+                </form>
+            </AuthCard>
+        </AuthLayout>
     );
 };
 

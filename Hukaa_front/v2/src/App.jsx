@@ -10,8 +10,19 @@ import Settings from './pages/Settings';
 import MainLayout from './layouts/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
 import { ThemeProvider } from './context/ThemeContext';
+import { useEffect } from 'react';
 
 function App() {
+  useEffect(() => {
+    const savedHue = localStorage.getItem('accentHue');
+    if (savedHue) {
+      document.documentElement.style.setProperty('--accent-hue', savedHue);
+      document.documentElement.style.setProperty('--color-main', `hsl(${savedHue} 89% var(--accent-l))`);
+      document.documentElement.style.setProperty('--color-main-hover', `hsl(${savedHue} 89% var(--accent-l) / 80%)`);
+      document.documentElement.style.setProperty('--color-optional', `hsl(${savedHue} 89% var(--accent-l) / 70%)`);
+    }
+  }, []);
+
   return (
     <ThemeProvider>
       <Router>
