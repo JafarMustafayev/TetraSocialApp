@@ -51,14 +51,14 @@ const MobileProfileSheet = ({ isOpen, onClose, user, onLogout }) => {
                     <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-3">
                             <div className="w-12 h-12 rounded-full bg-main/10 flex items-center justify-center font-bold text-main shrink-0 text-lg">
-                                {user?.FirstName?.[0] || 'U'}
+                                {user?.username?.[0].toUpperCase() || 'U'}
                             </div>
                             <div className="flex flex-col">
                                 <span className="font-bold text-gray-900 dark:text-gray-100 text-[16px]">
-                                    {user?.FirstName} {user?.LastName}
+                                    {user?.name}
                                 </span>
                                 <span className="text-gray-500 dark:text-gray-400 text-[14px]">
-                                    @{user?.Username || 'user'}
+                                    @{user?.username || 'user'}
                                 </span>
                             </div>
                         </div>

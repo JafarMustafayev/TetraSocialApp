@@ -22,3 +22,11 @@ export const checkEmail = async (email) => {
 
     return fetchClient(`/api/account/check-email?email=${encodeURIComponent(email)}`);
 };
+
+/**
+ * Retrieves the current authenticated user's profile.
+ * @returns {Promise<object>} Response object with user data.
+ */
+export const getMe = async () => {
+    return fetchClient('/api/account/me');
+};

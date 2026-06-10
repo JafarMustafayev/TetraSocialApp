@@ -6,6 +6,7 @@ import AuthLayout from '../../components/auth/AuthLayout';
 import AuthCard from '../../components/auth/AuthCard';
 import AuthInput from '../../components/auth/AuthInput';
 import AuthButton from '../../components/auth/AuthButton';
+import { useAuth } from '../../context/AuthContext';
 
 const Login = () => {
     const [credentials, setCredentials] = useState({
@@ -13,6 +14,7 @@ const Login = () => {
         Password: ''
     });
     const [isLoading, setIsLoading] = useState(false);
+    const { fetchUser } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -47,6 +49,8 @@ const Login = () => {
 
                 localStorage.setItem('token', tokenData.accessToken?.accessToken || tokenData.accessToken);
                 localStorage.setItem('refreshToken', tokenData.refreshToken?.refreshToken || tokenData.refreshToken);
+
+                await fetchUser();
 
                 toast.success('Successfully logged in!');
 
@@ -86,8 +90,8 @@ const Login = () => {
                     />
 
                     <div className="flex justify-end mb-6 -mt-2">
-                        <Link 
-                            to="/auth/forgot-password" 
+                        <Link
+                            to="/auth/forgot-password"
                             className="text-[14px] text-main hover:underline font-medium"
                         >
                             Forgot password?
@@ -100,8 +104,8 @@ const Login = () => {
 
                     <div className="mt-6 text-center">
                         <span className="text-[14px] text-gray-500">Don't have an account? </span>
-                        <Link 
-                            to="/auth/register" 
+                        <Link
+                            to="/auth/register"
                             className="text-[14px] text-main hover:underline font-bold"
                         >
                             Sign up

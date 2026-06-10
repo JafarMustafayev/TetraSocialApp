@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { LOGO } from '../../../api/api-config';
 import MobileProfileSheet from './MobileProfileSheet';
 import { useTheme } from '../../../context/ThemeContext';
+import { useAuth } from '../../../context/AuthContext';
 
 import {
     House,
@@ -13,14 +14,11 @@ import {
     User,
     Settings,
     Plus
-}
-    from "lucide-react"
-
-
+} from "lucide-react"
 
 const Navbar = () => {
     const location = useLocation();
-    const [user, setUser] = useState(null);
+    const { user } = useAuth();
     const [isMobileProfileSheetOpen, setIsMobileProfileSheetOpen] = useState(false);
 
     // Desktop Dropdown State
@@ -86,7 +84,7 @@ const Navbar = () => {
     };
 
     const getNavItemClass = (isActive) => {
-        const baseClass = "flex items-center gap-3 px-3 py-2 rounded-full transition-all group w-full";
+        const baseClass = "flex items-center gap-3 px-3 py-2 my-0.5 rounded-full transition-all group w-full";
 
         if (isActive) {
             return `${baseClass} font-medium bg-gray-100 text-gray-900 dark:bg-neutral-800 dark:text-gray-100`;
@@ -102,7 +100,7 @@ const Navbar = () => {
                 <div className="flex flex-col gap-2 w-full">
                     <div className="w-full flex justify-start">
                         <Link to="/" className="flex items-center w-auto h-auto rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800 transition-all mb-2">
-                            <img src={LOGO} alt="logo" className="h-[28px] w-auto" />
+                            <img src={LOGO} alt="logo" className="h-9 w-auto" />
                         </Link>
                     </div>
 
@@ -118,8 +116,8 @@ const Navbar = () => {
                                     className={getNavItemClass(isActive)}
                                     title={item.label}
                                 >
-                                    <div className="relative flex items-center justify-center shrink-0 w-5 h-5 ml-1">
-                                        <item.icon size={18} className={`text-gray-500 dark:text-gray-400`} />
+                                    <div className="relative flex items-center justify-center shrink-0 w-6 h-7 ml-1">
+                                        <item.icon size={24} className={`text-gray-500 dark:text-gray-400`} />
 
                                         {item.count > 0 && (
                                             <span className="absolute -top-1 -right-2 bg-main text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full border border-white dark:border-[#09090b]">
@@ -127,7 +125,7 @@ const Navbar = () => {
                                             </span>
                                         )}
                                     </div>
-                                    <span className={` text-[15px] truncate ${isActive ? 'text-gray-900 dark:text-gray-100' : 'text-inherit'}`}>
+                                    <span className={` text-[17px] truncate ${isActive ? 'text-gray-900 dark:text-gray-100' : 'text-inherit'}`}>
                                         {item.label}
                                     </span>
                                 </Link>
@@ -181,14 +179,14 @@ const Navbar = () => {
                     >
                         <div className="flex items-center gap-2 min-w-0">
                             <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center font-bold text-main shrink-0">
-                                {user?.FirstName?.[0] || 'U'}
+                                {user?.username?.[0].toUpperCase() || 'U'}
                             </div>
                             <div className="flex flex-col min-w-0">
                                 <span className="text-[14px] font-bold text-gray-900 dark:text-white truncate">
-                                    {user?.FirstName} {user?.LastName}
+                                    {user?.name || "Fullname"}
                                 </span>
                                 <span className="text-[13px] text-gray-500 truncate">
-                                    @{user?.Username || 'user'}
+                                    @{user?.username || 'user'}
                                 </span>
                             </div>
                         </div>
@@ -207,7 +205,7 @@ const Navbar = () => {
                             to={item.path}
                             className="flex flex-col items-center justify-center w-full h-full relative"
                         >
-                            <i className={`${item.icon} text-2xl ${isActive ? 'text-gray-900 dark:text-gray-100' : 'text-gray-600 dark:text-gray-400'}`}></i>
+                            <item.icon size={24} className={`text-2xl ${isActive ? 'text-gray-900 dark:text-gray-100' : 'text-gray-600 dark:text-gray-400'}`} />
                             {item.count > 0 && (
                                 <span className="absolute top-2 right-1/4 bg-main text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full border border-white dark:border-[#09090b]">
                                     {item.count}
@@ -222,7 +220,7 @@ const Navbar = () => {
                     className="flex flex-col items-center justify-center w-full h-full relative"
                 >
                     <div className="w-7 h-7 rounded-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center font-bold text-main text-sm">
-                        {user?.FirstName?.[0] || 'U'}
+                        {user?.username?.[0].toUpperCase() || 'U'}
                     </div>
                 </button>
             </nav>

@@ -10,6 +10,7 @@ import Settings from './pages/Settings';
 import MainLayout from './layouts/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
 import { ThemeProvider } from './context/ThemeContext';
+import { AuthProvider } from './context/AuthContext';
 import { useEffect } from 'react';
 
 function App() {
@@ -25,9 +26,10 @@ function App() {
 
   return (
     <ThemeProvider>
-      <Router>
-        <Toaster position="top-right" reverseOrder={false} />
-        <Routes>
+      <AuthProvider>
+        <Router>
+          <Toaster position="top-right" reverseOrder={false} />
+          <Routes>
           {/* Protected Routes */}
           <Route element={<MainLayout />}>
             <Route path="/feed" element={<Home />} />
@@ -47,6 +49,7 @@ function App() {
           <Route path="/" element={<Navigate to="/feed" replace />} />
         </Routes>
       </Router>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
