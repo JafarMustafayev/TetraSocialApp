@@ -42,4 +42,20 @@ public class SessionService(
 
         return ResponseDto.OkResponse(localizer.Get("Auth.Session.Success.Revoked"));
     }
+    public async Task<bool> ExistsActiveAsync(string sessionId)
+    {
+        return readRepo.FirstOrDefaultAsync(x => x.Id == sessionId).Result?.IsRevoked == false;
+    }
+    public async Task UpdateLastActivityAsync(string sessionId)
+    {
+        var session = await readRepo.FirstOrDefaultAsync(x => x.Id == sessionId);
+        if(session == null)
+        {
+            return;
+        }
+
+        session.LastActivityAt = DateTime.UtcNow;
+        writeRepo.Update(session);
+        await unitOfWork.SaveChangesAsync();
+    }
 }

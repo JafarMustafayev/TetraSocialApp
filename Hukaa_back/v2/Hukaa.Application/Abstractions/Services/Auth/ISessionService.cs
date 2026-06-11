@@ -10,4 +10,6 @@ public interface ISessionService
     //Task<ResponseDto> RevokeAllExceptCurrentAsync(string currentSessionId);
     //Task<ResponseDto> RevokeAllSessionsAsync();
     //void RevokeOldestSession(); // ★ limitə çatdıqda
+    Task<bool> ExistsActiveAsync(string sessionId);
+    Task UpdateLastActivityAsync(string sessionId);
 }

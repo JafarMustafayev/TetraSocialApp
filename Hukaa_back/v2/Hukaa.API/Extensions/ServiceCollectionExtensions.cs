@@ -85,7 +85,33 @@ public static class ServiceCollectionExtensions
                             }
 
                             return Task.CompletedTask;
-                        }
+                        },
+                        OnTokenValidated =
+                            async context =>
+                            {
+                                var sessionId = context.Principal?
+                                    .FindFirst("sessionId")?.Value;
+
+                                if(string.IsNullOrWhiteSpace(sessionId))
+                                {
+                                    context.Fail("Session claim missing");
+                                    return;
+                                }
+
+                                var sessionService = context.HttpContext
+                                    .RequestServices
+                                    .GetRequiredService<ISessionService>();
+
+                                var isActive = await sessionService.ExistsActiveAsync(sessionId);
+
+                                if(!isActive)
+                                {
+                                    context.Fail("Session revoked");
+                                    return;
+                                }
+                                await sessionService.UpdateLastActivityAsync(sessionId);
+                                
+                            }
                     };
                 });
         }
