@@ -160,7 +160,7 @@ const MessageBubble = ({ message, isFirstInGroup, onImageClick }) => {
     if (!message.text) return null;
 
     return (
-      <div className="relative text-[15px] leading-snug break-words after:content-[''] after:inline-block after:w-[50px] after:h-[15px] [&>span:last-child]:inline">
+      <div className="relative text-[15px] leading-snug wrap-break-word after:content-[''] after:inline-block after:w-[50px] after:h-[15px] [&>span:last-child]:inline">
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           components={{
@@ -213,7 +213,7 @@ const MessageBubble = ({ message, isFirstInGroup, onImageClick }) => {
     >
       <div
         className={`relative flex flex-col max-w-[85%] md:max-w-[65%] px-2 pt-2 pb-1.5 rounded-2xl ${tailClass} ${message.isMine
-          ? 'bg-[var(--color-main)] text-white'
+          ? 'bg-main text-white'
           : 'bg-white dark:bg-[#202327] text-gray-900 dark:text-gray-100'
           } shadow-sm`}
       >

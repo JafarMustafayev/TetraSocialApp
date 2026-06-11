@@ -20,7 +20,16 @@ export const AuthProvider = ({ children }) => {
         try {
             const response = await getMe();
             if (response.Success || response.success) {
-                setUser(response.Data || response.data);
+                const userData = response.Data || response.data;
+                setUser(userData);
+                if (userData && userData.accentHue !== undefined && userData.accentHue !== null) {
+                    const hue = userData.accentHue;
+                    localStorage.setItem('accentHue', hue);
+                    document.documentElement.style.setProperty('--accent-hue', hue);
+                    document.documentElement.style.setProperty('--color-main', `hsl(${hue} 89% var(--accent-l))`);
+                    document.documentElement.style.setProperty('--color-main-hover', `hsl(${hue} 89% var(--accent-l) / 80%)`);
+                    document.documentElement.style.setProperty('--color-optional', `hsl(${hue} 89% var(--accent-l) / 70%)`);
+                }
             } else {
                 setUser(null);
             }
