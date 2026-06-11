@@ -1,4 +1,3 @@
-import React from 'react';
 import { Search, MailPlus, ChevronDown } from 'lucide-react';
 import ConversationItem from './ConversationItem';
 
@@ -17,8 +16,8 @@ const ConversationList = ({
 }) => {
   // Filter conversations based on tab and search
   const filteredConversations = conversations.filter(c => {
-    const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          c.lastMessage.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.lastMessage.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesTab = activeTab === 'archived' ? c.isArchived : !c.isArchived;
     return matchesSearch && matchesTab;
   });
@@ -47,7 +46,7 @@ const ConversationList = ({
           </div>
           <input
             type="text"
-            className="block w-full pl-10 pr-3 py-2 border border-transparent rounded-full leading-5 bg-gray-100 dark:bg-[#202327] text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:outline-none focus:bg-white dark:focus:bg-black focus:border-[var(--color-main)] focus:ring-1 focus:ring-[var(--color-main)] sm:text-sm transition-all"
+            className="block w-full pl-10 pr-3 py-2 border border-transparent rounded-full leading-5 bg-gray-100 dark:bg-[#202327] text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:outline-none focus:bg-white dark:focus:bg-black focus:border-main focus:ring-1 focus:ring-main sm:text-sm transition-all"
             placeholder="Search messages..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -59,32 +58,30 @@ const ConversationList = ({
       <div className="flex px-4 border-b border-gray-200 dark:border-gray-800 mt-2">
         <button
           onClick={() => setActiveTab('all')}
-          className={`flex-1 pb-3 text-sm font-semibold transition-colors relative ${
-            activeTab === 'all' 
-              ? 'text-gray-900 dark:text-gray-100' 
-              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
-          }`}
+          className={`flex-1 pb-3 text-sm font-semibold transition-colors relative ${activeTab === 'all'
+            ? 'text-gray-900 dark:text-gray-100'
+            : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+            }`}
         >
           <div className="flex items-center justify-center space-x-2">
             <span>All chats</span>
           </div>
           {activeTab === 'all' && (
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-[var(--color-main)] rounded-t-full"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-main rounded-t-full"></div>
           )}
         </button>
         <button
           onClick={() => setActiveTab('archived')}
-          className={`flex-1 pb-3 text-sm font-semibold transition-colors relative ${
-            activeTab === 'archived' 
-              ? 'text-gray-900 dark:text-gray-100' 
-              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
-          }`}
+          className={`flex-1 pb-3 text-sm font-semibold transition-colors relative ${activeTab === 'archived'
+            ? 'text-gray-900 dark:text-gray-100'
+            : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+            }`}
         >
           <div className="flex items-center justify-center space-x-2">
             <span>Archived</span>
           </div>
           {activeTab === 'archived' && (
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-[var(--color-main)] rounded-t-full"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-main rounded-t-full"></div>
           )}
         </button>
       </div>

@@ -8,12 +8,12 @@ import { groupMessagesByDate } from '../../utils/dateFormatter';
 const ChatPanel = ({ conversation, messages, onBack, onSendMessage }) => {
   const scrollRef = useRef(null);
   const observerRef = useRef(null);
-  
+
   const [floatingDate, setFloatingDate] = useState(null);
   const [isFloatingDateVisible, setIsFloatingDateVisible] = useState(false);
   const hideTimeoutRef = useRef(null);
   const [showNewMessageIndicator, setShowNewMessageIndicator] = useState(false);
-  
+
   // State for image modal
   const [galleryData, setGalleryData] = useState(null); // { images: [], index: 0 }
 
@@ -25,7 +25,7 @@ const ChatPanel = ({ conversation, messages, onBack, onSendMessage }) => {
     if (scrollRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
       const isScrolledUp = scrollHeight - scrollTop - clientHeight > 100;
-      
+
       if (!isScrolledUp) {
         // If already at bottom, scroll down to show new message
         scrollRef.current.scrollTop = scrollHeight;
@@ -61,7 +61,7 @@ const ChatPanel = ({ conversation, messages, onBack, onSendMessage }) => {
       hideTimeoutRef.current = setTimeout(() => {
         setIsFloatingDateVisible(false);
       }, 1500);
-      
+
       // Also hide new message indicator if scrolled to bottom
       if (scrollRef.current) {
         const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
@@ -153,7 +153,7 @@ const ChatPanel = ({ conversation, messages, onBack, onSendMessage }) => {
 
         {/* User Info */}
         <div className="flex items-center flex-1 min-w-0 cursor-pointer">
-          <div className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-gray-700 dark:text-gray-200 font-semibold mr-3 flex-shrink-0">
+          <div className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-gray-700 dark:text-gray-200 font-semibold mr-3 shrink-0">
             {conversation.avatar}
           </div>
           <div className="flex flex-col min-w-0">
@@ -178,10 +178,9 @@ const ChatPanel = ({ conversation, messages, onBack, onSendMessage }) => {
       </div>
 
       {/* Floating Date Indicator */}
-      <div 
-        className={`absolute top-[70px] left-1/2 -translate-x-1/2 z-10 transition-opacity duration-300 ${
-          isFloatingDateVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        }`}
+      <div
+        className={`absolute top-[70px] left-1/2 -translate-x-1/2 z-10 transition-opacity duration-300 ${isFloatingDateVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}
       >
         <div className="bg-white/80 dark:bg-[#182229]/90 backdrop-blur-sm shadow-sm text-gray-600 dark:text-gray-300 text-xs px-3 py-1 rounded-lg">
           {floatingDate}
@@ -189,13 +188,13 @@ const ChatPanel = ({ conversation, messages, onBack, onSendMessage }) => {
       </div>
 
       {/* Messages List */}
-      <div 
+      <div
         ref={scrollRef}
         className="flex-1 overflow-y-auto px-4 py-2 custom-scrollbar flex flex-col relative"
       >
         {groupedMessages.map((group) => (
           <div key={group.date} className="flex flex-col date-separator-marker" data-date={group.date}>
-            
+
             {/* Date Separator Pill */}
             <div className="flex justify-center my-3">
               <span className="bg-white/80 dark:bg-[#182229]/90 shadow-sm text-gray-600 dark:text-gray-300 text-xs px-3 py-1 rounded-lg uppercase">
@@ -217,10 +216,10 @@ const ChatPanel = ({ conversation, messages, onBack, onSendMessage }) => {
               const isFirstInGroup = !prevMsg || prevMsg.senderId !== msg.senderId || prevMsg.isSystem;
 
               return (
-                <MessageBubble 
-                  key={msg.id} 
-                  message={msg} 
-                  isFirstInGroup={isFirstInGroup} 
+                <MessageBubble
+                  key={msg.id}
+                  message={msg}
+                  isFirstInGroup={isFirstInGroup}
                   onImageClick={(images, index) => setGalleryData({ images, index })}
                 />
               );
@@ -231,12 +230,12 @@ const ChatPanel = ({ conversation, messages, onBack, onSendMessage }) => {
 
       {/* New Message Indicator */}
       {showNewMessageIndicator && (
-        <button 
+        <button
           onClick={scrollToBottom}
           className="absolute bottom-[80px] right-4 bg-white dark:bg-[#202c33] text-gray-600 dark:text-[#aebac1] p-2 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-[#2a3942] transition-colors z-10"
         >
           <ChevronDown size={20} />
-          <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-[var(--color-main)] rounded-full border-2 border-white dark:border-[#202c33]"></span>
+          <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-main rounded-full border-2 border-white dark:border-[#202c33]"></span>
         </button>
       )}
 
@@ -247,10 +246,10 @@ const ChatPanel = ({ conversation, messages, onBack, onSendMessage }) => {
 
       {/* Image Modal */}
       {galleryData && (
-        <ImageModal 
+        <ImageModal
           images={galleryData.images}
           initialIndex={galleryData.index}
-          onClose={() => setGalleryData(null)} 
+          onClose={() => setGalleryData(null)}
         />
       )}
     </div>

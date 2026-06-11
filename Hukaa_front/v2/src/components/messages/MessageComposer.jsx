@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Paperclip, Smile, Send, X, FileText } from 'lucide-react';
+import { Paperclip, Send, X, FileText } from 'lucide-react';
 
 const formatFileSize = (bytes) => {
   if (bytes === 0) return '0 B';
@@ -143,8 +143,8 @@ const MessageComposer = ({ onSend }) => {
             onClick={handleSend}
             disabled={!text.trim() && attachments.length === 0}
             className={`p-2 rounded-full flex items-center justify-center transition-colors ${(text.trim() || attachments.length > 0)
-                ? 'bg-main text-white hover:bg-main/80'
-                : 'bg-main/50 text-white/70 cursor-not-allowed'
+              ? 'bg-main text-white hover:bg-main/80'
+              : 'bg-main/50 text-white/70 cursor-not-allowed'
               }`}
           >
             <Send size={18} className="ml-0.5" />

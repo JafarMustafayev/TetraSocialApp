@@ -56,7 +56,7 @@ const PostCard = ({ post }) => {
                 </div>
 
                 {/* Post Body */}
-                <div className="text-[15px] text-gray-900 dark:text-white mt-0.5 whitespace-pre-wrap leading-normal break-words">
+                <div className="text-[15px] text-gray-900 dark:text-white mt-0.5 whitespace-pre-wrap leading-normal wrap-break-word">
                     <div className={expanded ? '' : 'line-clamp-4'}>
                         {parseContent(post.Content)}
                     </div>

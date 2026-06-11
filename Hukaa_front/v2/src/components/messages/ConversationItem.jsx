@@ -40,14 +40,14 @@ const ConversationItem = ({
     <div
       onClick={onClick}
       className={`relative flex items-center p-4 cursor-pointer transition-colors duration-200 group
-        ${isSelected 
-          ? 'bg-gray-100 dark:bg-gray-800' 
+        ${isSelected
+          ? 'bg-gray-100 dark:bg-gray-800'
           : 'hover:bg-gray-50 dark:hover:bg-gray-900'}
         ${isMenuOpen ? 'z-20 bg-gray-100 dark:bg-gray-800' : 'z-0'}
       `}
     >
       {/* Avatar */}
-      <div className="w-12 h-12 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 font-semibold flex-shrink-0">
+      <div className="w-12 h-12 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 font-semibold shrink-0">
         {conversation.avatar}
       </div>
 
@@ -67,7 +67,7 @@ const ConversationItem = ({
       </div>
 
       {/* 3 dots menu button */}
-      <div 
+      <div
         className={`absolute right-4 top-4 flex items-center justify-center
           ${isMenuOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} 
           transition-opacity duration-200`}
@@ -77,7 +77,7 @@ const ConversationItem = ({
             e.stopPropagation();
             onMenuToggle(isMenuOpen ? null : conversation.id);
           }}
-          className="p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-colors bg-white dark:bg-[#0f1419] md:bg-transparent md:dark:bg-transparent shadow-sm md:shadow-none"
+          className="p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-colors bg-white dark:bg-black md:bg-transparent md:dark:bg-transparent shadow-sm md:shadow-none"
         >
           <MoreHorizontal size={18} />
         </button>
@@ -86,7 +86,7 @@ const ConversationItem = ({
         {isMenuOpen && (
           <div
             ref={menuRef}
-            className="absolute right-0 top-8 w-48 bg-white dark:bg-[#0f1419] rounded-xl shadow-lg border border-gray-100 dark:border-gray-800 py-1 z-50 flex flex-col"
+            className="absolute right-0 top-8 w-48 bg-white dark:bg-black rounded-xl shadow-lg border border-gray-100 dark:border-gray-800 py-1 z-50 flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             <button

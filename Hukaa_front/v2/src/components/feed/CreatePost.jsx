@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { USER_AVATAR, API_BASE_URL } from '../../api/api-config';
 import MediaPreviews from './MediaPreviews';
+import { Paperclip } from 'lucide-react';
+
 
 const CreatePost = ({ onPostCreated }) => {
     const [content, setContent] = useState('');
@@ -106,20 +108,9 @@ const CreatePost = ({ onPostCreated }) => {
                 <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100 dark:border-[#1f1f1f]">
                     <div className="flex items-center gap-1">
                         <button onClick={() => fileInputRef.current.click()} className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-main/10 transition-colors text-main">
-                            <i className="ri-image-line text-xl"></i>
+                            <Paperclip size={20} />
                         </button>
-                        <button className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-main/10 transition-colors text-main hidden sm:flex">
-                            <i className="ri-bar-chart-2-line text-xl"></i>
-                        </button>
-                        <button className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-main/10 transition-colors text-main hidden sm:flex">
-                            <i className="ri-emotion-line text-xl"></i>
-                        </button>
-                        <button className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-main/10 transition-colors text-main hidden sm:flex">
-                            <i className="ri-calendar-event-line text-xl"></i>
-                        </button>
-                        <button className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-main/10 transition-colors text-main hidden sm:flex">
-                            <i className="ri-map-pin-line text-xl opacity-50 cursor-not-allowed"></i>
-                        </button>
+
                     </div>
                     <button
                         onClick={handleSubmit}
