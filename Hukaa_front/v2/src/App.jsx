@@ -7,6 +7,7 @@ import ResetPassword from './pages/auth/ResetPassword';
 import EmailConfirmation from './pages/auth/EmailConfirmation';
 import Home from './pages/Home';
 import Settings from './pages/Settings';
+import Messages from './pages/Messages';
 import MainLayout from './layouts/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
 import { ThemeProvider } from './context/ThemeContext';
@@ -33,6 +34,7 @@ function App() {
           {/* Protected Routes */}
           <Route element={<MainLayout />}>
             <Route path="/feed" element={<Home />} />
+            <Route path="/messages" element={<Messages />} />
             <Route path="/settings/*" element={<Settings />} />
           </Route>
 
