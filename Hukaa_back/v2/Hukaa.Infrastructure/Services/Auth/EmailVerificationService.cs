@@ -41,6 +41,11 @@ public class EmailVerificationService(
             ));
         }
 
+        if(user.EmailConfirmed)
+        {
+            throw new ConflictException(localizer.Get("Auth.EmailVerification.Resend.AlreadyConfirmed"));
+        }
+
         var verificationResult = await verificationService.RegenerateEmailConfirmationTokenAsync(user);
         var url = clientUrlService.BuildEmailConfirmationUrl(user.Id, verificationResult.PlainToken);
 

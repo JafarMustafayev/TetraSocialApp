@@ -64,7 +64,7 @@ export const resetPassword = async (data) => {
  * @returns {Promise<object>}
  */
 export const confirmEmail = async (data) => {
-    return fetchClient('/api/auth/confirm-email', {
+    return fetchClient('/api/auth/EmailVerification/confirm', {
         method: 'POST',
         body: JSON.stringify(data)
     });
@@ -72,12 +72,12 @@ export const confirmEmail = async (data) => {
 
 /**
  * Resends confirmation email to user.
- * @param {string} email - The user's email address.
+ * @param {string} userId - The user's ID.
  * @returns {Promise<object>}
  */
-export const resendConfirmationEmail = async (email) => {
-    return fetchClient('/api/auth/resend-confirmation-email', {
+export const resendConfirmationEmail = async (userId) => {
+    return fetchClient('/api/auth/EmailVerification/resend', {
         method: 'POST',
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ userId: userId })
     });
 };

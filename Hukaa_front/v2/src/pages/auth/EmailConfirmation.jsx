@@ -10,7 +10,7 @@ const EmailConfirmation = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isResending, setIsResending] = useState(false);
     const [status, setStatus] = useState('verifying'); // verifying, success, error
-    const [email, setEmail] = useState('');
+    const [userId, setUserId] = useState('');
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -19,24 +19,24 @@ const EmailConfirmation = () => {
         document.title = "Confirm Email";
         const queryParams = new URLSearchParams(location.search);
         const token = queryParams.get('token');
-        const emailParam = queryParams.get('email');
+        const userId = queryParams.get('userId');
 
-        if (emailParam) {
-            setEmail(emailParam);
+        if (userId) {
+            setUserId(userId);
         }
 
-        if (token && emailParam) {
-            verifyEmail(emailParam, token);
+        if (token && userId) {
+            verifyEmail(userId, token);
         } else {
             setStatus('error');
             setIsLoading(false);
         }
     }, [location]);
 
-    const verifyEmail = async (emailToVerify, tokenToVerify) => {
+    const verifyEmail = async (userIdToVerify, tokenToVerify) => {
         try {
-            const result = await confirmEmail({ email: emailToVerify, token: tokenToVerify });
-            
+            const result = await confirmEmail({ userId: userIdToVerify, token: tokenToVerify });
+
             if (result.Success || result.success) {
                 setStatus('success');
                 toast.success('Email successfully verified!');
@@ -52,14 +52,14 @@ const EmailConfirmation = () => {
     };
 
     const handleResend = async () => {
-        if (!email) {
-            toast.error("Email address is missing. Please try logging in again.");
+        if (!userId) {
+            toast.error("User is missing. Please try logging in again.");
             return;
         }
 
         setIsResending(true);
         try {
-            const result = await resendConfirmationEmail(email);
+            const result = await resendConfirmationEmail(userId);
             if (result.Success || result.success) {
                 toast.success("Verification link resent to your email.");
             }
@@ -72,18 +72,18 @@ const EmailConfirmation = () => {
 
     return (
         <AuthLayout>
-            <AuthCard 
+            <AuthCard
                 title={
                     status === 'verifying' ? "Verifying Email..." :
-                    status === 'success' ? "Email Verified" : "Verification Failed"
-                } 
+                        status === 'success' ? "Email Verified" : "Verification Failed"
+                }
                 subtitle={
                     status === 'verifying' ? "Please wait while we verify your email address." :
-                    status === 'success' ? "Your email has been successfully verified. You can now log in." :
-                    "The verification link is invalid or has expired."
+                        status === 'success' ? "Your email has been successfully verified. You can now log in." :
+                            "The verification link is invalid or has expired."
                 }
             >
-                
+
                 {status === 'verifying' && (
                     <div className="flex justify-center my-8">
                         <div className="w-10 h-10 border-4 border-gray-200 dark:border-gray-800 border-t-main rounded-full animate-spin"></div>
@@ -113,8 +113,8 @@ const EmailConfirmation = () => {
                         </AuthButton>
                     ) : status === 'error' ? (
                         <>
-                            <AuthButton 
-                                onClick={handleResend} 
+                            <AuthButton
+                                onClick={handleResend}
                                 isLoading={isResending}
                             >
                                 Resend Verification Link
@@ -124,8 +124,8 @@ const EmailConfirmation = () => {
 
                     {status !== 'verifying' && (
                         <div className="text-center mt-6">
-                            <Link 
-                                to="/auth/login" 
+                            <Link
+                                to="/auth/login"
                                 className="text-[14px] text-gray-500 hover:text-main transition-colors font-medium flex items-center justify-center gap-1"
                             >
                                 <i className="ri-arrow-left-line"></i> Back to log in
