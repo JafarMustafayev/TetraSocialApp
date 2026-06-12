@@ -10,7 +10,7 @@ const SettingsInput = ({ label, type = "text", helperText, ...props }) => {
             </label>
             <input
                 type={type}
-                className="w-full h-[48px] px-4 rounded-[4px] border border-gray-300 dark:border-gray-700 bg-white dark:bg-black text-gray-900 dark:text-white focus:outline-none focus:border-main focus:ring-1 focus:ring-main transition-colors text-[15px]"
+                className="w-full h-[48px] px-4 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-black text-gray-900 dark:text-white focus:outline-none focus:border-main focus:ring-1 focus:ring-main transition-colors text-[15px] "
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
                 {...props}

@@ -29,28 +29,46 @@ function App() {
     <ThemeProvider>
       <AuthProvider>
         <Router>
-          <Toaster position="top-right" reverseOrder={false} />
+          <Toaster
+            position="bottom-right"
+            reverseOrder={false}
+            toastOptions={{
+              className: 'custom-toast',
+              success: {
+                iconTheme: {
+                  primary: '#10b981',
+                  secondary: 'var(--toast-bg)',
+                },
+              },
+              error: {
+                iconTheme: {
+                  primary: '#ef4444',
+                  secondary: 'var(--toast-bg)',
+                },
+              },
+            }}
+          />
           <Routes>
-          {/* Protected Routes */}
-          <Route element={<MainLayout />}>
-            <Route path="/feed" element={<Home />} />
-            <Route path="/messages" element={<Messages />} />
-            <Route path="/settings/*" element={<Settings />} />
-          </Route>
+            {/* Protected Routes */}
+            <Route element={<MainLayout />}>
+              <Route path="/feed" element={<Home />} />
+              <Route path="/messages" element={<Messages />} />
+              <Route path="/settings/*" element={<Settings />} />
+            </Route>
 
-          {/* Guest Routes (Redirect to /home if logged in) */}
-          <Route element={<AuthLayout />}>
-            <Route path="/auth/login" element={<Login />} />
-            <Route path="/auth/register" element={<Register />} />
-            <Route path="/auth/forgot-password" element={<ForgotPassword />} />
-            <Route path="/auth/reset-password" element={<ResetPassword />} />
-            <Route path="/auth/confirm-email" element={<EmailConfirmation />} />
-          </Route>
+            {/* Guest Routes (Redirect to /home if logged in) */}
+            <Route element={<AuthLayout />}>
+              <Route path="/auth/login" element={<Login />} />
+              <Route path="/auth/register" element={<Register />} />
+              <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+              <Route path="/auth/reset-password" element={<ResetPassword />} />
+              <Route path="/auth/confirm-email" element={<EmailConfirmation />} />
+            </Route>
 
-          {/* Default Redirect */}
-          <Route path="/" element={<Navigate to="/feed" replace />} />
-        </Routes>
-      </Router>
+            {/* Default Redirect */}
+            <Route path="/" element={<Navigate to="/feed" replace />} />
+          </Routes>
+        </Router>
       </AuthProvider>
     </ThemeProvider>
   );

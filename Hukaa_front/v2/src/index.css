@@ -7,10 +7,20 @@
   /* Dynamic primary color hue that can be changed from Settings */
   --accent-hue: 200;
   --accent-l: 46%;
+
+  /* Toast variables */
+  --toast-bg: #ffffff;
+  --toast-color: #0f1419;
+  --toast-border: #e4e4e7;
 }
 
 .dark {
   --accent-l: 55%;
+
+  /* Toast variables */
+  --toast-bg: #18181b;
+  --toast-color: #f4f4f5;
+  --toast-border: #27272a;
 }
 
 @theme {
@@ -86,4 +96,20 @@ html.dark ::-webkit-scrollbar-thumb {
 
 .dark .custom-scrollbar {
   scrollbar-color: #334155 transparent;
+}
+
+/* Custom Minimal Toast Styling */
+.custom-toast {
+  background: var(--toast-bg) !important;
+  color: var(--toast-color) !important;
+  border: 1px solid var(--toast-border) !important;
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.05), 0 1px 3px 0 rgba(0, 0, 0, 0.03) !important;
+  border-radius: 8px !important;
+  font-family: var(--font-main) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  padding: 10px 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
 }
