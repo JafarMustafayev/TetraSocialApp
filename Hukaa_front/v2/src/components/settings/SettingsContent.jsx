@@ -10,6 +10,7 @@ import AppearanceSettings from './direct/AppearanceSettings';
 
 // Item Components
 import UsernamePasswordForm from './forms/UsernamePasswordForm';
+import ActiveSessionsForm from './forms/ActiveSessionsForm';
 
 // Component Map for direct categories
 const DirectComponentMap = {
@@ -19,6 +20,7 @@ const DirectComponentMap = {
 // Component Map for items inside group categories
 const ItemComponentMap = {
     'username-password': UsernamePasswordForm,
+    'active-sessions': ActiveSessionsForm,
 };
 
 const SettingsContent = () => {

@@ -140,11 +140,8 @@ export const fetchClient = async (endpoint, options = {}) => {
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify({ refreshToken })
                 });
-                debugger;
-                console.log(refreshRes);
 
                 if (refreshRes.ok) {
-                    console.log("refreshRes is ok");
                     const data = await refreshRes.json();
 
                     // Handle potential backend format variations
@@ -165,8 +162,6 @@ export const fetchClient = async (endpoint, options = {}) => {
                     }
                 }
 
-                console.log("refreshRes is not ok");
-                
                 // If refresh fails
                 throw new Error('Refresh failed');
 

@@ -57,3 +57,13 @@ export const groupMessagesByDate = (messages) => {
 
   return groups;
 };
+
+export const formatUtcToLocal = (dateString) => {
+  if (!dateString) return '';
+  let formattedString = dateString.trim().replace(' ', 'T');
+  if (!/Z|[+-]\d{2}:?\d{2}$/i.test(formattedString)) {
+    formattedString += 'Z';
+  }
+  const date = new Date(formattedString);
+  return isNaN(date.getTime()) ? dateString : date.toLocaleString();
+};

@@ -81,3 +81,32 @@ export const resendConfirmationEmail = async (userId) => {
         body: JSON.stringify({ userId: userId })
     });
 };
+
+/**
+ * Retrieves all active sessions.
+ * @returns {Promise<object>} Server response.
+ */
+export const getSessions = async () => {
+    return fetchClient('/api/auth/session');
+};
+
+/**
+ * Revokes a specific active session.
+ * @param {string} sessionId 
+ * @returns {Promise<object>} Server response.
+ */
+export const revokeSession = async (sessionId) => {
+    return fetchClient(`/api/auth/session/${sessionId}`, {
+        method: 'DELETE'
+    });
+};
+
+/**
+ * Revokes all other active sessions (excluding the current one).
+ * @returns {Promise<object>} Server response.
+ */
+export const revokeOtherSessions = async () => {
+    return fetchClient('/api/auth/session/revoke-others', {
+        method: 'POST'
+    });
+};
