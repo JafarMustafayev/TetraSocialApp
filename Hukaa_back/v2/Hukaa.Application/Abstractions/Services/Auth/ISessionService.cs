@@ -3,13 +3,11 @@
 public interface ISessionService
 {
     Task<string> CreateSessionAsync(string userId);
-
-    //Task<ResponseDto> GetSessionByIdAsync(string sessionId);
-    //ResponseDto GetMyActiveSessions();
+    ResponseDto<object> GetMyActiveSessions();
     Task<ResponseDto> RevokeSessionAsync(string sessionId);
-    //Task<ResponseDto> RevokeAllExceptCurrentAsync(string currentSessionId);
-    //Task<ResponseDto> RevokeAllSessionsAsync();
-    //void RevokeOldestSession(); // ★ limitə çatdıqda
+    Task<ResponseDto> RevokeAllExceptCurrentAsync();
+    Task RevokeAllSessionsAsync(string? userId);
+    Task RevokeOldestSessionsAsync(ICollection<AuthSession> sessions);
     Task<bool> ExistsActiveAsync(string sessionId);
     Task UpdateLastActivityAsync(string sessionId);
 }

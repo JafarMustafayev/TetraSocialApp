@@ -10,7 +10,7 @@ public class AuthSession : BaseEntity
 
     public string CreatedByIp { get; set; } = null!;
 
-    public DateTime? LastActivityAt { get; set; }
+    public DateTime? LastActivityAt { get; set; } = DateTime.UtcNow;
 
     public bool IsRevoked { get; set; }
     public DateTime? RevokedAt { get; set; }
