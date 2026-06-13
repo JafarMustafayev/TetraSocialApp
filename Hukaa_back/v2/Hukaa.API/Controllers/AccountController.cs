@@ -25,4 +25,12 @@ public class AccountController(
         var res = await accountService.CheckUsernameAvailabilityAsync(username);
         return StatusCode(res.StatusCode, res);
     }
+
+    [Authorize]
+    [HttpPatch("username")]
+    public async Task<IActionResult> ChangeUsername([FromBody] ChangeUsernameRequestDto request)
+    {
+        var res = await accountService.ChangeUsernameAsync(request);
+        return StatusCode(res.StatusCode, res);
+    }
 }

@@ -64,6 +64,42 @@ public class AccountService(
 
         return ReturnAvailabilityResponse(avail);
     }
+    public async Task<ResponseDto<object>> ChangeUsernameAsync(ChangeUsernameRequestDto request)
+    {
+        CheckNullOrEmpty(request.Username, "Username");
+
+        if(await userManager.FindByNameAsync(request.Username) != null)
+        {
+            throw new ConflictException(localizer.Get("Validation.Common.Validation.AlreadyExists", "Username"));
+        }
+
+        var userId = claimsReader.GetUserId();
+
+        var user = await userManager.FindByIdAsync(userId);
+        if(user == null)
+        {
+            throw new NotFoundException(localizer.Get("Error.Common.NotFoundWithParameter", "User",
+                new Dictionary<string, object>
+                {
+                    ["Parameter"] = userId
+                }
+            ));
+        }
+
+        var result = await userManager.SetUserNameAsync(user, request.Username);
+
+        if(!result.Succeeded)
+        {
+            throw new ValidationException(
+                string.Join(", ", result.Errors.Select(x => x.Description))
+            );
+        }
+
+        return ResponseDto.OkResponse(localizer.Get("Auth.Username.Changed.Success"),new
+        {
+            Username = user.UserName
+        });
+    }
 
     private ResponseDto ReturnAvailabilityResponse(bool avail)
     {
