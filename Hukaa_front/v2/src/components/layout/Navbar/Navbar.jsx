@@ -13,7 +13,9 @@ import {
     Bookmark,
     User,
     Settings,
-    Plus
+    Plus,
+    Terminal,
+    Radio
 } from "lucide-react"
 
 const Navbar = () => {
@@ -72,6 +74,8 @@ const Navbar = () => {
         { path: '/notifications', label: 'Notifications', icon: Bell, count: 0 },
         { path: '/messages', label: 'Messages', icon: MessageSquare, count: 0 },
         { path: '/bookmarks', label: 'Bookmarks', icon: Bookmark },
+        { path: '/api-tester', label: 'API Tester', icon: Terminal, isDev: true },
+        { path: '/websocket-tester', label: 'WS Tester', icon: Radio, isDev: true },
         { path: '/profile', label: 'Profile', icon: User },
         { path: '/settings', label: 'Settings', icon: Settings }
     ];
@@ -106,6 +110,9 @@ const Navbar = () => {
 
                     <nav className="flex flex-col gap-1 mt-2 w-full">
                         {menuItems.map((item) => {
+                            if (item.isDev && !import.meta.env.DEV && user?.isAdmin !== true) {
+                                return null;
+                            }
                             const isActive =
                                 location.pathname === item.path ||
                                 location.pathname.startsWith(`${item.path}/`);

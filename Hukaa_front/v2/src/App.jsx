@@ -8,6 +8,8 @@ import EmailConfirmation from './pages/auth/EmailConfirmation';
 import Home from './pages/Home';
 import Settings from './pages/Settings';
 import Messages from './pages/Messages';
+import ApiTester from './pages/api-tester';
+import WebSocketTester from './pages/websocket-tester';
 import MainLayout from './layouts/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
 import { ThemeProvider } from './context/ThemeContext';
@@ -54,6 +56,9 @@ function App() {
               <Route path="/feed" element={<Home />} />
               <Route path="/messages" element={<Messages />} />
               <Route path="/settings/*" element={<Settings />} />
+              <Route path="/api-tester/*" element={<ApiTester />} />
+              <Route path="/websocket-tester/*" element={<WebSocketTester />} />
+
             </Route>
 
             {/* Guest Routes (Redirect to /home if logged in) */}
