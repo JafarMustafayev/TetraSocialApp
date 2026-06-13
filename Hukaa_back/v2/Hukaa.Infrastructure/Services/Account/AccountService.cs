@@ -27,7 +27,7 @@ public class AccountService(
             Id = userId,
             Email = user.Email,
             Username = user.UserName,
-            AccentHue = 200, // daha sonra dinamik olaraq deyisilecek 
+            AccentHue = 200,
             AvatarUrl = "",
             EmailVerified = user.EmailConfirmed,
             IsAdmin = roles.Contains(UserRoles.Admin),
@@ -46,11 +46,7 @@ public class AccountService(
     {
         CheckNullOrEmpty(email, "Email");
         CheckValidEmail(email);
-        var avail = false;
-        if(await userManager.FindByEmailAsync(email) == null)
-        {
-            avail = true;
-        }
+        var avail = await userManager.FindByEmailAsync(email) == null;
 
         return ReturnAvailabilityResponse(avail);
     }
@@ -58,11 +54,7 @@ public class AccountService(
     public async Task<ResponseDto> CheckUsernameAvailabilityAsync(string username)
     {
         CheckNullOrEmpty(username, "Username");
-        var avail = false;
-        if(await userManager.FindByNameAsync(username) == null)
-        {
-            avail = true;
-        }
+        var avail = await userManager.FindByNameAsync(username) == null;
 
         return ReturnAvailabilityResponse(avail);
     }
@@ -91,7 +83,7 @@ public class AccountService(
         var signInResult = await signInManager.CheckPasswordSignInAsync(user, request.Password, false);
         if(signInResult is { Succeeded: false, RequiresTwoFactor: false })
         {
-            throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.Invalid"));
+            throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.InvalidPassword"));
         }
 
         var token = await userManager.GenerateChangeEmailTokenAsync(user, request.Email);
@@ -105,7 +97,7 @@ public class AccountService(
 
         return ResponseDto<object>.OkResponse(localizer.Get("Auth.Email.Changed.Success"), new
         {
-            Email = user.Email
+            user.Email
         });
     }
     public async Task<ResponseDto<object>> ChangeUsernameAsync(ChangeUsernameRequestDto request)
