@@ -2,7 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../../../context/ThemeContext';
 
-const MobileProfileSheet = ({ isOpen, onClose, user, onLogout }) => {
+import {
+    Bookmark,
+    Settings,
+    Terminal,
+    Radio,
+    Moon,
+    Sun
+} from "lucide-react"
+
+const MobileProfileSheet = ({ isOpen, onClose, user, onLogout, menuItems }) => {
     const [isClosing, setIsClosing] = useState(false);
     const { theme, toggleTheme } = useTheme();
 
@@ -69,28 +78,23 @@ const MobileProfileSheet = ({ isOpen, onClose, user, onLogout }) => {
 
                     {/* Menu Items */}
                     <div className="flex flex-col border-t border-gray-200 dark:border-neutral-700">
-                        {/* Group 1 */}
-                        <div className="py-1.5 border-b border-gray-200 dark:border-neutral-700">
-                            <Link
-                                to="/bookmarks"
-                                className="flex items-center w-full gap-4 px-4 py-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
-                                onClick={handleClose}
-                            >
-                                <i className="ri-bookmark-line text-xl text-gray-600 dark:text-gray-400 shrink-0"></i>
-                                <span className="text-[16px] font-medium text-gray-900 dark:text-gray-100">Bookmarks</span>
-                            </Link>
-                        </div>
 
-                        {/* Group 2 */}
                         <div className="py-1.5 border-b border-gray-200 dark:border-neutral-700">
-                            <Link
-                                to="/settings"
-                                className="flex items-center w-full gap-4 px-4 py-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
-                                onClick={handleClose}
-                            >
-                                <i className="ri-settings-3-line text-xl text-gray-600 dark:text-gray-400 shrink-0"></i>
-                                <span className="text-[16px] font-medium text-gray-900 dark:text-gray-100">Settings</span>
-                            </Link>
+                            {menuItems.filter(item =>
+                                item.visibility.includes('profileSheet')).map((item) => {
+                                    const isActive = location.pathname.includes(item.path) || (item.path === '/feed' && location.pathname === '/');
+                                    return (
+                                        <Link
+                                            key={item.path}
+                                            to={item.path}
+                                            className="flex items-center w-full gap-4 px-4 py-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+                                            onClick={handleClose}
+                                        >
+                                            <item.icon size={24} className={`text-gray-500 dark:text-gray-400`} />
+                                            <span className="text-[16px] font-medium text-gray-900 dark:text-gray-100">{item.label}</span>
+                                        </Link>
+                                    );
+                                })}
 
                             <button
                                 onClick={toggleTheme}
@@ -98,20 +102,17 @@ const MobileProfileSheet = ({ isOpen, onClose, user, onLogout }) => {
                             >
                                 {theme === 'dark' ? (
                                     <>
-                                        <i className="ri-sun-line text-xl text-gray-600 dark:text-gray-400 shrink-0"></i>
+                                        <Sun size={24} className={`text-gray-500 dark:text-gray-400`} />
                                         <span className="text-[16px] font-medium text-gray-900 dark:text-gray-100">Light theme</span>
                                     </>
                                 ) : (
                                     <>
-                                        <i className="ri-moon-line text-xl text-gray-600 dark:text-gray-400 shrink-0"></i>
+                                        <Moon size={24} className={`text-gray-500 dark:text-gray-400`} />
                                         <span className="text-[16px] font-medium text-gray-900 dark:text-gray-100">Dark theme</span>
                                     </>
                                 )}
                             </button>
-                        </div>
 
-                        {/* Group 3 */}
-                        <div className="py-1.5 border-b border-gray-200 dark:border-neutral-700">
                             <button
                                 onClick={() => { handleClose(); onLogout(); }}
                                 className="flex items-center w-full gap-4 px-4 py-1.5 rounded-xl hover:bg-red-50 dark:hover:bg-neutral-900 transition-colors group"

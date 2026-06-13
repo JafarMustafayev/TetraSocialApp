@@ -15,7 +15,9 @@ import {
     Settings,
     Plus,
     Terminal,
-    Radio
+    Radio,
+    Moon,
+    Sun
 } from "lucide-react"
 
 const Navbar = () => {
@@ -68,17 +70,23 @@ const Navbar = () => {
         }
     }, []);
 
+
+
     const menuItems = [
-        { path: '/feed', label: 'Home', icon: House },
-        { path: '/search', label: 'Search', icon: Search },
-        { path: '/notifications', label: 'Notifications', icon: Bell, count: 0 },
-        { path: '/messages', label: 'Messages', icon: MessageSquare, count: 0 },
-        { path: '/bookmarks', label: 'Bookmarks', icon: Bookmark },
-        { path: '/api-tester', label: 'API Tester', icon: Terminal, isDev: true },
-        { path: '/websocket-tester', label: 'WS Tester', icon: Radio, isDev: true },
-        { path: '/profile', label: 'Profile', icon: User },
-        { path: '/settings', label: 'Settings', icon: Settings }
+        { path: '/feed', label: 'Home', icon: House, visibility: ['desktop', 'mobile'] },
+        { path: '/search', label: 'Search', icon: Search, visibility: ['desktop', 'mobile'] },
+        { path: '/notifications', label: 'Notifications', icon: Bell, count: 0, visibility: ['desktop', 'mobile'] },
+        { path: '/messages', label: 'Messages', icon: MessageSquare, count: 0, visibility: ['desktop', 'mobile'] },
+
+        { path: '/bookmarks', label: 'Bookmarks', icon: Bookmark, visibility: ['desktop', 'profileSheet'] },
+        { path: '/api-tester', label: 'API Tester', icon: Terminal, isDev: true, visibility: ['desktop', 'profileSheet'] },
+        { path: '/websocket-tester', label: 'WS Tester', icon: Radio, isDev: true, visibility: ['desktop', 'profileSheet'] },
+
+        { path: '/profile', label: 'Profile', icon: User, visibility: ['desktop'] },
+        { path: '/settings', label: 'Settings', icon: Settings, visibility: ['desktop', 'profileSheet'] }
     ];
+
+
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -109,35 +117,36 @@ const Navbar = () => {
                     </div>
 
                     <nav className="flex flex-col gap-1 mt-2 w-full">
-                        {menuItems.map((item) => {
-                            if (item.isDev && !import.meta.env.DEV && user?.isAdmin !== true) {
-                                return null;
-                            }
-                            const isActive =
-                                location.pathname === item.path ||
-                                location.pathname.startsWith(`${item.path}/`);
-                            return (
-                                <Link
-                                    key={item.path}
-                                    to={item.path}
-                                    className={getNavItemClass(isActive)}
-                                    title={item.label}
-                                >
-                                    <div className="relative flex items-center justify-center shrink-0 w-6 h-7 ml-1">
-                                        <item.icon size={24} className={`text-gray-500 dark:text-gray-400`} />
+                        {menuItems.filter(item =>
+                            item.visibility.includes('desktop')).map((item) => {
+                                if (item.isDev && !import.meta.env.DEV && user?.isAdmin !== true) {
+                                    return null;
+                                }
+                                const isActive =
+                                    location.pathname === item.path ||
+                                    location.pathname.startsWith(`${item.path}/`);
+                                return (
+                                    <Link
+                                        key={item.path}
+                                        to={item.path}
+                                        className={getNavItemClass(isActive)}
+                                        title={item.label}
+                                    >
+                                        <div className="relative flex items-center justify-center shrink-0 w-6 h-7 ml-1">
+                                            <item.icon size={24} className={`text-gray-500 dark:text-gray-400`} />
 
-                                        {item.count > 0 && (
-                                            <span className="absolute -top-1 -right-2 bg-main text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full border border-white dark:border-[#09090b]">
-                                                {item.count}
-                                            </span>
-                                        )}
-                                    </div>
-                                    <span className={` text-[17px] truncate ${isActive ? 'text-gray-900 dark:text-gray-100' : 'text-inherit'}`}>
-                                        {item.label}
-                                    </span>
-                                </Link>
-                            );
-                        })}
+                                            {item.count > 0 && (
+                                                <span className="absolute -top-1 -right-2 bg-main text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full border border-white dark:border-[#09090b]">
+                                                    {item.count}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <span className={` text-[17px] truncate ${isActive ? 'text-gray-900 dark:text-gray-100' : 'text-inherit'}`}>
+                                            {item.label}
+                                        </span>
+                                    </Link>
+                                );
+                            })}
                     </nav>
 
                     <div className="w-full flex justify-center ">
@@ -159,12 +168,12 @@ const Navbar = () => {
                             >
                                 {theme === 'dark' ? (
                                     <>
-                                        <i className="ri-sun-line text-xl text-gray-600 dark:text-gray-400"></i>
+                                        <Sun size={24} className={`text-gray-500 dark:text-gray-400`} />
                                         <span className="text-[15px] font-medium text-gray-900 dark:text-gray-100">Light theme</span>
                                     </>
                                 ) : (
                                     <>
-                                        <i className="ri-moon-line text-xl text-gray-600 dark:text-gray-400"></i>
+                                        <Moon size={24} className={`text-gray-500 dark:text-gray-400`} />
                                         <span className="text-[15px] font-medium text-gray-900 dark:text-gray-100">Dark theme</span>
                                     </>
                                 )}
@@ -204,23 +213,24 @@ const Navbar = () => {
 
             {/* Mobile Bottom Navigation */}
             <nav className="md:hidden fixed bottom-0 left-0 w-full bg-white/90 dark:bg-[#09090b]/90 backdrop-blur-md border-t border-gray-100 dark:border-[#1f1f1f] z-50 flex justify-around items-center h-[60px] pb-safe">
-                {[menuItems[0], menuItems[1], menuItems[2], menuItems[3]].map((item) => {
-                    const isActive = location.pathname.includes(item.path) || (item.path === '/feed' && location.pathname === '/');
-                    return (
-                        <Link
-                            key={item.path}
-                            to={item.path}
-                            className="flex flex-col items-center justify-center w-full h-full relative"
-                        >
-                            <item.icon size={24} className={`text-2xl ${isActive ? 'text-gray-900 dark:text-gray-100' : 'text-gray-600 dark:text-gray-400'}`} />
-                            {item.count > 0 && (
-                                <span className="absolute top-2 right-1/4 bg-main text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full border border-white dark:border-[#09090b]">
-                                    {item.count}
-                                </span>
-                            )}
-                        </Link>
-                    );
-                })}
+                {menuItems.filter(item =>
+                    item.visibility.includes('mobile')).map((item) => {
+                        const isActive = location.pathname.includes(item.path) || (item.path === '/feed' && location.pathname === '/');
+                        return (
+                            <Link
+                                key={item.path}
+                                to={item.path}
+                                className="flex flex-col items-center justify-center w-full h-full relative"
+                            >
+                                <item.icon size={24} className={`text-2xl ${isActive ? 'text-gray-900 dark:text-gray-100' : 'text-gray-600 dark:text-gray-400'}`} />
+                                {item.count > 0 && (
+                                    <span className="absolute top-2 right-1/4 bg-main text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full border border-white dark:border-[#09090b]">
+                                        {item.count}
+                                    </span>
+                                )}
+                            </Link>
+                        );
+                    })}
                 {/* Profile Button for Mobile */}
                 <button
                     onClick={() => setIsMobileProfileSheetOpen(true)}
@@ -238,6 +248,7 @@ const Navbar = () => {
                 onClose={() => setIsMobileProfileSheetOpen(false)}
                 user={user}
                 onLogout={handleLogout}
+                menuItems={menuItems}
             />
         </>
     );

@@ -36,7 +36,7 @@ const WebSocketLogs = ({
     };
 
     return (
-        <div className="flex-1 flex flex-col overflow-y-auto lg:overflow-hidden min-h-0 bg-white dark:bg-neutral-950 p-5 divide-y divide-gray-250/30 dark:divide-neutral-900/30 gap-4">
+        <div className="flex-1 flex flex-col overflow-hidden min-h-0 bg-white dark:bg-neutral-950 p-5 divide-y divide-gray-250/30 dark:divide-neutral-900/30 gap-4">
 
             {/* Header section */}
             <div className="flex items-center justify-between pb-3 shrink-0">

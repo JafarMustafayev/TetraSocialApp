@@ -37,7 +37,7 @@ const WebSocketTester = () => {
     } = useWebSocketTester();
 
     return (
-        <div className="flex-1 w-full min-h-screen bg-slate-50/40 dark:bg-[#070709] text-gray-900 dark:text-zinc-100 flex flex-col font-sans relative overflow-hidden transition-colors duration-300">
+        <div className="flex-1 w-full h-[calc(100vh-60px)] md:h-screen max-h-[calc(100vh-60px)] md:max-h-screen bg-slate-50/40 dark:bg-[#070709] text-gray-900 dark:text-zinc-100 flex flex-col font-sans relative overflow-hidden transition-colors duration-300">
 
             {/* Header Area */}
             <header className="border-b border-gray-200/50 dark:border-neutral-900 bg-white/70 dark:bg-[#09090b]/70 backdrop-blur-md px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0 z-20">
@@ -93,7 +93,7 @@ const WebSocketTester = () => {
                 <div
                     ref={workspaceRef}
                     className={`flex-1 flex ${layoutMode === 'split' ? 'flex-col lg:flex-row' : 'flex-col'
-                        } overflow-y-auto lg:overflow-hidden min-h-0 relative`}
+                        } overflow-hidden min-h-0 relative`}
                 >
 
                     {/* Left/Top Pane: Client Dispatcher */}
@@ -103,7 +103,7 @@ const WebSocketTester = () => {
                             height: layoutMode === 'split' ? '100%' : '50%',
                             minWidth: layoutMode === 'split' ? '35%' : 'auto'
                         }}
-                        className={`flex flex-col overflow-y-auto lg:overflow-hidden divide-y divide-gray-200/50 dark:divide-neutral-900 min-h-0 shrink-0 ${layoutMode === 'split'
+                        className={`flex flex-col overflow-hidden divide-y divide-gray-200/50 dark:divide-neutral-900 min-h-0 shrink-0 ${layoutMode === 'split'
                                 ? 'border-r border-gray-200/30 dark:border-neutral-900/30'
                                 : 'border-b border-gray-200/30 dark:border-neutral-900/30'
                             }`}
@@ -145,7 +145,7 @@ const WebSocketTester = () => {
                             height: layoutMode === 'split' ? '100%' : '50%',
                             minWidth: layoutMode === 'split' ? '35%' : 'auto'
                         }}
-                        className="flex-1 flex flex-col overflow-y-auto lg:overflow-hidden min-h-0 shrink-0"
+                        className="flex-1 flex flex-col overflow-hidden min-h-0 shrink-0"
                     >
                         <WebSocketLogs
                             status={status}
