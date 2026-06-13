@@ -11,7 +11,7 @@ import {
     Sun
 } from "lucide-react"
 
-const MobileProfileSheet = ({ isOpen, onClose, user, onLogout, menuItems }) => {
+const MobileProfileSheet = ({ isOpen, onClose, user, onLogout, isLoggingOut, menuItems }) => {
     const [isClosing, setIsClosing] = useState(false);
     const { theme, toggleTheme } = useTheme();
 
@@ -115,10 +115,13 @@ const MobileProfileSheet = ({ isOpen, onClose, user, onLogout, menuItems }) => {
 
                             <button
                                 onClick={() => { handleClose(); onLogout(); }}
-                                className="flex items-center w-full gap-4 px-4 py-1.5 rounded-xl hover:bg-red-50 dark:hover:bg-neutral-900 transition-colors group"
+                                disabled={isLoggingOut}
+                                className="flex items-center w-full gap-4 px-4 py-1.5 rounded-xl hover:bg-red-50 dark:hover:bg-neutral-900 transition-colors group disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <i className="ri-logout-box-r-line text-xl text-red-500 shrink-0 group-hover:text-red-600"></i>
-                                <span className="text-[16px] font-medium text-red-500 group-hover:text-red-600">Log out</span>
+                                <span className="text-[16px] font-medium text-red-500 group-hover:text-red-600">
+                                    {isLoggingOut ? "Logging out..." : "Log out"}
+                                </span>
                             </button>
                         </div>
                     </div>

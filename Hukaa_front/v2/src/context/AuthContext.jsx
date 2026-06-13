@@ -1,12 +1,15 @@
 // src/context/AuthContext.jsx
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { getMe } from '../api/account.api';
+import { logout as logoutApi } from '../api/auth.api';
+import { toast } from 'react-hot-toast';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [isLoadingUser, setIsLoadingUser] = useState(true);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     const fetchUser = async () => {
         setIsLoadingUser(true);
@@ -45,12 +48,30 @@ export const AuthProvider = ({ children }) => {
         setUser(prev => prev ? { ...prev, ...data } : null);
     };
 
+    const logout = async () => {
+        if (isLoggingOut) return;
+        setIsLoggingOut(true);
+        try {
+            await logoutApi();
+        } catch (error) {
+            console.error("Logout request failed:", error);
+            toast.error("Logged out locally. Session cleanup request failed.");
+        } finally {
+            localStorage.removeItem('token');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+            setUser(null);
+            setIsLoggingOut(false);
+            window.location.href = '/auth/login';
+        }
+    };
+
     useEffect(() => {
         fetchUser();
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, setUser, fetchUser, isLoadingUser, updateCurrentUser }}>
+        <AuthContext.Provider value={{ user, setUser, fetchUser, isLoadingUser, updateCurrentUser, logout, isLoggingOut }}>
             {children}
         </AuthContext.Provider>
     );

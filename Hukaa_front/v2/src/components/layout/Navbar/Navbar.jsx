@@ -22,7 +22,7 @@ import {
 
 const Navbar = () => {
     const location = useLocation();
-    const { user } = useAuth();
+    const { user, logout, isLoggingOut } = useAuth();
     const [isMobileProfileSheetOpen, setIsMobileProfileSheetOpen] = useState(false);
 
     // Desktop Dropdown State
@@ -88,12 +88,7 @@ const Navbar = () => {
 
 
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
-        window.location.href = '/auth/login';
-    };
+
 
     const getNavItemClass = (isActive) => {
         const baseClass = "flex items-center gap-3 px-3 py-2 my-0.5 rounded-full transition-all group w-full";
@@ -179,11 +174,14 @@ const Navbar = () => {
                                 )}
                             </button>
                             <button
-                                onClick={() => { handleLogout(); setIsDesktopDropdownOpen(false); }}
-                                className="w-[95%] flex items-center gap-3 px-4 py-3 hover:bg-red-50 dark:hover:bg-neutral-800 transition-colors text-left group rounded-2xl mx-auto"
+                                onClick={() => { logout(); setIsDesktopDropdownOpen(false); }}
+                                disabled={isLoggingOut}
+                                className="w-[95%] flex items-center gap-3 px-4 py-3 hover:bg-red-50 dark:hover:bg-neutral-800 transition-colors text-left group rounded-2xl mx-auto disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <i className="ri-logout-box-r-line text-xl text-red-500 group-hover:text-red-600"></i>
-                                <span className="text-[15px] font-medium text-red-500 group-hover:text-red-600">Log out</span>
+                                <span className="text-[15px] font-medium text-red-500 group-hover:text-red-600">
+                                    {isLoggingOut ? "Logging out..." : "Log out"}
+                                </span>
                             </button>
                         </div>
                     )}
@@ -247,7 +245,8 @@ const Navbar = () => {
                 isOpen={isMobileProfileSheetOpen}
                 onClose={() => setIsMobileProfileSheetOpen(false)}
                 user={user}
-                onLogout={handleLogout}
+                onLogout={logout}
+                isLoggingOut={isLoggingOut}
                 menuItems={menuItems}
             />
         </>
