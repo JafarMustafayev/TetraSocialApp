@@ -4,25 +4,37 @@ import { toast } from 'react-hot-toast';
 import SettingsInput from '../SettingsInput';
 import SettingsButton from '../SettingsButton';
 import { useAuth } from '../../../context/AuthContext';
-import { checkUsername, updateUsername } from '../../../api/account.api';
+import { checkUsername, updateUsername, checkEmail, updateEmailAddress } from '../../../api/account.api';
 import Skeleton from '../../ui/Skeleton';
 
 const UsernamePasswordForm = () => {
     const navigate = useNavigate();
     const { user, isLoadingUser, updateCurrentUser } = useAuth();
 
+    // Username section states
     const [username, setUsername] = useState('');
     const [initialUsername, setInitialUsername] = useState('');
     const [isCheckingUsername, setIsCheckingUsername] = useState(false);
     const [isUsernameAvailable, setIsUsernameAvailable] = useState(null);
     const [usernameMessage, setUsernameMessage] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Email section states
+    const [email, setEmail] = useState('');
+    const [initialEmail, setInitialEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+    const [isEmailAvailable, setIsEmailAvailable] = useState(null);
+    const [emailMessage, setEmailMessage] = useState('');
+    const [emailError, setEmailError] = useState(null);
+    const [passwordError, setPasswordError] = useState(null);
+
+    // Global states
+    const [isSubmittingUsername, setIsSubmittingUsername] = useState(false);
+    const [isSubmittingEmail, setIsSubmittingEmail] = useState(false);
     const [error, setError] = useState(null);
     const [hasInitialized, setHasInitialized] = useState(false);
 
-    const [email, setEmail] = useState('');
-    const [currentPasswordEmail, setCurrentPasswordEmail] = useState('');
-
+    // Password section states
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
 
@@ -33,9 +45,16 @@ const UsernamePasswordForm = () => {
             setUsername(currentVal);
             setInitialUsername(currentVal);
             setEmail(currentEmail);
+            setInitialEmail(currentEmail);
             setHasInitialized(true);
         }
     }, [user, hasInitialized]);
+
+    // Email format helper
+    const validateEmailFormat = (val) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(val);
+    };
 
     // Debounced username availability check
     useEffect(() => {
@@ -99,17 +118,94 @@ const UsernamePasswordForm = () => {
         };
     }, [username, initialUsername, hasInitialized]);
 
-    const isSubmitDisabled = 
+    // Debounced email availability check
+    useEffect(() => {
+        if (!hasInitialized) return;
+
+        const trimmedEmail = email.trim();
+
+        if (!trimmedEmail) {
+            setIsCheckingEmail(false);
+            setIsEmailAvailable(false);
+            setEmailMessage(email.length > 0 ? "Email cannot be empty." : "");
+            return;
+        }
+
+        if (!validateEmailFormat(trimmedEmail)) {
+            setIsCheckingEmail(false);
+            setIsEmailAvailable(false);
+            setEmailMessage("Invalid email format.");
+            return;
+        }
+
+        if (email === initialEmail) {
+            setIsCheckingEmail(false);
+            setIsEmailAvailable(null);
+            setEmailMessage("");
+            return;
+        }
+
+        setIsCheckingEmail(true);
+        setIsEmailAvailable(null);
+        setEmailMessage("Checking email...");
+
+        let active = true;
+        const timer = setTimeout(async () => {
+            try {
+                const response = await checkEmail(trimmedEmail);
+                if (!active) return;
+
+                const success = response.Success !== undefined ? response.Success : response.success;
+                const data = response.Data !== undefined ? response.Data : response.data;
+                const isAvailable = data ? (data.isAvailable !== undefined ? data.isAvailable : data.IsAvailable) : false;
+
+                if (success && isAvailable) {
+                    setIsEmailAvailable(true);
+                    setEmailMessage("This email is available.");
+                } else {
+                    setIsEmailAvailable(false);
+                    setEmailMessage("This email is already taken.");
+                }
+            } catch (err) {
+                if (!active) return;
+                setIsEmailAvailable(false);
+                setEmailMessage("Error checking email.");
+            } finally {
+                if (active) {
+                    setIsCheckingEmail(false);
+                }
+            }
+        }, 750);
+
+        return () => {
+            active = false;
+            clearTimeout(timer);
+        };
+    }, [email, initialEmail, hasInitialized]);
+
+    // Username submit state helper
+    const isUsernameSubmitDisabled =
         !username.trim() ||
         username === initialUsername ||
         isUsernameAvailable !== true ||
         isCheckingUsername ||
-        isSubmitting;
+        isSubmittingUsername;
+
+    // Email submit state helper
+    const isEmailSubmitDisabled =
+        !email.trim() ||
+        !validateEmailFormat(email) ||
+        email === initialEmail ||
+        isEmailAvailable !== true ||
+        isCheckingEmail ||
+        !password ||
+        password.length < 6 ||
+        isSubmittingEmail;
 
     const handleUpdateUsername = async () => {
-        if (isSubmitDisabled) return;
+        if (isUsernameSubmitDisabled) return;
 
-        setIsSubmitting(true);
+        setIsSubmittingUsername(true);
         setError(null);
 
         try {
@@ -138,16 +234,48 @@ const UsernamePasswordForm = () => {
             console.error("Error updating username:", err);
             setError("An unexpected error occurred.");
         } finally {
-            setIsSubmitting(false);
+            setIsSubmittingUsername(false);
         }
     };
 
-    const handleUpdateEmail = () => {
-        if (!currentPasswordEmail) {
-            toast.error("Please enter your current password to update email.");
-            return;
+    const handleUpdateEmail = async () => {
+        if (isEmailSubmitDisabled) return;
+
+        setIsSubmittingEmail(true);
+        setEmailError(null);
+        setPasswordError(null);
+
+        try {
+            const res = await updateEmailAddress(email.trim(), password);
+            const success = res.Success !== undefined ? res.Success : res.success;
+            const message = res.Message !== undefined ? res.Message : res.message;
+            const data = res.Data !== undefined ? res.Data : res.data;
+            const statusCode = res.StatusCode !== undefined ? res.StatusCode : res.statusCode;
+
+            if (success) {
+                toast.success(message || "Email has been successfully changed.");
+                const newEmail = data?.email || data?.Email || email.trim();
+                updateCurrentUser({ email: newEmail });
+                setInitialEmail(newEmail);
+                setIsEmailAvailable(null);
+                setEmailMessage("");
+                setPassword("");
+            } else {
+                if (statusCode === 409) {
+                    setIsEmailAvailable(false);
+                    setEmailMessage("This email is already taken.");
+                } else if (statusCode === 401) {
+                    setPasswordError("Password is incorrect.");
+                } else {
+                    setEmailError(message || "Failed to update email.");
+                }
+            }
+        } catch (err) {
+            console.error("Error updating email:", err);
+            setEmailError("An unexpected error occurred.");
+        } finally {
+            setIsSubmittingEmail(false);
         }
-        toast.success("Email updated successfully.");
     };
 
     const handleChangePassword = () => {
@@ -156,7 +284,7 @@ const UsernamePasswordForm = () => {
             return;
         }
         if (newPassword.length < 8) {
-            toast.error("New password must be at least 8 characters.");
+            toast.error("New password must be at least 6 characters.");
             return;
         }
         toast.success("Password changed successfully.");
@@ -191,28 +319,72 @@ const UsernamePasswordForm = () => {
         );
     }
 
-    let inputStatus = null;
-    let inputHelperText = "";
+    // Input state definitions for Username
+    let usernameInputStatus = null;
+    let usernameHelperText = "";
 
     if (hasInitialized) {
         if (!username.trim()) {
             if (username.length > 0) {
-                inputStatus = "error";
-                inputHelperText = "Username cannot be empty.";
+                usernameInputStatus = "error";
+                usernameHelperText = "Username cannot be empty.";
             }
         } else if (username === initialUsername) {
-            inputStatus = null;
-            inputHelperText = "";
+            usernameInputStatus = null;
+            usernameHelperText = "";
         } else if (isCheckingUsername) {
-            inputStatus = null;
-            inputHelperText = "Checking username...";
+            usernameInputStatus = null;
+            usernameHelperText = "Checking username...";
         } else if (isUsernameAvailable === true) {
-            inputStatus = "success";
-            inputHelperText = "This username is available.";
+            usernameInputStatus = "success";
+            usernameHelperText = "This username is available.";
         } else if (isUsernameAvailable === false) {
-            inputStatus = "error";
-            inputHelperText = usernameMessage || "This username is already taken.";
+            usernameInputStatus = "error";
+            usernameHelperText = usernameMessage || "This username is already taken.";
         }
+    }
+
+    // Input state definitions for Email
+    let emailInputStatus = null;
+    let emailHelperText = "";
+
+    if (hasInitialized) {
+        const trimmedEmail = email.trim();
+        if (!trimmedEmail) {
+            if (email.length > 0) {
+                emailInputStatus = "error";
+                emailHelperText = "Email cannot be empty.";
+            }
+        } else if (!validateEmailFormat(trimmedEmail)) {
+            emailInputStatus = "error";
+            emailHelperText = "Invalid email format.";
+        } else if (email === initialEmail) {
+            emailInputStatus = null;
+            emailHelperText = "";
+        } else if (isCheckingEmail) {
+            emailInputStatus = null;
+            emailHelperText = "Checking email...";
+        } else if (isEmailAvailable === true) {
+            emailInputStatus = "success";
+            emailHelperText = "This email is available.";
+        } else if (isEmailAvailable === false) {
+            emailInputStatus = "error";
+            emailHelperText = emailMessage || "This email is already taken.";
+        }
+    }
+
+    if (emailError) {
+        emailInputStatus = "error";
+        emailHelperText = emailError;
+    }
+
+    // Input state definitions for Email Current Password
+    let passwordInputStatus = null;
+    let passwordHelperText = "Confirm your password to update your email.";
+
+    if (passwordError) {
+        passwordInputStatus = "error";
+        passwordHelperText = passwordError;
     }
 
     return (
@@ -236,16 +408,16 @@ const UsernamePasswordForm = () => {
                         label="Username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        status={inputStatus}
-                        helperText={inputHelperText}
+                        status={usernameInputStatus}
+                        helperText={usernameHelperText}
                     />
                     <div className="flex justify-end -mt-2">
-                        <SettingsButton 
-                            variant="outline" 
+                        <SettingsButton
+                            variant="outline"
                             onClick={handleUpdateUsername}
-                            disabled={isSubmitDisabled}
+                            disabled={isUsernameSubmitDisabled}
                         >
-                            {isSubmitting ? "Updating..." : "Update username"}
+                            {isSubmittingUsername ? "Updating..." : "Update username"}
                         </SettingsButton>
                     </div>
                 </div>
@@ -256,18 +428,31 @@ const UsernamePasswordForm = () => {
                         label="Email Address"
                         type="email"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => {
+                            setEmail(e.target.value);
+                            setEmailError(null);
+                        }}
+                        status={emailInputStatus}
+                        helperText={emailHelperText}
                     />
                     <SettingsInput
                         label="Current password"
                         type="password"
-                        value={currentPasswordEmail}
-                        onChange={(e) => setCurrentPasswordEmail(e.target.value)}
-                        helperText="Confirm your password to update your email."
+                        value={password}
+                        onChange={(e) => {
+                            setPassword(e.target.value);
+                            if (passwordError) setPasswordError(null);
+                        }}
+                        status={passwordInputStatus}
+                        helperText={passwordHelperText}
                     />
                     <div className="flex justify-end">
-                        <SettingsButton variant="outline" onClick={handleUpdateEmail}>
-                            Update email
+                        <SettingsButton
+                            variant="outline"
+                            onClick={handleUpdateEmail}
+                            disabled={isEmailSubmitDisabled}
+                        >
+                            {isSubmittingEmail ? "Updating..." : "Update email"}
                         </SettingsButton>
                     </div>
                 </div>
@@ -285,7 +470,7 @@ const UsernamePasswordForm = () => {
                         type="password"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
-                        helperText="At least 8 characters"
+                        helperText="At least 6 characters"
                     />
                     <div className="flex justify-end">
                         <SettingsButton variant="outline" onClick={handleChangePassword}>

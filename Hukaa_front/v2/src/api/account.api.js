@@ -43,3 +43,17 @@ export const updateUsername = async (username) => {
     });
 };
 
+/**
+ * Updates the current user's email address.
+ * @param {string} email - The new email address.
+ * @param {string} password - The current user's password.
+ * @returns {Promise<object>} The server response.
+ */
+export const updateEmailAddress = async (email, password) => {
+    return fetchClient('/api/account/emailAddress', {
+        method: 'PATCH',
+        body: JSON.stringify({ Email: email, Password: password })
+    });
+};
+
+
