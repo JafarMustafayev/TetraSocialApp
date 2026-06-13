@@ -2,98 +2,161 @@
 import { API_BASE_URL } from './api-config';
 import { toast } from 'react-hot-toast';
 
-let isRefreshing = false;
-let failedQueue = [];
+// ─────────────────────────────────────────────
+// Token Store
+// Centralizes all token operations.
+// ─────────────────────────────────────────────
+const TokenStore = {
+    getAccessToken: () => localStorage.getItem('token'),
+    getRefreshToken: () => localStorage.getItem('refreshToken'),
+    setTokens: (access, refresh) => {
+        localStorage.setItem('token', access);
+        if (refresh) localStorage.setItem('refreshToken', refresh);
+    },
+    clearTokens: () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+    },
+};
+
+// ─────────────────────────────────────────────
+// Auth helpers
+// ─────────────────────────────────────────────
+const redirectToLogin = () => {
+    const currentPath = window.location.pathname + window.location.search;
+
+    if (window.location.pathname.includes('/auth/login')) return;
+
+    TokenStore.clearTokens();
+    window.location.href = `/auth/login?redirect=${encodeURIComponent(currentPath)}`;
+};
+
+// ─────────────────────────────────────────────
+// Refresh Queue
+// Enqueue parallel requests while token is refreshing.
+// Resolve all requests at once after refresh completes.
+// ─────────────────────────────────────────────
+const RefreshQueue = (() => {
+    let _isRefreshing = false;
+    let _queue = [];           // Array<{ resolve, reject }>
+
+    return {
+        get isRefreshing() { return _isRefreshing; },
+
+        /**
+         * Starts the refresh process. The caller awaits refreshFn,
+         * which must return a new access token. If successful,
+         * the queue is resolved with the new token; otherwise, it's rejected with an error.
+         */
+        async run(refreshFn) {
+            _isRefreshing = true;
+            try {
+                const newToken = await refreshFn();
+                _queue.forEach(({ resolve }) => resolve(newToken));
+                return newToken;
+            } catch (err) {
+                _queue.forEach(({ reject }) => reject(err));
+                throw err;
+            } finally {
+                _queue = [];
+                _isRefreshing = false;
+            }
+        },
+
+        /**
+         * Requests arriving while refresh is in progress wait on this Promise.
+         * `run` resolves or rejects the queue once done.
+         */
+        waitForToken() {
+            return new Promise((resolve, reject) => {
+                _queue.push({ resolve, reject });
+            });
+        },
+    };
+})();
+
+// ─────────────────────────────────────────────
+// Token Refresh
+// ─────────────────────────────────────────────
 
 /**
- * Standardized logout with redirection to login page and current path as redirect param.
+ * Gets a new access token from the backend.
+ * Returns a new token string on success, otherwise throws an exception.
  */
-const logoutWithRedirect = () => {
-    const currentPath = window.location.pathname + window.location.search;
-    
-    // Clear tokens
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
-    
-    // Avoid redirecting if already on the login page to prevent refresh loops
-    if (window.location.pathname.includes('/auth/login')) {
-        return;
+const executeTokenRefresh = async () => {
+    const refreshToken = TokenStore.getRefreshToken();
+    if (!refreshToken) throw new Error('NO_REFRESH_TOKEN');
+
+    const response = await fetch(`${API_BASE_URL}/api/auth/refresh-token`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body:    JSON.stringify({ refreshToken }),
+    });
+
+    if (!response.ok) throw new Error('REFRESH_FAILED');
+
+    const data = await response.json();
+
+    // Backend response structure:
+    // { accessToken: { accessToken: string }, refreshToken: { refreshToken: string } }
+    const newAccessToken  = data?.accessToken?.accessToken;
+    const newRefreshToken = data?.refreshToken?.refreshToken;
+
+    if (!newAccessToken) throw new Error('INVALID_TOKEN_RESPONSE');
+
+    TokenStore.setTokens(newAccessToken, newRefreshToken);
+    return newAccessToken;
+};
+
+// ─────────────────────────────────────────────
+// Response Handler
+// ─────────────────────────────────────────────
+
+/**
+ * Converts fetch response into a standard result object.
+ * We do not handle 401 status here — that's fetchClient's job.
+ */
+const parseResponse = async (response) => {
+    const contentType = response.headers.get('content-type') ?? '';
+    const hasJson     = contentType.includes('application/json');
+
+    if (response.status === 204 || !hasJson) {
+        return { Success: response.ok, StatusCode: response.status, Data: null };
     }
 
-    // Use window.location for hard redirect to ensure app state is cleared
-    const loginUrl = `/auth/login?redirect=${encodeURIComponent(currentPath)}`;
-    window.location.href = loginUrl;
-};
-
-/**
- * Processes the queue of failed requests after a token refresh.
- */
-const processQueue = (error, token = null) => {
-    failedQueue.forEach(prom => {
-        if (error) {
-            prom.reject(error);
-        } else {
-            prom.resolve(token);
-        }
-    });
-    failedQueue = [];
-};
-
-/**
- * Handles the response from the fetch call, parsing JSON and managing errors.
- * Note: 401 errors are now intercepted in fetchClient before reaching here.
- */
-const handleResponse = async (response, isLogin = false) => {
+    let body;
     try {
-        const contentType = response.headers.get('content-type');
-        if (response.status === 204 || !contentType || !contentType.includes('application/json')) {
-            return {
-                Success: response.ok,
-                StatusCode: response.status,
-                Data: null
-            };
-        }
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            const message = data.Message || data.message || 'An error occurred during the request.';
-            // Only show toast if it's not a 401 (since 401 is handled by refresh flow)
-            // UNLESS it's a login request, in which case we want to see the error
-            if (response.status !== 401 || isLogin) {
-                toast.error(message);
-            }
-            return {
-                Success: false,
-                StatusCode: response.status,
-                Message: message,
-                Errors: data.Errors || data.errors || [],
-                Data: data.Data || data.data || null
-            };
-        }
-
-        return data;
-    } catch (error) {
-        console.error('API Response Parsing Error:', error);
+        body = await response.json();
+    } catch {
         return {
-            Success: false,
+            Success:    false,
             StatusCode: response.status,
-            Message: 'Critical server error or invalid response format.',
-            Errors: [error.message]
+            Message:    'Server response is not in JSON format.',
+            Errors:     [],
         };
     }
+
+    if (!response.ok) {
+        const message = body?.Message ?? body?.message ?? 'An error occurred during the request.';
+        toast.error(message);
+        return {
+            Success:    false,
+            StatusCode: response.status,
+            Message:    message,
+            Errors:     body?.Errors ?? body?.errors ?? [],
+            Data:       body?.Data   ?? body?.data   ?? null,
+        };
+    }
+
+    return body;
 };
 
-/**
- * Custom fetch wrapper with automatic token refresh and request queuing.
- */
-export const fetchClient = async (endpoint, options = {}) => {
-    const token = localStorage.getItem('token');
-    const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-    const url = `${API_BASE_URL}${cleanEndpoint}`;
-
+// ─────────────────────────────────────────────
+// Build Headers
+// ─────────────────────────────────────────────
+const buildHeaders = (token, options = {}) => {
     const headers = {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         ...options.headers,
     };
 
@@ -105,82 +168,87 @@ export const fetchClient = async (endpoint, options = {}) => {
         headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const config = { ...options, headers };
+    return headers;
+};
+
+// ─────────────────────────────────────────────
+// Public Endpoints
+// We don't try to refresh tokens for endpoints like Login.
+// ─────────────────────────────────────────────
+const PUBLIC_ENDPOINTS = [
+    '/api/auth/login',
+    '/api/auth/refresh-token',
+    '/api/auth/register',
+];
+
+const isPublicEndpoint = (endpoint) =>
+    PUBLIC_ENDPOINTS.some(pub => endpoint.startsWith(pub));
+
+// ─────────────────────────────────────────────
+// fetchClient
+// ─────────────────────────────────────────────
+
+/**
+ * Centralized fetch wrapper for all API requests.
+*
+* Flow:
+*   1. Send request
+*   2. If 401 comes and endpoint is not public:
+*       a. Another refresh is in progress — queue, wait for token
+*       b. Nobody is refreshing — start refresh
+*   3. Retry original request once with new token
+*   4. If refresh fails — logout + redirect
+ */
+export const fetchClient = async (endpoint, options = {}) => {
+    const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const url                = `${API_BASE_URL}${normalizedEndpoint}`;
+
+    const performRequest = async (accessToken) => {
+        const headers = buildHeaders(accessToken, options);
+        return fetch(url, { ...options, headers });
+    };
 
     try {
-        const response = await fetch(url, config);
+        // ── First attempt ─
+        const firstResponse = await performRequest(TokenStore.getAccessToken());
 
-        // Intercept 401 Unauthorized (except for login endpoint)
-        if (response.status === 401 && cleanEndpoint !== '/api/auth/login') {
-            const refreshToken = localStorage.getItem('refreshToken');
+        // If not 401, return normal response
+        if (firstResponse.status !== 401 || isPublicEndpoint(normalizedEndpoint)) {
+            return parseResponse(firstResponse);
+        }
 
-            if (!refreshToken) {
-                logoutWithRedirect();
-                return { Success: false, StatusCode: 401, Message: 'Session expired.' };
-            }
+        // ── 401 → Token Refresh Flow ─
+        if (!TokenStore.getRefreshToken()) {
+            redirectToLogin();
+            return { Success: false, StatusCode: 401, Message: 'Session expired' };
+        }
 
-            if (isRefreshing) {
-                // Return a promise that will resolve when the refresh finishes
-                return new Promise((resolve, reject) => {
-                    failedQueue.push({ resolve, reject });
-                }).then(newToken => {
-                    config.headers['Authorization'] = `Bearer ${newToken}`;
-                    return fetch(url, config).then(handleResponse);
-                }).catch(err => {
-                    return { Success: false, StatusCode: 401, Message: 'Session expired.' };
-                });
-            }
+        let freshToken;
 
-            isRefreshing = true;
-
+        if (RefreshQueue.isRefreshing) {
+            // Another request is already refreshing — wait for it to notify us
+            freshToken = await RefreshQueue.waitForToken();
+        } else {
+            // This request starts the refresh
             try {
-                // Background refresh request
-                const refreshRes = await fetch(`${API_BASE_URL}/api/auth/refresh-token`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({ refreshToken })
-                });
-
-                if (refreshRes.ok) {
-                    const data = await refreshRes.json();
-
-                    // Handle potential backend format variations
-                    const newToken = data.accessToken?.accessToken || data.accessToken || data.Data?.accessToken?.accessToken;
-                    const newRefreshToken = data.refreshToken?.refreshToken || data.refreshToken || data.Data?.refreshToken?.refreshToken;
-
-                    if (newToken) {
-                        localStorage.setItem('token', newToken);
-                        if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
-                        
-                        processQueue(null, newToken);
-                        isRefreshing = false;
-
-                        // Retry original request
-                        config.headers['Authorization'] = `Bearer ${newToken}`;
-                        const retryResponse = await fetch(url, config);
-                        return await handleResponse(retryResponse);
-                    }
-                }
-
-                // If refresh fails
-                throw new Error('Refresh failed');
-
-            } catch (err) {
-                isRefreshing = false;
-                processQueue(err, null);
-                logoutWithRedirect();
-                return { Success: false, StatusCode: 401, Message: 'Session expired.' };
+                freshToken = await RefreshQueue.run(executeTokenRefresh);
+            } catch {
+                redirectToLogin();
+                return { Success: false, StatusCode: 401, Message: 'Session expired' };
             }
         }
 
-        return await handleResponse(response, cleanEndpoint === '/api/auth/login');
-    } catch (error) {
-        console.error('Network/Request Error:', error);
+        // ── Retry with new token ────
+        const retryResponse = await performRequest(freshToken);
+        return parseResponse(retryResponse);
+
+    } catch (err) {
+        console.error('[fetchClient] Network error:', err);
         toast.error('Network error. Please check your connection.');
         return {
             Success: false,
             Message: 'Network error. Please check your connection.',
-            Errors: [error.message]
+            Errors:  [err.message],
         };
     }
 };
