@@ -129,7 +129,7 @@ public class AuthService(
     {
         var sessionId = claimsReader.GetSessionId();
 
-        await sessionService.RevokeSessionAsync(sessionId);
+        await sessionService.RevokeSessionAsync(sessionId, true);
         return ResponseDto.OkResponse(localizer.Get("Auth.Logout.Success"));
     }
 

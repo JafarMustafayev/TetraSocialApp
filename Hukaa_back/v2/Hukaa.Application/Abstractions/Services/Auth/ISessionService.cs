@@ -4,7 +4,7 @@ public interface ISessionService
 {
     Task<string> CreateSessionAsync(string userId);
     ResponseDto<object> GetMyActiveSessions();
-    Task<ResponseDto> RevokeSessionAsync(string sessionId);
+    Task<ResponseDto> RevokeSessionAsync(string sessionId, bool ifLoggingOut = false);
     Task<ResponseDto> RevokeAllExceptCurrentAsync();
     Task RevokeAllSessionsAsync(string? userId);
     Task RevokeOldestSessionsAsync(ICollection<AuthSession> sessions);

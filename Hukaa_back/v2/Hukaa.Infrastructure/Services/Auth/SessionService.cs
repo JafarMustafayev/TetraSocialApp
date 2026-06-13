@@ -85,7 +85,7 @@ public class SessionService(
 
         return session.Id;
     }
-    public async Task<ResponseDto> RevokeSessionAsync(string sessionId)
+    public async Task<ResponseDto> RevokeSessionAsync(string sessionId, bool isLoggingOut)
     {
         var userId = jwtClaimsReader.GetUserId();
         var currentSessionId = jwtClaimsReader.GetSessionId();
@@ -93,22 +93,20 @@ public class SessionService(
         var session = await readRepo.FirstOrDefaultAsync(s =>
             s.Id == sessionId &&
             s.UserId == userId &&
-            !s.IsRevoked);
+            !s.IsRevoked, true);
 
         if(session == null)
         {
             throw new NotFoundException(localizer.Get("Error.Session.Get.NotFound"));
         }
 
-        if(session.Id == currentSessionId)
+        if(session.Id == currentSessionId && !isLoggingOut)
         {
             throw new BadRequestException(localizer.Get("Error.Session.CannotRevokeCurrent"));
         }
 
         session.Revoke(ipResolver.GetClientIpV4());
-        writeRepo.Update(session);
         await unitOfWork.SaveChangesAsync();
-
         await authTokenService.RevokeRefreshTokenBySessionIdAsync(sessionId);
 
         return ResponseDto.OkResponse(localizer.Get("Auth.Session.Success.Revoked"));
