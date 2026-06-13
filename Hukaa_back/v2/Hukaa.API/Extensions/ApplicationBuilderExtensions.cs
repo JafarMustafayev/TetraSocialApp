@@ -8,9 +8,9 @@ public static class ApplicationBuilderExtensions
         {
             app.UseLocalization();
             app.UseHttpsRedirection();
-       app.UseAuthentication();
-            app.UseAuthorization();
             app.UseCors("CorsPolicy");
+            app.UseAuthentication();
+            app.UseAuthorization();
         }
 
         private void UseLocalization()

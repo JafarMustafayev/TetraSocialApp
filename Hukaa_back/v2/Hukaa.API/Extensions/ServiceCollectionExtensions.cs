@@ -109,9 +109,28 @@ public static class ServiceCollectionExtensions
                                     context.Fail("Session revoked");
                                     return;
                                 }
+
                                 await sessionService.UpdateLastActivityAsync(sessionId);
-                                
-                            }
+                            },
+
+                        OnChallenge = context =>
+                        {
+                            context.HandleResponse();
+
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            context.Response.ContentType = "application/json";
+
+                            var body = JsonSerializer.Serialize(new
+                            {
+                                Success = false,
+                                StatusCode = 401,
+                                Message = "Authorization is required.",
+                                Data = (object?)null,
+                                Errors = Array.Empty<string>()
+                            });
+
+                            return context.Response.WriteAsync(body);
+                        }
                     };
                 });
         }
