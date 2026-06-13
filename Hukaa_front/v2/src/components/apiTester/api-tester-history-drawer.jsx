@@ -67,19 +67,7 @@ const HistoryDrawer = ({
                                     </div>
 
                                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all shrink-0 z-10">
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                loadFromHistory(item);
-                                                handleSendRequest();
-                                                setHistoryOpen(false);
-                                            }}
-                                            className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-neutral-800 text-emerald-500"
-                                            title="Repeat request immediately"
-                                        >
-                                            <Play className="h-3 w-3 fill-current" />
-                                        </button>
+
                                         <button
                                             type="button"
                                             onClick={(e) => togglePinHistoryItem(e, idx)}
