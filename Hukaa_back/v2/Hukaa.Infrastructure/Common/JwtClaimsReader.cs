@@ -30,7 +30,7 @@ public class JwtClaimsReader(
 
     public List<string> GetRoles()
     {
-        var roles = GetClaimValues("roles");
+        var roles = GetClaimValues(ClaimTypes.Role);
         if(roles == null || roles.Count == 0)
         {
             throw new UnauthorizedException(localizer.Get("Error.Authorization.Failure.MissingRoles"));
