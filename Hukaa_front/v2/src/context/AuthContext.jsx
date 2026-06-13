@@ -41,12 +41,16 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const updateCurrentUser = (data) => {
+        setUser(prev => prev ? { ...prev, ...data } : null);
+    };
+
     useEffect(() => {
         fetchUser();
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, setUser, fetchUser, isLoadingUser }}>
+        <AuthContext.Provider value={{ user, setUser, fetchUser, isLoadingUser, updateCurrentUser }}>
             {children}
         </AuthContext.Provider>
     );

@@ -30,3 +30,16 @@ export const checkEmail = async (email) => {
 export const getMe = async () => {
     return fetchClient('/api/account/me');
 };
+
+/**
+ * Updates the current user's username.
+ * @param {string} username - The new username.
+ * @returns {Promise<object>} The server response.
+ */
+export const updateUsername = async (username) => {
+    return fetchClient('/api/account/username', {
+        method: 'PATCH',
+        body: JSON.stringify({ username })
+    });
+};
+

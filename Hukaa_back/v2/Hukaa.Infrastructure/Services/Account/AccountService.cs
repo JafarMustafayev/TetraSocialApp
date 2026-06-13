@@ -64,6 +64,10 @@ public class AccountService(
 
         return ReturnAvailabilityResponse(avail);
     }
+    public Task<ResponseDto> ChangeEmailAsync(ChangeEmailRequestDto request)
+    {
+        throw new NotImplementedException();
+    }
     public async Task<ResponseDto<object>> ChangeUsernameAsync(ChangeUsernameRequestDto request)
     {
         CheckNullOrEmpty(request.Username, "Username");
@@ -95,7 +99,7 @@ public class AccountService(
             );
         }
 
-        return ResponseDto.OkResponse(localizer.Get("Auth.Username.Changed.Success"),new
+        return ResponseDto<object>.OkResponse(localizer.Get("Auth.Username.Changed.Success"), new
         {
             Username = user.UserName
         });
