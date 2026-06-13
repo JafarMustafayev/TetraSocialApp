@@ -19,8 +19,4 @@
     <ItemGroup>
         <AdditionalFiles Include="Resources\Localization\SharedResource.resx"/>
     </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Validators\Account\"/>
-    </ItemGroup>
 </Project>

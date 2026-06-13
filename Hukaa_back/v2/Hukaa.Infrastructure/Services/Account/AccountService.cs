@@ -2,6 +2,7 @@
 
 public class AccountService(
     UserManager<User> userManager,
+    SignInManager<User> signInManager,
     IJwtClaimsReader claimsReader,
     ILocalizationService localizer) : IAccountService
 {
@@ -44,6 +45,7 @@ public class AccountService(
     public async Task<ResponseDto> CheckEmailAvailabilityAsync(string email)
     {
         CheckNullOrEmpty(email, "Email");
+        CheckValidEmail(email);
         var avail = false;
         if(await userManager.FindByEmailAsync(email) == null)
         {
@@ -64,9 +66,47 @@ public class AccountService(
 
         return ReturnAvailabilityResponse(avail);
     }
-    public Task<ResponseDto> ChangeEmailAsync(ChangeEmailRequestDto request)
+    public async Task<ResponseDto<object>> ChangeEmailAsync(ChangeEmailRequestDto request)
     {
-        throw new NotImplementedException();
+        CheckNullOrEmpty(request.Email, "Email");
+        CheckValidEmail(request.Email);
+
+        if(await userManager.FindByEmailAsync(request.Email) != null)
+        {
+            throw new ConflictException(localizer.Get("Validation.Common.Validation.AlreadyExists", "Email"));
+        }
+
+        var userId = claimsReader.GetUserId();
+        var user = await userManager.FindByIdAsync(userId);
+        if(user == null)
+        {
+            throw new NotFoundException(localizer.Get("Error.Common.NotFoundWithParameter", "User",
+                new Dictionary<string, object>
+                {
+                    ["Parameter"] = userId
+                }
+            ));
+        }
+
+        var signInResult = await signInManager.CheckPasswordSignInAsync(user, request.Password, false);
+        if(signInResult is { Succeeded: false, RequiresTwoFactor: false })
+        {
+            throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.Invalid"));
+        }
+
+        var token = await userManager.GenerateChangeEmailTokenAsync(user, request.Email);
+
+        var changeResult = await userManager.ChangeEmailAsync(user, request.Email, token);
+        if(!changeResult.Succeeded)
+        {
+            var errors = changeResult.Errors.Select(x => x.Description).ToList();
+            throw new ConflictException(localizer.Get("Validation.Common.Validation.Failure"), errors);
+        }
+
+        return ResponseDto<object>.OkResponse(localizer.Get("Auth.Email.Changed.Success"), new
+        {
+            Email = user.Email
+        });
     }
     public async Task<ResponseDto<object>> ChangeUsernameAsync(ChangeUsernameRequestDto request)
     {
@@ -94,9 +134,8 @@ public class AccountService(
 
         if(!result.Succeeded)
         {
-            throw new ValidationException(
-                string.Join(", ", result.Errors.Select(x => x.Description))
-            );
+            var errors = result.Errors.Select(x => x.Description).ToList();
+            throw new ConflictException(localizer.Get("Validation.Common.Validation.Failure"), errors);
         }
 
         return ResponseDto<object>.OkResponse(localizer.Get("Auth.Username.Changed.Success"), new
@@ -124,6 +163,14 @@ public class AccountService(
         if(string.IsNullOrEmpty(value) || string.IsNullOrWhiteSpace(value))
         {
             throw new ConflictException(localizer.Get("Validation.Common.Validation.Required", paramName ?? "Query"));
+        }
+    }
+
+    private void CheckValidEmail(string email)
+    {
+        if(!Regex.IsMatch(email, @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"))
+        {
+            throw new ConflictException(localizer.Get("Validation.Common.Validation.InvalidEmail"));
         }
     }
 }

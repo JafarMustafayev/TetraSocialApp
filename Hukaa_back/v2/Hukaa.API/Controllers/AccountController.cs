@@ -33,4 +33,12 @@ public class AccountController(
         var res = await accountService.ChangeUsernameAsync(request);
         return StatusCode(res.StatusCode, res);
     }
+
+    [Authorize]
+    [HttpPatch("emailAddress")]
+    public async Task<IActionResult> ChangeEmailAddress([FromBody] ChangeEmailRequestDto request)
+    {
+        var res = await accountService.ChangeEmailAsync(request);
+        return StatusCode(res.StatusCode, res);
+    }
 }
