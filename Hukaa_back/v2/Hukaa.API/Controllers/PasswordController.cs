@@ -19,6 +19,7 @@ public class PasswordController(
         return StatusCode(result.StatusCode, result);
     }
 
+    [Authorize]
     [HttpPost("change-password")]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestDto request)
     {

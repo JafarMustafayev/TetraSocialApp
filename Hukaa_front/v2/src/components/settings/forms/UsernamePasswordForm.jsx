@@ -5,6 +5,7 @@ import SettingsInput from '../SettingsInput';
 import SettingsButton from '../SettingsButton';
 import { useAuth } from '../../../context/AuthContext';
 import { checkUsername, updateUsername, checkEmail, updateEmailAddress } from '../../../api/account.api';
+import { changePassword } from '../../../api/auth.api';
 import Skeleton from '../../ui/Skeleton';
 
 const UsernamePasswordForm = () => {
@@ -37,6 +38,14 @@ const UsernamePasswordForm = () => {
     // Password section states
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
+    const [confirmNewPassword, setConfirmNewPassword] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmNewPassword: '',
+        general: ''
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         if (user && !hasInitialized) {
@@ -278,18 +287,116 @@ const UsernamePasswordForm = () => {
         }
     };
 
-    const handleChangePassword = () => {
-        if (!currentPassword || !newPassword) {
-            toast.error("Please fill all password fields.");
+    const handleChangePassword = async () => {
+        // Clear previous errors before validation
+        setFieldErrors({
+            currentPassword: '',
+            newPassword: '',
+            confirmNewPassword: '',
+            general: ''
+        });
+
+        // Frontend validation
+        const newFieldErrors = {
+            currentPassword: '',
+            newPassword: '',
+            confirmNewPassword: '',
+            general: ''
+        };
+        let hasValidationError = false;
+
+        if (!currentPassword || currentPassword.length < 6) {
+            newFieldErrors.currentPassword = "Current password must be at least 6 characters.";
+            hasValidationError = true;
+        }
+
+        if (!newPassword || newPassword.length < 6) {
+            newFieldErrors.newPassword = "New password must be at least 6 characters.";
+            hasValidationError = true;
+        }
+
+        if (confirmNewPassword && confirmNewPassword !== newPassword) {
+            newFieldErrors.confirmNewPassword = "Passwords do not match.";
+            hasValidationError = true;
+        }
+
+        if (hasValidationError) {
+            setFieldErrors(newFieldErrors);
             return;
         }
-        if (newPassword.length < 8) {
-            toast.error("New password must be at least 6 characters.");
-            return;
+
+        setIsSubmitting(true);
+
+        try {
+            const res = await changePassword({ currentPassword, newPassword });
+
+            const success = res.Success !== undefined ? res.Success : res.success;
+            const message = res.Message !== undefined ? res.Message : res.message;
+            const errors = res.Errors !== undefined ? res.Errors : res.errors;
+            const statusCode = res.StatusCode !== undefined ? res.StatusCode : res.statusCode;
+
+            if (success) {
+                const successMsg = (message || "Password has been successfully changed.").trim();
+                toast.success(successMsg);
+
+                setCurrentPassword('');
+                setNewPassword('');
+                setConfirmNewPassword('');
+
+                setFieldErrors({
+                    currentPassword: '',
+                    newPassword: '',
+                    confirmNewPassword: '',
+                    general: ''
+                });
+            } else {
+                const errorMsg = message || "Password could not be changed. Please try again.";
+
+                if (!message || statusCode === 200) {
+                    toast.error(errorMsg);
+                }
+
+                const responseFieldErrors = {
+                    currentPassword: '',
+                    newPassword: '',
+                    confirmNewPassword: '',
+                    general: ''
+                };
+
+                if (errors) {
+                    if (Array.isArray(errors)) {
+                        const hasIncorrect = errors.some(err =>
+                            typeof err === 'string' && err.toLowerCase().includes('incorrect password')
+                        );
+                        if (hasIncorrect) {
+                            responseFieldErrors.currentPassword = "Incorrect password.";
+                        } else {
+                            responseFieldErrors.general = errors.join(' ');
+                        }
+                    } else if (typeof errors === 'object') {
+                        Object.entries(errors).forEach(([key, val]) => {
+                            const fieldName = key.toLowerCase();
+                            const errMsg = Array.isArray(val) ? val[0] : val;
+                            if (fieldName === 'currentpassword') {
+                                responseFieldErrors.currentPassword = errMsg;
+                            } else if (fieldName === 'newpassword') {
+                                responseFieldErrors.newPassword = errMsg;
+                            } else if (fieldName === 'confirmnewpassword') {
+                                responseFieldErrors.confirmNewPassword = errMsg;
+                            } else {
+                                responseFieldErrors.general = errMsg;
+                            }
+                        });
+                    }
+                }
+                setFieldErrors(responseFieldErrors);
+            }
+        } catch (err) {
+            console.error("Error changing password:", err);
+            toast.error("Password could not be changed. Please try again.");
+        } finally {
+            setIsSubmitting(false);
         }
-        toast.success("Password changed successfully.");
-        setCurrentPassword('');
-        setNewPassword('');
     };
 
     if (isLoadingUser || !user) {
@@ -463,18 +570,38 @@ const UsernamePasswordForm = () => {
                         label="Current password"
                         type="password"
                         value={currentPassword}
-                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        onChange={(e) => {
+                            setCurrentPassword(e.target.value);
+                            setFieldErrors(prev => ({ ...prev, currentPassword: '' }));
+                        }}
+                        status={fieldErrors.currentPassword ? 'error' : null}
+                        helperText={fieldErrors.currentPassword}
                     />
                     <SettingsInput
                         label="New password"
                         type="password"
                         value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        helperText="At least 6 characters"
+                        onChange={(e) => {
+                            setNewPassword(e.target.value);
+                            setFieldErrors(prev => ({ ...prev, newPassword: '' }));
+                        }}
+                        status={fieldErrors.newPassword ? 'error' : null}
+                        helperText={fieldErrors.newPassword || "At least 6 characters"}
                     />
                     <div className="flex justify-end">
-                        <SettingsButton variant="outline" onClick={handleChangePassword}>
-                            Change password
+                        <SettingsButton
+                            variant="outline"
+                            onClick={handleChangePassword}
+                            disabled={
+                                !currentPassword ||
+                                currentPassword.length < 6 ||
+                                !newPassword ||
+                                newPassword.length < 6 ||
+                                (confirmNewPassword !== undefined && confirmNewPassword !== '' && confirmNewPassword !== newPassword) ||
+                                isSubmitting
+                            }
+                        >
+                            {isSubmitting ? "Changing..." : "Change password"}
                         </SettingsButton>
                     </div>
                 </div>

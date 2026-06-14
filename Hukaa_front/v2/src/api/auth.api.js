@@ -59,6 +59,19 @@ export const resetPassword = async (data) => {
 };
 
 /**
+ * Changes the user's password.
+ * @param {object} data - { currentPassword, newPassword }
+ * @returns {Promise<object>} The server response.
+ */
+export const changePassword = async (data) => {
+    return fetchClient('/api/auth/Password/change-password', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    });
+};
+
+
+/**
  * Confirms user email with token.
  * @param {object} data - { Email: string, Token: string }
  * @returns {Promise<object>}
