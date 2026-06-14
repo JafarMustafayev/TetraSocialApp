@@ -27,6 +27,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(10)
             .HasDefaultValue("en");
 
+        builder.Property(x => x.TwoFactorProvider)
+            .IsRequired()
+            .HasConversion<int>();
+
         builder.Property(x => x.Status)
             .IsRequired()
             .HasConversion<int>();
