@@ -24,3 +24,4 @@ global using Hukaa.Application.DTOs.UserDevice;
 global using System.Text.RegularExpressions;
 global using Hukaa.Application.DTOs.Auth.Session;
 global using Hukaa.Application.DTOs.Account;
+global using Hukaa.Application.DTOs.Auth.TwoFactor;
