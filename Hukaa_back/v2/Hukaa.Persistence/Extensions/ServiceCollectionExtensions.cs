@@ -23,6 +23,7 @@ public static class ServiceCollectionExtensions
             services.AddScoped<IRefreshTokenWriteRepository, RefreshTokenWriteRepository>();
             services.AddScoped<IAuthSessionWriteRepository, AuthSessionWriteRepository>();
             services.AddScoped<IVerificationTokenWriteRepository, VerificationTokenWriteRepository>();
+            services.AddScoped<ITwoFactorRecoveryCodeWriteRepository, TwoFactorRecoveryCodeWriteRepository>();
         }
 
         private void AddReadRepositoriesCollection()
@@ -30,6 +31,7 @@ public static class ServiceCollectionExtensions
             services.AddScoped<IRefreshTokenReadRepository, RefreshTokenReadRepository>();
             services.AddScoped<IAuthSessionReadRepository, AuthSessionReadRepository>();
             services.AddScoped<IVerificationTokenReadRepository, VerificationTokenReadRepository>();
+            services.AddScoped<ITwoFactorRecoveryCodeReadRepository, TwoFactorRecoveryCodeReadRepository>();
         }
 
         private void AddSqlServer()

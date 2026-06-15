@@ -24,6 +24,8 @@ global using Hukaa.Persistence.Repositories.AuthSessionRepos;
 global using Hukaa.Application.Abstractions.Repositories.VerificationTokenRepos;
 global using Hukaa.Persistence.Repositories.VerificationTokenRepos;
 global using Hukaa.Domain.Enums;
+global using Hukaa.Application.Abstractions.Repositories.TwoFactor;
+global using Hukaa.Persistence.Repositories.TwoFactor;
 
 // ---------------
 global using IdentityOptions = Hukaa.Application.Options.Identity.IdentityOptions;
