@@ -188,6 +188,15 @@
     <data name="Error.Authorization.Failure.MissingUserId" xml:space="preserve">
     <value>User identifier not found.</value>
   </data>
+    <data name="Error.Cache.Expiration.Invalid" xml:space="preserve">
+    <value>Expiration must be greater than zero.</value>
+  </data>
+    <data name="Error.Cache.Key.Required" xml:space="preserve">
+    <value>Redis cache key cannot be null or empty.</value>
+  </data>
+    <data name="Error.Cache.Pattern.Required" xml:space="preserve">
+    <value>Redis cache pattern cannot be null or empty.</value>
+  </data>
     <data name="Error.Common.NotFoundWithParameter" xml:space="preserve">
       <value>{PropertyName} with `{Parameter}` not found.</value>
     </data>

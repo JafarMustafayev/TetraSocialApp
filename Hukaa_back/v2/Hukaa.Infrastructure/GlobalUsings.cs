@@ -48,6 +48,8 @@ global using Hukaa.Application.DTOs.Auth.Password;
 global using Hukaa.Application.DTOs.Account;
 global using Hukaa.Application.Options.BusinessRules;
 global using Hukaa.Application.DTOs.Auth.Session;
+global using StackExchange.Redis;
+global using Hukaa.Application.Options.Database;
 //--------------
 global using IdentityOptions = Hukaa.Application.Options.Identity.IdentityOptions;
 global using TokenOptions = Hukaa.Application.Options.Token.TokenOptions;
