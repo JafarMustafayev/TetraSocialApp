@@ -4,4 +4,6 @@ public interface ITwoFactorService
 {
     Task<ResponseDto<TwoFactorStatusResponseDto>> GetStatusAsync();
 
+    Task<ResponseDto<AuthenticatorSetupResponseDto>> SetupAuthenticatorAsync(EnableTwoFactorRequestDto request);
+
 }
