@@ -26,3 +26,4 @@ global using Microsoft.AspNetCore.Authorization;
 global using Hukaa.Application.DTOs.Auth.EmailVerification;
 global using Hukaa.Application.DTOs.Auth.Password;
 global using Hukaa.Application.DTOs.Account;
+global using Hukaa.Application.DTOs.Auth.TwoFactor;
