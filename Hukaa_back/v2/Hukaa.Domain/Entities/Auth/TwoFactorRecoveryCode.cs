@@ -1,6 +1,6 @@
 ﻿namespace Hukaa.Domain.Entities.Auth;
 
-public class TwoFactorRecoveryCode : BaseEntity, ISoftDeletable
+public class TwoFactorRecoveryCode : BaseEntity
 {
     public string UserId { get; set; } = null!;
 
@@ -10,7 +10,17 @@ public class TwoFactorRecoveryCode : BaseEntity, ISoftDeletable
     public DateTime? UsedAt { get; set; }
     public User User { get; set; } = null!;
 
-    public bool IsDeleted { get; set; }
-    public DateTime? DeletedAt { get; set; }
-    public string? DeletedBy { get; set; }
+    public bool IsRevoked { get; set; }
+    public DateTime? RevokedAt { get; set; }
+
+    public void Revoke()
+    {
+        if(IsRevoked)
+        {
+            return;
+        }
+
+        IsRevoked = true;
+        RevokedAt = DateTime.UtcNow;
+    }
 }

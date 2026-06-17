@@ -11,6 +11,7 @@ public class User : IdentityUser<string>
     public UserStatus Status { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime DateOfBirth { get; set; }
+    public string? AuthenticatorKey { get; set; }
     public TwoFactorProvider TwoFactorProvider { get; set; } = TwoFactorProvider.None;
 
     public HashSet<AuthSession> AuthSessions { get; set; } = new();
