@@ -131,3 +131,52 @@ export const revokeOtherSessions = async () => {
 export const getTwoFactorStatus = async () => {
     return fetchClient('/api/auth/2fa/status');
 };
+
+/**
+ * Initiates the setup/enable flow for two-factor authentication.
+ * @param {string} password - The current user's password.
+ * @returns {Promise<object>} Server response.
+ */
+export const setupTwoFactor = async (password) => {
+    return fetchClient('/api/auth/2fa/setup', {
+        method: 'POST',
+        body: JSON.stringify({ password })
+    });
+};
+
+/**
+ * Enables two-factor authentication using the verification code.
+ * @param {string} code - The 6-digit verification code.
+ * @returns {Promise<object>} Server response.
+ */
+export const enableTwoFactor = async (code) => {
+    return fetchClient('/api/auth/2fa/enable', {
+        method: 'POST',
+        body: JSON.stringify({ Code: code })
+    });
+};
+
+/**
+ * Regenerates two-factor authentication recovery codes.
+ * @param {string} password - The user's password.
+ * @returns {Promise<object>} Server response.
+ */
+export const regenerateTwoFactorRecoveryCodes = async (password) => {
+    return fetchClient('/api/auth/2fa/regenerate', {
+        method: 'POST',
+        body: JSON.stringify({ password })
+    });
+};
+
+/**
+ * Disables two-factor authentication using password and verification code.
+ * @param {string} password - The user's password.
+ * @param {string} code - The 2FA verification code.
+ * @returns {Promise<object>} Server response.
+ */
+export const disableTwoFactor = async (password, code) => {
+    return fetchClient('/api/auth/2fa/disable', {
+        method: 'POST',
+        body: JSON.stringify({ password, code })
+    });
+};
