@@ -11,6 +11,7 @@ import AppearanceSettings from './direct/AppearanceSettings';
 // Item Components
 import UsernamePasswordForm from './forms/UsernamePasswordForm';
 import ActiveSessionsForm from './forms/ActiveSessionsForm';
+import TwoFactorForm from './forms/TwoFactorForm';
 
 // Component Map for direct categories
 const DirectComponentMap = {
@@ -21,6 +22,7 @@ const DirectComponentMap = {
 const ItemComponentMap = {
     'username-password': UsernamePasswordForm,
     'active-sessions': ActiveSessionsForm,
+    'two-factor': TwoFactorForm,
 };
 
 const SettingsContent = () => {

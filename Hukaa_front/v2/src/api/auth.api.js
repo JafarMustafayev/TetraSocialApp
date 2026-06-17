@@ -123,3 +123,11 @@ export const revokeOtherSessions = async () => {
         method: 'POST'
     });
 };
+
+/**
+ * Retrieves the current two-factor authentication status from the backend.
+ * @returns {Promise<object>} Server response.
+ */
+export const getTwoFactorStatus = async () => {
+    return fetchClient('/api/auth/2fa/status');
+};
