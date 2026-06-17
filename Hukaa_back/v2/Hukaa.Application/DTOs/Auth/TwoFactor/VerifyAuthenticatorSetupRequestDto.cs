@@ -2,5 +2,5 @@
 
 public sealed class VerifyAuthenticatorSetupRequestDto
 {
-    public int Code { get; set; }
+    public string Code { get; set; } = null!;
 }

@@ -10,7 +10,7 @@ public class VerifyAuthenticatorSetupRequestValidator : AbstractValidator<Verify
 
         RuleFor(x => x.Code)
             .Cascade(CascadeMode.Stop)
-            .ApplyIntValidation(
+            .ApplyStringValidation(
                 rules.Code,
                 localizer,
                 "Code");

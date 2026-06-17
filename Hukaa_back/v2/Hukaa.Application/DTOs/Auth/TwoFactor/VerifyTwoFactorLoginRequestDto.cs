@@ -3,5 +3,5 @@
 public sealed class VerifyTwoFactorLoginRequestDto
 {
     public string ChallengeId { get; set; } = null!;
-    public int Code { get; set; }
+    public string Code { get; set; } = null!;
 }

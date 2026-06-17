@@ -17,7 +17,7 @@ public class VerifyTwoFactorLoginRequestValidator : AbstractValidator<VerifyTwoF
 
         RuleFor(x => x.Code)
             .Cascade(CascadeMode.Stop)
-            .ApplyIntValidation(
+            .ApplyStringValidation(
                 rules.Code,
                 localizer,
                 "Code");

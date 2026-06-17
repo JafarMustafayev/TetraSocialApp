@@ -2,7 +2,12 @@
 
 public sealed class TwoFactorStatusResponseDto
 {
-    public bool IsEmailTwoFactorEnabled { get; set; }
-    public bool IsAuthenticatorEnabled { get; set; }
-    public bool HasRecoveryCodes { get; set; }
+    public bool IsEnabled { get; init; }
+    public TwoFactorDetailsDto Details { get; init; } = new();
+}
+
+public sealed class TwoFactorDetailsDto
+{
+    public string Provider { get; set; } = nameof (TwoFactorProvider.None);
+    public int RecoveryCodesCount { get; set; }
 }
