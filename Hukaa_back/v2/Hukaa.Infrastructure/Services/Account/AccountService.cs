@@ -2,7 +2,6 @@
 
 public class AccountService(
     UserManager<User> userManager,
-    SignInManager<User> signInManager,
     IJwtClaimsReader claimsReader,
     ILocalizationService localizer) : IAccountService
 {
@@ -80,8 +79,8 @@ public class AccountService(
             ));
         }
 
-        var signInResult = await signInManager.CheckPasswordSignInAsync(user, request.Password, false);
-        if(signInResult is { Succeeded: false, RequiresTwoFactor: false })
+        var checkResult = await userManager.CheckPasswordAsync(user, request.Password);
+        if(!checkResult)
         {
             throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.InvalidPassword"));
         }

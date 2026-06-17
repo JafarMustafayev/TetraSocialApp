@@ -39,38 +39,14 @@ public class PasswordManagementService(
         var decodedUserId = clientUrlService.DecodeFromUrl(request.UserId);
         var decodedToken = clientUrlService.DecodeFromUrl(request.Token);
 
-        var user = await userManager.FindByIdAsync(decodedUserId);
-
-        if(user == null)
-        {
-            throw new NotFoundException(localizer.Get("Error.Common.NotFoundWithParameter", "User",
-                new Dictionary<string, object>
-                {
-                    ["Parameter"] = decodedUserId
-                }
-            ));
-        }
+        var user = await GetUserAsync(decodedUserId);
 
         await verificationService.ResetPasswordAsync(user, decodedToken, request.NewPassword);
-
         return ResponseDto.OkResponse(localizer.Get("Auth.Password.Reset.Success"));
     }
     public async Task<ResponseDto> ChangePasswordAsync(ChangePasswordRequestDto request)
     {
-        var userId = claimsReader.GetUserId();
-
-        var user = await userManager.FindByIdAsync(userId);
-
-        if(user == null)
-        {
-            throw new NotFoundException(localizer.Get("Error.Common.NotFoundWithParameter", "User",
-                new Dictionary<string, object>
-                {
-                    ["Parameter"] = userId
-                }
-            ));
-        }
-
+        var user = await GetUserAsync();
         var res = await userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
 
         if(!res.Succeeded)
@@ -80,5 +56,21 @@ public class PasswordManagementService(
         }
 
         return ResponseDto.OkResponse(localizer.Get("Auth.Password.Change.Success"));
+    }
+
+    private async Task<User> GetUserAsync(string? userId = null)
+    {
+        var user = await userManager.FindByIdAsync(userId ?? claimsReader.GetUserId());
+        if(user == null)
+        {
+            throw new NotFoundException(localizer.Get("Error.Common.NotFoundWithParameter", "User",
+                new Dictionary<string, object>
+                {
+                    ["Parameter"] = userId ?? claimsReader.GetUserId()
+                }
+            ));
+        }
+
+        return user;
     }
 }
