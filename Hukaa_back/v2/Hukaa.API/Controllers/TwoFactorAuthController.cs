@@ -28,4 +28,21 @@ public class TwoFactorAuthController(
         var result = await twoFactorService.VerifyAndEnableAuthenticatorAsync(request);
         return StatusCode(result.StatusCode, result);
     }
+
+    [Authorize]
+    [HttpPost("regenerate")]
+    public async Task<IActionResult> GenerateRecoveryCodes([FromBody] EnableTwoFactorRequestDto request)
+    {
+        var result = await twoFactorService.GenerateRecoveryCodesAsync(request);
+        return StatusCode(result.StatusCode, result);
+    }
+
+    [Authorize]
+    [HttpPost("disable")]
+    public async Task<IActionResult> DisableAuthenticator([FromBody] DisableTwoFactorRequestDto request)
+    {
+        var result = await twoFactorService.DisableAuthenticatorAsync(request);
+        return StatusCode(result.StatusCode, result);
+    }
+
 }

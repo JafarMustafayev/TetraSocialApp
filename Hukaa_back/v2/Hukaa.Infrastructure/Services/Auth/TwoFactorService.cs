@@ -26,8 +26,7 @@ public class TwoFactorService(
         }
 
         var count = await recoveryCodeReadRepo.CountAsync(x =>
-            x.UserId == user.Id
-            && !x.IsUsed);
+            x.UserId == user.Id && !x.IsUsed && !x.IsRevoked);
 
         return ResponseDto<TwoFactorStatusResponseDto>.OkResponse(localizer.Get("Auth.TwoFactor.Status.Retrieved"),
             new TwoFactorStatusResponseDto
@@ -98,32 +97,79 @@ public class TwoFactorService(
             throw new UnauthorizedException(localizer.Get("Auth.TwoFactor.Setup.InvalidCode"));
         }
 
-        await UpdateUserAsync(user, secretKey);
+        await UpdateUserAsync(user, true, secretKey, TwoFactorProvider.AuthenticatorApp);
 
-        await RevokeAllExistsRecoveryCodesAsync(user.Id);
-        var recoveryCodes = GenerateRecoveryCodes();
-
-        var recoveryEntities = new List<TwoFactorRecoveryCode>();
-        foreach (var code in recoveryCodes)
-        {
-            recoveryEntities.Add(new TwoFactorRecoveryCode
-            {
-                CodeHash = tokenHasher.Hash(code, _appSecretKey),
-                UserId = user.Id
-            });
-        }
-
-        await recoveryCodeWriteRepo.AddRangeAsync(recoveryEntities);
-        await uni.SaveChangesAsync();
+        var recoveryCodes = await GenerateAndSaveRecoveryCodesAsync(user.Id);
 
         await redisCacheService.RemoveAsync(GetSetupKey(user.Id));
         await ResetSetupFailCountAsync(user.Id);
 
-        var data = new RecoveryCodesResponseDto
+        return ResponseDto<RecoveryCodesResponseDto>.OkResponse(
+            localizer.Get("Auth.TwoFactor.Setup.Success"),
+            new RecoveryCodesResponseDto
+            {
+                Codes = recoveryCodes
+            });
+    }
+    public async Task<ResponseDto> DisableAuthenticatorAsync(DisableTwoFactorRequestDto request)
+    {
+        var user = await GetUserAsync();
+
+        if(!user.TwoFactorEnabled)
         {
-            Codes = recoveryCodes
-        };
-        return ResponseDto<RecoveryCodesResponseDto>.OkResponse(localizer.Get("Auth.TwoFactor.Setup.Success"), data);
+            throw new ConflictException(localizer.Get("Auth.TwoFactor.Setup.NotEnabled"));
+        }
+
+        var isValidPassword = await userManager.CheckPasswordAsync(user, request.Password);
+        if(!isValidPassword)
+        {
+            await IncrementSetupFailCountAsync(user.Id);
+            throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.InvalidPassword"));
+        }
+
+        var secretKey = user.AuthenticatorKey ?? "";
+        var isValidCode = VerifyTotpCode(secretKey, request.Code);
+
+
+        if(!isValidCode)
+        {
+            await IncrementSetupFailCountAsync(user.Id);
+            throw new UnauthorizedException(localizer.Get("Auth.TwoFactor.Setup.InvalidCode"));
+        }
+        await userManager.SetTwoFactorEnabledAsync(user, false);
+
+        await UpdateUserAsync(user, false);
+        await RevokeAllExistsRecoveryCodesAsync(user.Id);
+
+        return ResponseDto.OkResponse(localizer.Get("Auth.TwoFactor.Disabled.Success"));
+    }
+    public async Task<ResponseDto<RecoveryCodesResponseDto>> GenerateRecoveryCodesAsync(EnableTwoFactorRequestDto request)
+    {
+        var user = await GetUserAsync();
+        await CheckSetupLockAsync(user.Id);
+
+        if(!user.TwoFactorEnabled)
+        {
+            throw new ConflictException(localizer.Get("Auth.TwoFactor.Setup.NotEnabled"));
+        }
+
+        var isValidPassword = await userManager.CheckPasswordAsync(user, request.Password);
+        if(!isValidPassword)
+        {
+            await IncrementSetupFailCountAsync(user.Id);
+            throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.InvalidPassword"));
+        }
+
+        var recoveryCodes = await GenerateAndSaveRecoveryCodesAsync(user.Id);
+
+        await ResetSetupFailCountAsync(user.Id);
+
+        return ResponseDto<RecoveryCodesResponseDto>.OkResponse(
+            localizer.Get("Auth.TwoFactor.Setup.Success"),
+            new RecoveryCodesResponseDto
+            {
+                Codes = recoveryCodes
+            });
     }
 
     // Private 
@@ -233,12 +279,12 @@ public class TwoFactorService(
             new VerificationWindow(1, 1));
     }
 
-    private async Task UpdateUserAsync(User user, string secretKey)
+    private async Task UpdateUserAsync(User user, bool setEnable, string? secretKey = null, TwoFactorProvider? provider = null)
     {
-        user.TwoFactorProvider = TwoFactorProvider.AuthenticatorApp;
+        user.TwoFactorProvider = provider ?? TwoFactorProvider.None;
         user.AuthenticatorKey = secretKey;
         await userManager.UpdateAsync(user);
-        await userManager.SetTwoFactorEnabledAsync(user, true);
+        await userManager.SetTwoFactorEnabledAsync(user, setEnable);
     }
 
     private async Task RevokeAllExistsRecoveryCodesAsync(string userId)
@@ -248,7 +294,28 @@ public class TwoFactorService(
             .ToListAsync();
 
         recoveryCodes.ForEach(x => x.Revoke());
+        recoveryCodeWriteRepo.UpdateRange(recoveryCodes);
         await uni.SaveChangesAsync();
+    }
+
+    private async Task<List<string>> GenerateAndSaveRecoveryCodesAsync(string userId)
+    {
+        await RevokeAllExistsRecoveryCodesAsync(userId);
+
+        var recoveryCodes = GenerateRecoveryCodes();
+
+        var recoveryEntities = recoveryCodes
+            .Select(code => new TwoFactorRecoveryCode
+            {
+                CodeHash = tokenHasher.Hash(code, _appSecretKey),
+                UserId = userId
+            })
+            .ToList();
+
+        await recoveryCodeWriteRepo.AddRangeAsync(recoveryEntities);
+        await uni.SaveChangesAsync();
+
+        return recoveryCodes;
     }
 
 }
