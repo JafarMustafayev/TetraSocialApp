@@ -13,7 +13,7 @@ public class TwoFactorService(
 ) : ITwoFactorService
 {
     private readonly TwoFactorAuthBusinessRulesOptions _rulesOptions = appConfig.GetSection<BusinessRulesOptions>().TwoFactorAuth;
-    private readonly string _appSecretKey = appConfig.GetSection<TokenOptions>().SecurityKey;
+    private readonly TokenOptions _tokenOptions = appConfig.GetSection<TokenOptions>();
 
     public async Task<ResponseDto<TwoFactorStatusResponseDto>> GetStatusAsync()
     {
@@ -64,7 +64,9 @@ public class TwoFactorService(
         var secretKey = GenerateSecretKey();
         var authUri = GenerateAuthUri(secretKey, user.Id);
 
-        await redisCacheService.SetAsync(GetSetupKey(user.Id), secretKey, TimeSpan.FromMinutes(10));
+        await redisCacheService.SetAsync(
+            GetSetupKey(user.Id), secretKey,
+            TimeSpan.FromMinutes(_tokenOptions.Lifetime.TwoFactorVerificationToken.TotalMinutes));
 
         var setupResponse = new AuthenticatorSetupResponseDto
         {
@@ -130,12 +132,12 @@ public class TwoFactorService(
         var secretKey = user.AuthenticatorKey ?? "";
         var isValidCode = VerifyTotpCode(secretKey, request.Code);
 
-
         if(!isValidCode)
         {
             await IncrementSetupFailCountAsync(user.Id);
             throw new UnauthorizedException(localizer.Get("Auth.TwoFactor.Setup.InvalidCode"));
         }
+
         await userManager.SetTwoFactorEnabledAsync(user, false);
 
         await UpdateUserAsync(user, false);
@@ -171,19 +173,101 @@ public class TwoFactorService(
                 Codes = recoveryCodes
             });
     }
-
-    // Private 
-    private async Task<User> GetUserAsync()
+    public async Task<(bool isValid, User? user )> VerifyRecoveryCodeAsync(RecoveryCodeLoginRequestDto request)
     {
-        var userId = claimsReader.GetUserId();
-        var user = await userManager.FindByIdAsync(userId);
+        var userId = await redisCacheService.GetAsync<string>(GetChallengeKey(request.ChallengeId));
+        if(string.IsNullOrEmpty(userId))
+        {
+            throw new NotFoundException(localizer.Get("Auth.TwoFactor.Challenge.Expired"));
+        }
+
+        var user = await GetUserAsync(userId);
+        if(!user.TwoFactorEnabled)
+        {
+            throw new UnauthorizedException(localizer.Get("Auth.TwoFactor.Setup.NotEnabled"));
+        }
+
+        await CheckSetupLockAsync(userId);
+
+        var hashedCode = tokenHasher.Hash(request.RecoveryCode, _tokenOptions.SecurityKey);
+
+        var existRecoveryCode = await recoveryCodeReadRepo.FirstOrDefaultAsync(x =>
+            x.CodeHash == hashedCode && x.UserId == user.Id && !(x.IsUsed || x.IsRevoked));
+        if(existRecoveryCode == null)
+        {
+            await IncrementSetupFailCountAsync(user.Id);
+            throw new NotFoundException(localizer.Get("Auth.TwoFactor.RecoveryCode.NotFound"));
+        }
+
+        existRecoveryCode.Use();
+        recoveryCodeWriteRepo.Update(existRecoveryCode);
+        await uni.SaveChangesAsync();
+
+        await ResetSetupFailCountAsync(user.Id);
+        await redisCacheService.RemoveAsync(GetChallengeKey(request.ChallengeId));
+        return (true, user);
+    }
+
+    public async Task<TwoFactorChallengeResponseDto> CreateLoginChallengeAsync(string userId, string provider)
+    {
+        var response = new TwoFactorChallengeResponseDto
+        {
+            ChallengeId = Guid.CreateVersion7().ToString(),
+            ExpiresAt = DateTime.UtcNow.AddMinutes(_tokenOptions.Lifetime.LoginVerificationToken.TotalMinutes),
+            Provider = provider
+        };
+        var challengeKey = GetChallengeKey(response.ChallengeId);
+
+        await redisCacheService.SetAsync(challengeKey, userId, _tokenOptions.Lifetime.LoginVerificationToken);
+
+        return response;
+    }
+
+    public async Task<(bool isValid, User? user )> VerifyLoginChallengeAsync(VerifyTwoFactorLoginRequestDto request)
+    {
+        var userId = await redisCacheService.GetAsync<string>(GetChallengeKey(request.ChallengeId));
+        if(string.IsNullOrEmpty(userId))
+        {
+            throw new NotFoundException(localizer.Get("Auth.TwoFactor.Challenge.Expired"));
+        }
+
+        var user = await GetUserAsync(userId);
+        if(!user.TwoFactorEnabled)
+        {
+            throw new UnauthorizedException(localizer.Get("Auth.TwoFactor.Setup.NotEnabled"));
+        }
+
+        await CheckSetupLockAsync(userId);
+
+        if(user.TwoFactorProvider == TwoFactorProvider.AuthenticatorApp)
+        {
+            var isValidCode = VerifyTotpCode(user.AuthenticatorKey ?? "", request.Code);
+            if(!isValidCode)
+            {
+                await IncrementSetupFailCountAsync(user.Id);
+                throw new UnauthorizedException(localizer.Get("Auth.TwoFactor.Setup.InvalidCode"));
+            }
+
+            await ResetSetupFailCountAsync(user.Id);
+            await redisCacheService.RemoveAsync(GetChallengeKey(request.ChallengeId));
+            return (true, user);
+        }
+
+        return (false, null);
+    }
+
+// Private 
+    private async Task<User> GetUserAsync(string? userId = null)
+    {
+        var id = userId ?? claimsReader.GetUserId();
+        var user = await userManager.FindByIdAsync(id);
 
         if(user == null)
         {
             throw new NotFoundException(localizer.Get("Error.Common.NotFoundWithParameter", "User",
                 new Dictionary<string, object>
                 {
-                    ["Parameter"] = userId
+                    ["Parameter"] = id
                 }
             ));
         }
@@ -198,6 +282,7 @@ public class TwoFactorService(
         rng.GetBytes(key);
         return Base32Encoding.ToString(key).TrimEnd('=');
     }
+
     private string GenerateAuthUri(string secretKey, string accountName, string issuer = "Hukaa")
     {
         var encodedIssuer = Uri.EscapeDataString(issuer);
@@ -210,6 +295,7 @@ public class TwoFactorService(
                $"&digits=6" +
                $"&period=30";
     }
+
     private List<string> GenerateRecoveryCodes(int codeCount = 10)
     {
         var codes = new List<string>();
@@ -228,13 +314,20 @@ public class TwoFactorService(
     {
         return $"2fa:authenticator-setup:{userId}";
     }
+
     private string GetFailKey(string userId)
     {
         return $"2fa:setup:fail:{userId}";
     }
+
     private string GetLockKey(string userId)
     {
         return $"2fa:setup:lock:{userId}";
+    }
+
+    private string GetChallengeKey(string userId)
+    {
+        return $"2fa:login:challenge:{userId}";
     }
 
     private async Task CheckSetupLockAsync(string userId)
@@ -247,6 +340,7 @@ public class TwoFactorService(
             throw new TooManyRequestsException(localizer.Get("Auth.TooManyAttempts.TryAgainLater"));
         }
     }
+
     private async Task IncrementSetupFailCountAsync(string userId)
     {
         var failKey = GetFailKey(userId);
@@ -263,6 +357,7 @@ public class TwoFactorService(
 
         await redisCacheService.SetAsync(failKey, count, _rulesOptions.FailTtl);
     }
+
     private async Task ResetSetupFailCountAsync(string userId)
     {
         var key = GetFailKey(userId);
@@ -307,7 +402,7 @@ public class TwoFactorService(
         var recoveryEntities = recoveryCodes
             .Select(code => new TwoFactorRecoveryCode
             {
-                CodeHash = tokenHasher.Hash(code, _appSecretKey),
+                CodeHash = tokenHasher.Hash(code, _tokenOptions.SecurityKey),
                 UserId = userId
             })
             .ToList();

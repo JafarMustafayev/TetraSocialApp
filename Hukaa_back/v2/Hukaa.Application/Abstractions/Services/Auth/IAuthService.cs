@@ -3,9 +3,9 @@
 public interface IAuthService
 {
     Task<ResponseDto> RegisterAsync(RegisterRequestDto request);
-    Task<AuthTokenResponse> LoginAsync(LoginRequestDto request);
-    Task<AuthTokenResponse> RefreshTokenAsync(RotateTokenRequestDto request);
+    Task<ResponseDto<LoginResponseDto>> LoginAsync(LoginRequestDto request);
+    Task<ResponseDto<AuthTokenResponse>> RefreshTokenAsync(RotateTokenRequestDto request);
     Task<ResponseDto> LogoutAsync();
-
-    //Task<AuthTokenResponse> LoginWithTwoFactorAsync(TwoFactorVerifyRequest request);
+    Task<ResponseDto<AuthTokenResponse>> LoginWithTwoFactorAsync(VerifyTwoFactorLoginRequestDto request);
+    Task<ResponseDto<AuthTokenResponse>> LoginWithRecoveryCodeAsync(RecoveryCodeLoginRequestDto request);
 }

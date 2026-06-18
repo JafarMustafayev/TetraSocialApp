@@ -32,4 +32,19 @@ public class AuthController(IAuthService authService) : ControllerBase
         var res = await authService.LogoutAsync();
         return StatusCode(res.StatusCode, res);
     }
+
+    [HttpPost("login/2fa")]
+    public async Task<IActionResult> LoginWithTwoFactor([FromBody] VerifyTwoFactorLoginRequestDto request)
+    {
+        var res = await authService.LoginWithTwoFactorAsync(request);
+        return StatusCode(res.StatusCode, res);
+    }
+
+    [HttpPost("login/recovery")]
+    public async Task<IActionResult> LoginWithRecoveryCode([FromBody] RecoveryCodeLoginRequestDto request)
+    {
+        var res = await authService.LoginWithRecoveryCodeAsync(request);
+        return StatusCode(res.StatusCode, res);
+    }
+
 }

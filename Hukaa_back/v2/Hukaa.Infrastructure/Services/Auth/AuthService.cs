@@ -11,7 +11,8 @@ public class AuthService(
     ISessionService sessionService,
     IJwtClaimsReader claimsReader,
     IMailService mailService,
-    IClientUrlService clientUrlService
+    IClientUrlService clientUrlService,
+    ITwoFactorService twoFactorService
 ) : IAuthService
 {
     private readonly IdentityOptions _identityOptions = config.GetSection<IdentityOptions>();
@@ -73,7 +74,7 @@ public class AuthService(
             });
     }
 
-    public async Task<AuthTokenResponse> LoginAsync(LoginRequestDto request)
+    public async Task<ResponseDto<LoginResponseDto>> LoginAsync(LoginRequestDto request)
     {
         var user = Regex.IsMatch(request.EmailOrUsername, @"[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+")
             ? await userManager.FindByEmailAsync(request.EmailOrUsername) ?? null
@@ -87,50 +88,86 @@ public class AuthService(
         await ValidateUserStatusAsync(user);
 
         var result = await signInManager.CheckPasswordSignInAsync(user, request.Password, true);
-
         if(result is { Succeeded: false, RequiresTwoFactor: false })
         {
             throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.Invalid"));
         }
 
-        var roles = await userManager.GetRolesAsync(user);
-        var sessionId = await sessionService.CreateSessionAsync(user.Id);
-        var refreshToken = await authTokenService.GenerateRefreshTokenAsync(sessionId);
-        var accessToken = authTokenService.GenerateAccessToken(user.Id, sessionId, roles);
-
-        return new AuthTokenResponse
+        if(user.TwoFactorEnabled)
         {
-            AccessToken = accessToken,
-            RefreshToken = refreshToken
-        };
+            var twoFactorResult = await twoFactorService.CreateLoginChallengeAsync(user.Id, user.TwoFactorProvider.ToString());
+            return ResponseDto<LoginResponseDto>.OkResponse(
+                localizer.Get("Auth.Login.Success.RequiresTwoFactor"),
+                new LoginResponseDto
+                {
+                    RequiresTwoFactor = user.TwoFactorEnabled,
+                    TwoFactorChallenge = twoFactorResult
+                });
+        }
+
+        var tokens = await GenerateAuthTokensAsync(user);
+
+        return ResponseDto<LoginResponseDto>.OkResponse(
+            localizer.Get("Auth.Login.Success"),
+            new LoginResponseDto
+            {
+                RequiresTwoFactor = user.TwoFactorEnabled,
+                Tokens = tokens
+            });
     }
 
-    public async Task<AuthTokenResponse> RefreshTokenAsync(RotateTokenRequestDto request)
+    public async Task<ResponseDto<AuthTokenResponse>> RefreshTokenAsync(RotateTokenRequestDto request)
     {
         var validToken = await authTokenService.ValidateRefreshTokenAsync(request.RefreshToken);
         var user = await userManager.FindByIdAsync(validToken.AuthSession.UserId);
 
-        if(user != null)
+        if(user == null)
         {
-            await ValidateUserStatusAsync(user);
-            var roles = await userManager.GetRolesAsync(user);
-
-            return await authTokenService.RotateValidatedRefreshTokenAsync(
-                request.RefreshToken,
-                user.Id,
-                roles.ToList()
-            );
+            throw new UnauthorizedException(localizer.Get("Validation.Common.Validation.Failure"));
         }
 
-        throw new UnauthorizedException(localizer.Get("Validation.Common.Validation.Failure"));
+        await ValidateUserStatusAsync(user);
+        var roles = await userManager.GetRolesAsync(user);
+
+        var res = await authTokenService.RotateValidatedRefreshTokenAsync(
+            request.RefreshToken,
+            user.Id,
+            roles.ToList()
+        );
+
+        return ResponseDto<AuthTokenResponse>.OkResponse(
+            localizer.Get("Auth.Login.Success"), res);
     }
 
     public async Task<ResponseDto> LogoutAsync()
     {
         var sessionId = claimsReader.GetSessionId();
-
         await sessionService.RevokeSessionAsync(sessionId, true);
         return ResponseDto.OkResponse(localizer.Get("Auth.Logout.Success"));
+    }
+    public async Task<ResponseDto<AuthTokenResponse>> LoginWithTwoFactorAsync(VerifyTwoFactorLoginRequestDto request)
+    {
+        var response = await twoFactorService.VerifyLoginChallengeAsync(request);
+        if(response is { isValid: false, user: null })
+        {
+            throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.Invalid"));
+        }
+
+        var tokens = await GenerateAuthTokensAsync(response.user);
+        return ResponseDto<AuthTokenResponse>.OkResponse(
+            localizer.Get("Auth.Login.Success"), tokens);
+    }
+    public async Task<ResponseDto<AuthTokenResponse>> LoginWithRecoveryCodeAsync(RecoveryCodeLoginRequestDto request)
+    {
+        var response = await twoFactorService.VerifyRecoveryCodeAsync(request);
+        if(response is { isValid: false, user: null })
+        {
+            throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.Invalid"));
+        }
+
+        var tokens = await GenerateAuthTokensAsync(response.user);
+        return ResponseDto<AuthTokenResponse>.OkResponse(
+            localizer.Get("Auth.Login.Success"), tokens);
     }
 
     //------
@@ -145,5 +182,25 @@ public class AuthService(
         {
             throw new UnauthorizedException(localizer.Get("Auth.Login.Failure.Locked"));
         }
+    }
+
+    private async Task<AuthTokenResponse> GenerateAuthTokensAsync(User user)
+    {
+        var roles = await userManager.GetRolesAsync(user);
+
+        var sessionId = await sessionService.CreateSessionAsync(user.Id);
+
+        var refreshToken = await authTokenService.GenerateRefreshTokenAsync(sessionId);
+
+        var accessToken = authTokenService.GenerateAccessToken(
+            user.Id,
+            sessionId,
+            roles);
+
+        return new AuthTokenResponse
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
+        };
     }
 }

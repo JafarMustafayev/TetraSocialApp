@@ -23,4 +23,15 @@ public class TwoFactorRecoveryCode : BaseEntity
         IsRevoked = true;
         RevokedAt = DateTime.UtcNow;
     }
+
+    public void Use()
+    {
+        if(IsUsed)
+        {
+            return;
+        }
+
+        IsUsed = true;
+        UsedAt = DateTime.UtcNow;
+    }
 }
