@@ -25,6 +25,32 @@ export const login = async (credentials) => {
 };
 
 /**
+ * Verify Two-Factor Authentication login challenge code.
+ * @param {string} ChallengeId - The unique challenge identifier.
+ * @param {string} code - The 6-digit verification code.
+ * @returns {Promise<object>} The server response.
+ */
+export const verifyTwoFactorLogin = async (ChallengeId, code) => {
+    return fetchClient('/api/Auth/login/2fa', {
+        method: 'POST',
+        body: JSON.stringify({ ChallengeId, code })
+    });
+};
+
+/**
+ * Log in using a Two-Factor Authentication recovery code.
+ * @param {string} ChallengeId - The unique challenge identifier.
+ * @param {string} recoveryCode - The recovery code entered by the user.
+ * @returns {Promise<object>} The server response.
+ */
+export const loginWithRecoveryCode = async (ChallengeId, recoveryCode) => {
+    return fetchClient('/api/Auth/login/recovery', {
+        method: 'POST',
+        body: JSON.stringify({ ChallengeId, recoveryCode })
+    });
+};
+
+/**
  * Log out the current user.
  * @returns {Promise<object>} The server response.
  */

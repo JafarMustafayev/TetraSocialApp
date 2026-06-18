@@ -5,6 +5,7 @@ import Register from './pages/auth/Register';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import ResetPassword from './pages/auth/ResetPassword';
 import EmailConfirmation from './pages/auth/EmailConfirmation';
+import TwoFactorVerification from './pages/auth/TwoFactorVerification';
 import Home from './pages/Home';
 import Settings from './pages/Settings';
 import Messages from './pages/Messages';
@@ -68,6 +69,7 @@ function App() {
               <Route path="/auth/forgot-password" element={<ForgotPassword />} />
               <Route path="/auth/reset-password" element={<ResetPassword />} />
               <Route path="/auth/confirm-email" element={<EmailConfirmation />} />
+              <Route path="/auth/2fa" element={<TwoFactorVerification />} />
             </Route>
 
             {/* Default Redirect */}

@@ -8,6 +8,61 @@ import AuthInput from '../../components/auth/AuthInput';
 import AuthButton from '../../components/auth/AuthButton';
 import { useAuth } from '../../context/AuthContext';
 
+// Helper to normalize the backend response to support both camelCase and PascalCase
+const normalizeLoginResponse = (res) => {
+    if (!res) return null;
+    const success = res.success ?? res.Success ?? false;
+    const statusCode = res.statusCode ?? res.StatusCode;
+    const message = res.message ?? res.Message;
+    const data = res.data ?? res.Data;
+    const errors = res.errors ?? res.Errors;
+
+    let requiresTwoFactor = false;
+    let tokens = null;
+    let twoFactorChallenge = null;
+
+    if (data) {
+        requiresTwoFactor = data.requiresTwoFactor ?? data.RequiresTwoFactor ?? false;
+        tokens = data.tokens ?? data.Tokens ?? null;
+        twoFactorChallenge = data.twoFactorChallenge ?? data.TwoFactorChallenge ?? null;
+    }
+
+    return {
+        success,
+        statusCode,
+        message,
+        errors,
+        requiresTwoFactor,
+        tokens,
+        twoFactorChallenge
+    };
+};
+
+// Helper to safely extract nested tokens in camelCase or PascalCase
+const extractTokens = (tokensObj) => {
+    if (!tokensObj) return null;
+
+    const accessTokenObj = tokensObj.accessToken ?? tokensObj.AccessToken;
+    const refreshTokenObj = tokensObj.refreshToken ?? tokensObj.RefreshToken;
+
+    const accessToken = accessTokenObj?.accessToken ?? accessTokenObj?.AccessToken;
+    const accessTokenExpiresAt = accessTokenObj?.accessTokenExpiresAt ?? accessTokenObj?.AccessTokenExpiresAt;
+
+    const refreshToken = refreshTokenObj?.refreshToken ?? refreshTokenObj?.RefreshToken;
+    const refreshTokenExpiresAt = refreshTokenObj?.refreshTokenExpiresAt ?? refreshTokenObj?.RefreshTokenExpiresAt;
+
+    if (!accessToken || !refreshToken) {
+        return null;
+    }
+
+    return {
+        accessToken,
+        accessTokenExpiresAt,
+        refreshToken,
+        refreshTokenExpiresAt
+    };
+};
+
 const Login = () => {
     const [credentials, setCredentials] = useState({
         UsernameOrEmail: '',
@@ -41,18 +96,60 @@ const Login = () => {
         setIsLoading(true);
         try {
             const result = await login(payload);
+            const normalized = normalizeLoginResponse(result);
 
-            const isSuccess = result.Success || result.success || (result.accessToken && result.refreshToken);
+            if (!normalized || !normalized.success) {
+                const errorMsg = normalized?.message || 'Login failed. Please check your credentials.';
+                if (normalized?.errors && normalized.errors.length > 0) {
+                    normalized.errors.forEach(err => {
+                        toast.error(typeof err === 'string' ? err : (err.message || err.Message || 'Validation error'));
+                    });
+                } else {
+                    toast.error(errorMsg);
+                }
+                return;
+            }
 
-            if (isSuccess) {
-                const tokenData = result.Data || result.data || result;
+            if (normalized.requiresTwoFactor) {
+                if (!normalized.twoFactorChallenge) {
+                    toast.error('Two-factor challenge could not be started. Please try again.');
+                    return;
+                }
 
-                localStorage.setItem('token', tokenData.accessToken?.accessToken || tokenData.accessToken);
-                localStorage.setItem('refreshToken', tokenData.refreshToken?.refreshToken || tokenData.refreshToken);
+                const challenge = normalized.twoFactorChallenge;
+                const challengeId = challenge.challengeId ?? challenge.ChallengeId;
+                const provider = challenge.provider ?? challenge.Provider;
+                const expiresAt = challenge.expiresAt ?? challenge.ExpiresAt;
+
+                if (!challengeId) {
+                    toast.error('Two-factor challenge could not be started. Please try again.');
+                    return;
+                }
+
+                // Redirect to the separate 2FA page, passing challenge details in navigation state
+                navigate('/auth/2fa', {
+                    state: {
+                        challenge: {
+                            challengeId,
+                            provider,
+                            expiresAt
+                        }
+                    }
+                });
+            } else {
+                // requiresTwoFactor === false
+                const tokens = extractTokens(normalized.tokens);
+                if (!tokens) {
+                    toast.error('Login response is missing authentication tokens.');
+                    return;
+                }
+
+                localStorage.setItem('token', tokens.accessToken);
+                localStorage.setItem('refreshToken', tokens.refreshToken);
 
                 await fetchUser();
 
-                toast.success('Successfully logged in!');
+                toast.success(normalized.message || 'Successfully logged in!');
 
                 const queryParams = new URLSearchParams(location.search);
                 const redirectPath = queryParams.get('redirect') || '/feed';
@@ -61,6 +158,7 @@ const Login = () => {
             }
         } catch (error) {
             console.error('Login Error:', error);
+            toast.error('An unexpected error occurred during login. Please try again.');
         } finally {
             setIsLoading(false);
         }
@@ -118,3 +216,4 @@ const Login = () => {
 };
 
 export default Login;
+

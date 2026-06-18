@@ -179,10 +179,12 @@ const PUBLIC_ENDPOINTS = [
     '/api/auth/login',
     '/api/auth/refresh-token',
     '/api/auth/register',
+    '/api/auth/login/2fa',
+    '/api/auth/login/recovery',
 ];
 
 const isPublicEndpoint = (endpoint) =>
-    PUBLIC_ENDPOINTS.some(pub => endpoint.startsWith(pub));
+    PUBLIC_ENDPOINTS.some(pub => endpoint.toLowerCase().startsWith(pub.toLowerCase()));
 
 // ─────────────────────────────────────────────
 // fetchClient
