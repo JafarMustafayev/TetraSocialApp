@@ -11,7 +11,7 @@ const SettingsCategoryList = () => {
 
     return (
         <div className="w-full h-full flex flex-col overflow-y-auto custom-scrollbar">
-            <div className="px-4 py-3 sticky top-0 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md z-10 border-b border-gray-100 dark:border-[#1f1f1f]">
+            <div className="px-4 py-3 sticky top-0 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md z-10">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">Settings</h2>
             </div>
 

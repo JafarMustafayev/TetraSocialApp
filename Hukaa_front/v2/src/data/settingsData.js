@@ -2,10 +2,12 @@ import {
   KeyRound,
   Shield,
   Monitor,
-  Link2,
-  TriangleAlert,
+  SlidersHorizontal,
   UserPen,
   Wrench,
+  BellRing,
+  EyeOff,
+  Ban
 } from "lucide-react";
 
 export const settingsData = [
@@ -18,28 +20,21 @@ export const settingsData = [
       {
         id: "username-password",
         title: "Username and password",
+        description: "Manage your username, email, and password.",
         icon: KeyRound,
       },
       {
         id: "two-factor",
         title: "Two-factor authentication",
+        description: "Add an extra layer of security to your account.",
         icon: Shield,
       },
       {
         id: "active-sessions",
         title: "Active sessions",
+        description: "Manage your active sessions.",
         icon: Monitor,
-      },
-      {
-        id: "connected-accounts",
-        title: "Connected accounts",
-        icon: Link2,
-      },
-      {
-        id: "delete-account",
-        title: "Delete account",
-        icon: TriangleAlert,
-      },
+      }
     ],
   },
   {
@@ -66,8 +61,21 @@ export const settingsData = [
     id: "notifications",
     title: "Notifications",
     description: "Customize what you get notified about and when.",
-    type: "direct",
-    componentKey: "notifications"
+    type: "group",
+    items: [
+      {
+        id: "browser-notifications",
+        title: "Browser notifications",
+        description: "Receive notifications in your browser even when you're not on the site.",
+        icon: BellRing,
+      },
+      {
+        id: "notification-preferences",
+        title: "Notification preferences",
+        description: "Manage how you get notified about activity on Hukaa.",
+        icon: SlidersHorizontal,
+      }
+    ]
   },
   {
     id: "messages",
@@ -87,29 +95,21 @@ export const settingsData = [
     id: "privacy",
     title: "Privacy",
     description: "Manage what information you share with others.",
-    type: "direct",
-    componentKey: "privacy"
-  },
-  {
-    id: "username",
-    title: "Username",
-    description: "Change your unique username handle.",
-    type: "direct",
-    componentKey: "username"
-  },
-  {
-    id: "feed",
-    title: "Feed",
-    description: "Adjust how your feed is generated and displayed.",
-    type: "direct",
-    componentKey: "feed"
-  },
-  {
-    id: "developer",
-    title: "Developer",
-    description: "Manage API keys and developer applications.",
-    type: "direct",
-    componentKey: "developer"
+    type: "group",
+    items: [
+      {
+        id: "visibility",
+        title: "Visibility",
+        description: "Private browsing and account visibility.",
+        icon: EyeOff,
+      },
+      {
+        id: "blocked-accounts",
+        title: "Blocked accounts",
+        description: "Manage your blocked accounts.",
+        icon: Ban,
+      }
+    ]
   },
   {
     id: "deleted",

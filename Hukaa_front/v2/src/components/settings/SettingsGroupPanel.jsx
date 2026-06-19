@@ -1,10 +1,9 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 
 const SettingsGroupPanel = ({ category, onBack }) => {
     return (
         <div className="w-full h-full flex flex-col overflow-y-auto custom-scrollbar bg-white dark:bg-[#09090b]">
-            <div className="px-4 py-3 sticky top-0 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md z-10 flex items-center gap-3">
+            <div className="px-4 pt-4  sticky top-0 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md z-10 flex items-center gap-3 ">
                 <button
                     onClick={onBack}
                     className="md:hidden w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-[#16181c] flex items-center justify-center transition-colors"
@@ -14,7 +13,7 @@ const SettingsGroupPanel = ({ category, onBack }) => {
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">{category.title}</h2>
             </div>
 
-            <div className="p-4 border-b border-gray-100 dark:border-[#1f1f1f]">
+            <div className="p-4 ">
                 <p className="text-[14px] text-gray-500 dark:text-gray-400">
                     {category.description}
                 </p>
@@ -26,7 +25,7 @@ const SettingsGroupPanel = ({ category, onBack }) => {
                         <Link
                             key={item.id}
                             to={`/settings/${category.id}/${item.id}`}
-                            className="flex items-start gap-4 p-4 cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-[#16181c]"
+                            className="flex items-start gap-4 px-4 py-2 cursor-pointer transition-colors hover:bg-gray-100 dark:hover:bg-[#16181c] mx-2 mt-1.5 rounded-md"
                         >
                             <div className="mt-0.5 flex items-center justify-center">
                                 {item.icon ? <item.icon size={18} className={`text-gray-500 dark:text-gray-400`} /> : <i className={`text-gray-500 dark:text-gray-400 text-xl ri-settings-3-line`}></i>}

@@ -1,5 +1,5 @@
-import React from 'react';
-import Skeleton from '../ui/Skeleton';
+// src/components/skeletons/post-skeleton.jsx
+import Skeleton from './Skeleton';
 
 const PostSkeleton = ({ count = 3 }) => {
     return (
@@ -9,7 +9,7 @@ const PostSkeleton = ({ count = 3 }) => {
                 <div className="shrink-0">
                     <Skeleton className="w-10 h-10 rounded-full" />
                 </div>
-                
+
                 {/* Right side content */}
                 <div className="flex-1 min-w-0">
                     {/* Header */}
@@ -17,14 +17,14 @@ const PostSkeleton = ({ count = 3 }) => {
                         <Skeleton className="w-24 h-4 rounded" />
                         <Skeleton className="w-16 h-3 rounded" />
                     </div>
-                    
+
                     {/* Post Body */}
                     <div className="space-y-2 mt-2">
                         <Skeleton className="w-full h-3 rounded" />
                         <Skeleton className="w-[90%] h-3 rounded" />
                         <Skeleton className="w-[60%] h-3 rounded" />
                     </div>
-                    
+
                     {/* Actions */}
                     <div className="flex items-center justify-between mt-4 max-w-md">
                         <Skeleton className="w-6 h-6 rounded-full" />

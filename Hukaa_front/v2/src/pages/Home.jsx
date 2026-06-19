@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import CreatePost from '../components/feed/CreatePost';
 import PostCard from '../components/feed/PostCard';
-import PostSkeleton from '../components/feed/PostSkeleton';
+import { PostSkeleton } from '../components/skeletons/index.js';
 import BirthdayWidget from '../components/widgets/BirthdayWidget';
 import SuggestedUsersWidget from '../components/widgets/SuggestedUsersWidget';
 

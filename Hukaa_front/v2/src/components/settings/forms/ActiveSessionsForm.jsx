@@ -5,7 +5,7 @@ import { toast } from 'react-hot-toast';
 import SettingsButton from '../SettingsButton';
 import { formatUtcToLocal } from '../../../utils/dateFormatter';
 import { getSessions, revokeSession, revokeOtherSessions } from '../../../api/auth.api';
-import Skeleton from '../../ui/Skeleton';
+import { ActiveSessionsSkeleton } from '../../skeletons/index.js';
 
 const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, isLoading }) => {
     if (!isOpen) return null;
@@ -45,19 +45,25 @@ const ActiveSessionsForm = () => {
     const [sessions, setSessions] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
-    
+    const [error, setError] = useState(null);
+
     // Modal states
     const [revokingSessionId, setRevokingSessionId] = useState(null);
     const [isRevokingOthersOpen, setIsRevokingOthersOpen] = useState(false);
 
     const fetchActiveSessions = useCallback(async () => {
+        setIsLoading(true);
+        setError(null);
         try {
             const res = await getSessions();
             if (res.Success || res.success) {
                 setSessions(res.Data || res.data || []);
+            } else {
+                setError(res.Message || res.message || "Failed to fetch active sessions.");
             }
-        } catch (error) {
-            console.error("Failed to fetch sessions:", error);
+        } catch (err) {
+            console.error("Failed to fetch sessions:", err);
+            setError("An unexpected error occurred while fetching sessions.");
         } finally {
             setIsLoading(false);
         }
@@ -140,9 +146,13 @@ const ActiveSessionsForm = () => {
     };
 
     if (isLoading) {
+        return <ActiveSessionsSkeleton onBack={() => navigate('/settings/account')} />;
+    }
+
+    if (error) {
         return (
-            <div className="w-full h-full flex flex-col overflow-y-auto custom-scrollbar bg-white dark:bg-[#09090b]">
-                <div className="px-4 py-3 sticky top-0 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md z-10 border-b border-gray-100 dark:border-[#1f1f1f] flex items-center gap-4">
+            <div className="w-full h-full flex flex-col bg-white dark:bg-[#09090b]">
+                <div className="px-4 py-3 sticky top-0 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md z-10 flex items-center gap-4">
                     <button
                         onClick={() => navigate('/settings/account')}
                         className="w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-[#16181c] flex items-center justify-center transition-colors"
@@ -151,25 +161,13 @@ const ActiveSessionsForm = () => {
                     </button>
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white">Active Sessions</h2>
                 </div>
-
-                <div className="p-4 md:p-6 max-w-[800px] space-y-4">
-                    <div className="mb-6">
-                        <Skeleton className="h-6 w-48 mb-2" />
-                        <Skeleton className="h-4 w-72" />
-                    </div>
-                    {[1, 2, 3].map((i) => (
-                        <div key={i} className="border border-gray-200 dark:border-[#1f1f1f] rounded-xl p-4 md:p-5 flex flex-col md:flex-row gap-4 md:items-center justify-between bg-gray-50/50 dark:bg-[#16181c]/50">
-                            <div className="flex items-start gap-4 w-full">
-                                <Skeleton className="w-10 h-10 rounded-full shrink-0" />
-                                <div className="space-y-2 w-full max-w-[300px]">
-                                    <Skeleton className="h-5 w-40" />
-                                    <Skeleton className="h-4 w-32" />
-                                    <Skeleton className="h-4 w-28" />
-                                    <Skeleton className="h-4 w-44" />
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+                <div className="p-4 md:p-6 max-w-[600px] flex flex-col items-start gap-4">
+                    <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 rounded-xl px-4 py-3 w-full">
+                        {error}
+                    </p>
+                    <SettingsButton variant="outline" onClick={fetchActiveSessions}>
+                        Try again
+                    </SettingsButton>
                 </div>
             </div>
         );
@@ -177,7 +175,7 @@ const ActiveSessionsForm = () => {
 
     return (
         <div className="w-full h-full flex flex-col overflow-y-auto custom-scrollbar bg-white dark:bg-[#09090b]">
-            <div className="px-4 py-3 sticky top-0 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md z-10 border-b border-gray-100 dark:border-[#1f1f1f] flex items-center gap-4">
+            <div className="px-4 pt-3 sticky top-0 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md z-10 flex items-center gap-4">
                 <button
                     onClick={() => navigate('/settings/account')}
                     className="w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-[#16181c] flex items-center justify-center transition-colors"
@@ -187,17 +185,16 @@ const ActiveSessionsForm = () => {
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">Active Sessions</h2>
             </div>
 
-            <div className="p-4 md:p-6 max-w-[800px]">
+            <div className="p-4 md:px-6 md:py-2 max-w-[800px]">
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
                     <div>
-                        <h3 className="font-bold text-[18px] text-gray-900 dark:text-white mb-1">Your Sessions</h3>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
                             Review and manage your active login sessions.
                         </p>
                     </div>
                     {sessions.length > 1 && (
-                        <SettingsButton 
-                            variant="danger" 
+                        <SettingsButton
+                            variant="danger"
                             disabled={actionLoading}
                             onClick={() => setIsRevokingOthersOpen(true)}
                         >
@@ -210,11 +207,11 @@ const ActiveSessionsForm = () => {
                     {sessions.map(session => {
                         const info = getSessionDeviceInfo(session.deviceInfo);
                         return (
-                            <div 
-                                key={session.id} 
+                            <div
+                                key={session.id}
                                 className={`border rounded-xl p-4 md:p-5 flex flex-col md:flex-row gap-4 md:items-center justify-between transition-colors
-                                    ${session.isCurrent 
-                                        ? 'border-main bg-main/5 dark:bg-main/5' 
+                                    ${session.isCurrent
+                                        ? 'border-main bg-main/5 dark:bg-main/5'
                                         : 'border-gray-200 dark:border-[#1f1f1f] bg-gray-50/50 dark:bg-[#16181c]/50'
                                     }`}
                             >
@@ -249,13 +246,15 @@ const ActiveSessionsForm = () => {
 
                                 {!session.isCurrent && (
                                     <div className="flex justify-end mt-2 md:mt-0">
-                                        <button
+
+                                        <SettingsButton
+                                            variant="danger"
+                                            className=''
                                             onClick={() => handleRevokeClick(session.id)}
                                             disabled={actionLoading}
-                                            className="text-sm font-medium text-red-600 dark:text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors px-3 py-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50"
                                         >
-                                            Revoke session
-                                        </button>
+                                            Revoke
+                                        </SettingsButton>
                                     </div>
                                 )}
                             </div>

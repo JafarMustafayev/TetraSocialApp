@@ -4,6 +4,7 @@ import { LOGO } from '../../../api/api-config';
 import MobileProfileSheet from './MobileProfileSheet';
 import { useTheme } from '../../../context/ThemeContext';
 import { useAuth } from '../../../context/AuthContext';
+import { Skeleton } from '../../skeletons/index.js';
 
 import {
     House,
@@ -22,7 +23,7 @@ import {
 
 const Navbar = () => {
     const location = useLocation();
-    const { user, logout, isLoggingOut } = useAuth();
+    const { user, logout, isLoggingOut, isLoadingUser } = useAuth();
     const [isMobileProfileSheetOpen, setIsMobileProfileSheetOpen] = useState(false);
 
     // Desktop Dropdown State
@@ -189,22 +190,34 @@ const Navbar = () => {
                     {/* The Account Button */}
                     <div
                         className={`flex items-center justify-between p-2 rounded-full cursor-pointer transition-all w-full ${isDesktopDropdownOpen ? 'bg-gray-100 dark:bg-neutral-800' : 'hover:bg-gray-100 dark:hover:bg-neutral-800'}`}
-                        onClick={() => setIsDesktopDropdownOpen(!isDesktopDropdownOpen)}
+                        onClick={() => !isLoadingUser && user && setIsDesktopDropdownOpen(!isDesktopDropdownOpen)}
                     >
-                        <div className="flex items-center gap-2 min-w-0">
-                            <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center font-bold text-main shrink-0">
-                                {user?.username?.[0].toUpperCase() || 'U'}
+                        {isLoadingUser || !user ? (
+                            <div className="flex items-center gap-3 w-full pl-1">
+                                <Skeleton className="w-10 h-10 rounded-full shrink-0" />
+                                <div className="flex flex-col gap-1.5 w-full max-w-[120px]">
+                                    <Skeleton className="h-3 w-24 rounded" />
+                                    <Skeleton className="h-2 w-16 rounded" />
+                                </div>
                             </div>
-                            <div className="flex flex-col min-w-0">
-                                <span className="text-[14px] font-bold text-gray-900 dark:text-white truncate">
-                                    {user?.name || "Fullname"}
-                                </span>
-                                <span className="text-[13px] text-gray-500 truncate">
-                                    @{user?.username || 'user'}
-                                </span>
-                            </div>
-                        </div>
-                        <i className="ri-more-line  text-gray-900 dark:text-white text-[20px] shrink-0"></i>
+                        ) : (
+                            <>
+                                <div className="flex items-center gap-2 min-w-0">
+                                    <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center font-bold text-main shrink-0">
+                                        {user?.username?.[0].toUpperCase() || 'U'}
+                                    </div>
+                                    <div className="flex flex-col min-w-0">
+                                        <span className="text-[14px] font-bold text-gray-900 dark:text-white truncate">
+                                            {user?.name || "Fullname"}
+                                        </span>
+                                        <span className="text-[13px] text-gray-500 truncate">
+                                            @{user?.username || 'user'}
+                                        </span>
+                                    </div>
+                                </div>
+                                <i className="ri-more-line  text-gray-900 dark:text-white text-[20px] shrink-0"></i>
+                            </>
+                        )}
                     </div>
                 </div>
             </header>
@@ -231,12 +244,16 @@ const Navbar = () => {
                     })}
                 {/* Profile Button for Mobile */}
                 <button
-                    onClick={() => setIsMobileProfileSheetOpen(true)}
+                    onClick={() => !isLoadingUser && user && setIsMobileProfileSheetOpen(true)}
                     className="flex flex-col items-center justify-center w-full h-full relative"
                 >
-                    <div className="w-7 h-7 rounded-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center font-bold text-main text-sm">
-                        {user?.username?.[0].toUpperCase() || 'U'}
-                    </div>
+                    {isLoadingUser || !user ? (
+                        <Skeleton className="w-7 h-7 rounded-full shrink-0" />
+                    ) : (
+                        <div className="w-7 h-7 rounded-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center font-bold text-main text-sm">
+                            {user?.username?.[0].toUpperCase() || 'U'}
+                        </div>
+                    )}
                 </button>
             </nav>
 

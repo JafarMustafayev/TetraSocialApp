@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import SettingsButton from '../SettingsButton';
 import SettingsInput from '../SettingsInput';
-import Skeleton from '../../ui/Skeleton';
+import { TwoFactorSkeleton } from '../../skeletons/index.js';
 import { getTwoFactorStatus, setupTwoFactor, enableTwoFactor, regenerateTwoFactorRecoveryCodes, disableTwoFactor } from '../../../api/auth.api';
 import { QRCodeSVG } from 'qrcode.react';
 
@@ -24,7 +24,7 @@ const TwoFactorForm = ({ onBack }) => {
     const [password, setPassword] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    
+
     // Step 2 setup data
     const [sharedKey, setSharedKey] = useState('');
     const [qrCodeUri, setQrCodeUri] = useState('');
@@ -474,39 +474,13 @@ const TwoFactorForm = ({ onBack }) => {
     };
 
     if (isLoading) {
-        return (
-            <div className="w-full h-full flex flex-col bg-white dark:bg-[#09090b]">
-                <div className="px-4 py-3 sticky top-0 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md z-10 border-b border-gray-100 dark:border-[#1f1f1f] flex items-center gap-4">
-                    <button
-                        onClick={onBack}
-                        className="w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-[#16181c] flex items-center justify-center transition-colors"
-                    >
-                        <i className="ri-arrow-left-line text-xl text-gray-900 dark:text-white"></i>
-                    </button>
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">Two-factor authentication</h2>
-                </div>
-                <div className="p-4 md:p-6 max-w-[600px] space-y-6">
-                    <div className="space-y-2">
-                        <Skeleton className="h-6 w-48" />
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-5/6" />
-                    </div>
-                    <div className="flex items-center justify-between py-4 border-t border-b border-gray-100 dark:border-[#1f1f1f] mt-8">
-                        <div className="flex items-center gap-2">
-                            <Skeleton className="h-3 w-3 rounded-full" />
-                            <Skeleton className="h-4 w-12" />
-                        </div>
-                        <Skeleton className="h-[36px] w-24 rounded-full" />
-                    </div>
-                </div>
-            </div>
-        );
+        return <TwoFactorSkeleton onBack={onBack} />;
     }
 
     if (error) {
         return (
             <div className="w-full h-full flex flex-col bg-white dark:bg-[#09090b]">
-                <div className="px-4 py-3 sticky top-0 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md z-10 border-b border-gray-100 dark:border-[#1f1f1f] flex items-center gap-4">
+                <div className="px-4 py-3 sticky top-0 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md z-10 flex items-center gap-4">
                     <button
                         onClick={onBack}
                         className="w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-[#16181c] flex items-center justify-center transition-colors"
@@ -516,7 +490,6 @@ const TwoFactorForm = ({ onBack }) => {
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white">Two-factor authentication</h2>
                 </div>
                 <div className="p-4 md:p-6 max-w-[600px] flex flex-col items-start gap-4">
-                    <h3 className="font-bold text-[18px] text-gray-900 dark:text-white">Two-factor authentication</h3>
                     <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 rounded-xl px-4 py-3 w-full">
                         {error}
                     </p>
@@ -530,7 +503,7 @@ const TwoFactorForm = ({ onBack }) => {
 
     return (
         <div className="w-full h-full flex flex-col overflow-y-auto custom-scrollbar bg-white dark:bg-[#09090b]">
-            <div className="px-4 py-3 sticky top-0 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md z-10 border-b border-gray-100 dark:border-[#1f1f1f] flex items-center gap-4">
+            <div className="px-4 pt-3 sticky top-0 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md z-10 flex items-center gap-4">
                 <button
                     onClick={onBack}
                     className="w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-[#16181c] flex items-center justify-center transition-colors"
@@ -540,9 +513,8 @@ const TwoFactorForm = ({ onBack }) => {
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">Two-factor authentication</h2>
             </div>
 
-            <div className="p-4 md:p-6 max-w-[600px] space-y-6">
+            <div className="p-4 md:px-6 md:py-2 max-w-[600px] space-y-6">
                 <div>
-                    <h3 className="font-bold text-[18px] text-gray-900 dark:text-white mb-2">Two-factor authentication</h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
                         Add an extra layer of security to your account. When enabled, someone who knows your password still cannot sign in without a verification code from your authenticator app.
                     </p>
@@ -575,7 +547,6 @@ const TwoFactorForm = ({ onBack }) => {
                             </SettingsButton>
                             <SettingsButton
                                 variant="danger"
-                                className="bg-red-600! hover:bg-red-700! text-white! border-transparent"
                                 onClick={() => {
                                     resetDisableState();
                                     setIsDisableModalOpen(true);
@@ -661,7 +632,7 @@ const TwoFactorForm = ({ onBack }) => {
                                 <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed text-[13.5px]">
                                     Scan the QR code with your authenticator app (such as Google Authenticator, Authy, 1Password), then enter the 6-digit verification code below.
                                 </p>
-                                
+
                                 <div className="flex flex-col items-center justify-center py-4 bg-gray-50/50 dark:bg-[#16181c]/30 rounded-xl border border-gray-100 dark:border-neutral-800">
                                     <div className="bg-white p-3 rounded-xl border border-gray-200 shadow-sm mb-3">
                                         <QRCodeSVG value={qrCodeUri} size={160} level="M" />
@@ -867,7 +838,7 @@ const TwoFactorForm = ({ onBack }) => {
                             <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed text-[13.5px]">
                                 Enter your password and a valid verification code to disable two-factor authentication.
                             </p>
-                            
+
                             <SettingsInput
                                 label="Password"
                                 type="password"
@@ -901,7 +872,6 @@ const TwoFactorForm = ({ onBack }) => {
                                 </SettingsButton>
                                 <SettingsButton
                                     variant="danger"
-                                    className="bg-red-600! hover:bg-red-700! text-white! border-transparent"
                                     onClick={handleConfirmDisable}
                                     disabled={disablePassword.length < 6 || disableCode.length !== 6 || isDisabling}
                                 >

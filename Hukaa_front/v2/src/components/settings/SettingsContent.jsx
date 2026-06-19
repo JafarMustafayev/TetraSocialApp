@@ -46,11 +46,11 @@ const SettingsContent = () => {
         if (DirectComponent) {
             return <DirectComponent category={category} onBack={() => navigate('/settings')} />;
         }
-        
+
         // Placeholder for direct components not yet implemented
         return (
             <div className="w-full h-full flex flex-col bg-white dark:bg-[#09090b]">
-                <div className="px-4 py-3 sticky top-0 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md z-10 flex items-center gap-3 border-b border-gray-100 dark:border-[#1f1f1f]">
+                <div className="px-4 py-2 sticky top-0 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md z-10 flex items-center gap-3 border-b border-gray-100 dark:border-[#1f1f1f]">
                     <button onClick={() => navigate('/settings')} className="md:hidden w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-[#16181c] flex items-center justify-center transition-colors">
                         <i className="ri-arrow-left-line text-xl text-gray-900 dark:text-white"></i>
                     </button>
@@ -86,7 +86,7 @@ const SettingsContent = () => {
         // Placeholder for group item forms not yet implemented
         return (
             <div className="w-full h-full flex flex-col bg-white dark:bg-[#09090b]">
-                <div className="px-4 py-3 sticky top-0 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md z-10 flex items-center gap-3 border-b border-gray-100 dark:border-[#1f1f1f]">
+                <div className="px-4 py-2 sticky top-0 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md z-10 flex items-center gap-3 border-b border-gray-100 dark:border-[#1f1f1f]">
                     <button onClick={() => navigate(`/settings/${category.id}`)} className="w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-[#16181c] flex items-center justify-center transition-colors">
                         <i className="ri-arrow-left-line text-xl text-gray-900 dark:text-white"></i>
                     </button>
