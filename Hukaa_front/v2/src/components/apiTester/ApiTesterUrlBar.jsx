@@ -18,7 +18,7 @@ const UrlBar = ({
 }) => {
     return (
         <div className="p-5 bg-white/40 dark:bg-neutral-950/20 shrink-0">
-            <div className="bg-white dark:bg-neutral-905 border border-gray-200/60 dark:border-neutral-900 rounded-2xl p-4 shadow-sm relative group">
+            <div className="bg-white dark:bg-neutral-900 border border-main! rounded-2xl p-4 shadow-sm relative group">
                 <div className="flex flex-col sm:flex-row gap-3">
 
                     {/* HTTP Method select badge */}
@@ -26,7 +26,7 @@ const UrlBar = ({
                         <button
                             type="button"
                             onClick={() => setMethodDropdownOpen(!methodDropdownOpen)}
-                            className={`w-full sm:w-[130px] h-12 rounded-xl border border-gray-200/70 dark:border-neutral-880 bg-gray-55 dark:bg-neutral-900/80 flex items-center justify-between px-4 font-bold text-sm transition-all duration-200 hover:bg-gray-100 dark:hover:bg-neutral-800 cursor-pointer ${METHOD_COLORS[method]?.text}`}
+                            className={`w-full sm:w-[130px] h-12 rounded-xl border bg-gray-55 dark:bg-neutral-900/80 flex items-center justify-between px-4 font-bold text-sm transition-all duration-200 hover:bg-gray-100 dark:hover:bg-neutral-800 cursor-pointer ${METHOD_COLORS[method]?.text}`}
                         >
                             <span className="flex items-center gap-2">
                                 <span className={`w-2 h-2 rounded-full ${METHOD_COLORS[method]?.dot}`} />

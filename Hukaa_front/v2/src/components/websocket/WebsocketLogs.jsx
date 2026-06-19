@@ -113,7 +113,7 @@ const WebSocketLogs = ({
                 )}
 
                 {/* Logs Listing Viewport */}
-                <div className="flex-1 overflow-y-auto bg-neutral-950 border border-neutral-900 rounded-2xl p-4 font-mono text-[11px] leading-relaxed custom-scrollbar shadow-inner select-text">
+                <div className="flex-1 overflow-y-auto bg-neutral-950 border border-main rounded-2xl p-4 font-mono text-[11px] leading-relaxed custom-scrollbar shadow-inner select-text">
                     <div className="space-y-3 min-h-full">
                         {logs.map((log) => {
                             const isSent = log.type === 'sent';

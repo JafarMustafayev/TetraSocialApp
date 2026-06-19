@@ -20,7 +20,7 @@ const BodyTab = ({
     return (
         <div className="space-y-4 h-full flex flex-col min-h-0">
             {/* Radio Selection bar */}
-            <div className="flex flex-wrap gap-4 text-xs font-bold bg-gray-100/40 dark:bg-neutral-900/50 p-2.5 rounded-xl border border-gray-200/50 dark:border-neutral-850/60 shrink-0">
+            <div className="flex flex-wrap gap-4 text-xs font-bold bg-gray-100/40 dark:bg-neutral-900/50 p-2.5 rounded-xl border border-main/60 shrink-0">
                 {[
                     { id: 'none', label: 'None' },
                     { id: 'json', label: 'JSON' },
@@ -126,7 +126,7 @@ const BodyTab = ({
 
                         <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1 select-text">
                             {formData.map((fd, i) => (
-                                <div key={i} className="flex items-center gap-2 bg-gray-55/30 dark:bg-neutral-900/10 p-1.5 rounded-xl border border-gray-200/50 dark:border-neutral-850">
+                                <div key={i} className="flex items-center gap-2 bg-gray-55/30 dark:bg-neutral-900/10 p-1.5 rounded-xl border border-main">
                                     <select
                                         value={fd.type}
                                         onChange={(e) => updateFormData(i, 'type', e.target.value)}

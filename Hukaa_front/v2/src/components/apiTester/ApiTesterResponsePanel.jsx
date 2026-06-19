@@ -56,7 +56,7 @@ const ResponsePanel = ({
                         </p>
 
                         {/* Troubleshooting tips */}
-                        <div className="text-[10px] text-gray-500 dark:text-zinc-400 bg-gray-55 dark:bg-[#111216]/40 p-3.5 rounded-xl border border-gray-200/50 dark:border-neutral-850/60 text-left space-y-1">
+                        <div className="text-[10px] text-gray-500 dark:text-zinc-400 bg-gray-55 dark:bg-[#111216]/40 p-3.5 rounded-xl border border-main/60 text-left space-y-1">
                             <span className="font-extrabold text-gray-600 dark:text-zinc-350 block mb-1">Troubleshooting Checklist:</span>
                             <p>• Check if the target server address is running correctly.</p>
                             <p>• If testing local services (e.g. localhost), verify the port number.</p>

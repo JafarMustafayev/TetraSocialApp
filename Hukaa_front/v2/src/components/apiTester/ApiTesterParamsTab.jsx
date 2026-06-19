@@ -18,7 +18,7 @@ const ParamsTab = ({ queryParams, addQueryParam, updateQueryParam, removeQueryPa
 
             <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1 select-text">
                 {queryParams.map((p, i) => (
-                    <div key={i} className="flex items-center gap-2 bg-gray-55/30 dark:bg-neutral-900/10 p-1.5 rounded-xl border border-gray-200/50 dark:border-neutral-850">
+                    <div key={i} className="flex items-center gap-2 bg-gray-55/30 dark:bg-neutral-900/10 p-1.5 rounded-xl border border-main">
                         <input
                             type="checkbox"
                             checked={p.active}
