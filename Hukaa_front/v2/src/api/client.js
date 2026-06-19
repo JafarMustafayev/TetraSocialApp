@@ -95,12 +95,23 @@ const executeTokenRefresh = async () => {
 
     if (!response.ok) throw new Error('REFRESH_FAILED');
 
-    const data = await response.json();
+    const result = await response.json();
 
-    // Backend response structure:
-    // { accessToken: { accessToken: string }, refreshToken: { refreshToken: string } }
-    const newAccessToken  = data?.accessToken?.accessToken;
-    const newRefreshToken = data?.refreshToken?.refreshToken;
+    // Check API Success flag if it's formatted as standard API response
+    const success = result.Success ?? result.success ?? true;
+    if (!success) {
+        throw new Error('REFRESH_FAILED');
+    }
+
+    // Robust extractor supporting root, Data, and tokens nesting (camelCase and PascalCase)
+    const rootData = result.Data ?? result.data ?? result;
+    const tokensObj = rootData.tokens ?? rootData.Tokens ?? rootData;
+
+    const accessTokenObj = tokensObj.accessToken ?? tokensObj.AccessToken;
+    const refreshTokenObj = tokensObj.refreshToken ?? tokensObj.RefreshToken;
+
+    const newAccessToken  = accessTokenObj?.accessToken ?? accessTokenObj?.AccessToken;
+    const newRefreshToken = refreshTokenObj?.refreshToken ?? refreshTokenObj?.RefreshToken;
 
     if (!newAccessToken) throw new Error('INVALID_TOKEN_RESPONSE');
 
