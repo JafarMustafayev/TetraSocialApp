@@ -1,7 +1,7 @@
-// src/components/websocket/websocket-message-sender.jsx
+// src/components/websocket/WebsocketMessageSender.jsx
 import React from 'react';
 import { Send, Sparkles } from 'lucide-react';
-import { SOCKET_STATES } from '../../utils/websocket/websocket-constants';
+import { SOCKET_STATES } from '../../utils/websocket/websocketConstants.js';
 
 const WebSocketMessageSender = ({
     messageBody,

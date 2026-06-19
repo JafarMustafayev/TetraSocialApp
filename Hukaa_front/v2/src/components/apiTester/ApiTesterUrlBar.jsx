@@ -1,7 +1,7 @@
-// src/components/apiTester/api-tester-url-bar.jsx
+// src/components/apiTester/ApiTesterUrlBar.jsx
 import React from 'react';
 import { X, Check, Copy, RefreshCw, Send } from 'lucide-react';
-import { METHOD_COLORS } from '../../utils/api-tester/api-tester-constants';
+import { METHOD_COLORS } from '../../utils/api/apiTesterConstants';
 
 const UrlBar = ({
     method,

@@ -1,3 +1,4 @@
+// src/pages/Messages.jsx
 import React, { useState } from 'react';
 import ConversationList from '../components/messages/ConversationList';
 import ChatPanel from '../components/messages/ChatPanel';

@@ -1,3 +1,4 @@
+// src/components/messages/ConversationItem.jsx
 import React, { useEffect, useRef } from 'react';
 import { MoreHorizontal, Pin, BellOff, Archive, Trash2 } from 'lucide-react';
 

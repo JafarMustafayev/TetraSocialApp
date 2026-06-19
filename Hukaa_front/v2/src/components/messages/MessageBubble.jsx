@@ -1,3 +1,4 @@
+// src/components/messages/MessageBubble.jsx
 import React, { useState } from 'react';
 import { Check, CheckCheck, FileText, Download, Copy, Check as CheckIcon } from 'lucide-react';
 import { formatMessageTime } from '../../utils/dateFormatter';

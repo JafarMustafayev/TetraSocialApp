@@ -1,17 +1,24 @@
+// src/pages/Settings.jsx
 import React, { useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import SettingsCategoryList from '../components/settings/SettingsCategoryList';
 import SettingsContent from '../components/settings/SettingsContent';
+import { useNavigate } from 'react-router-dom';
 
 const Settings = () => {
     const location = useLocation();
+    const navigate = useNavigate();
 
     // Check if we are at the root of the settings page
     const isRoot = location.pathname === '/settings' || location.pathname === '/settings/';
 
     useEffect(() => {
         document.title = "Settings - Hukaa";
+        if (isRoot) {
+            navigate('/settings/account');
+        }
     }, []);
+
 
     return (
         <div className="flex w-full h-[calc(100vh-60px)] md:h-screen overflow-hidden">

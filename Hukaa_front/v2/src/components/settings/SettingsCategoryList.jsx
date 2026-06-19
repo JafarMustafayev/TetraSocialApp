@@ -1,3 +1,4 @@
+// src/components/settings/SettingsCategoryList.jsx
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { settingsData } from '../../data/settingsData';

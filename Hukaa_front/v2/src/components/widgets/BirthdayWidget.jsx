@@ -1,4 +1,4 @@
-import React from 'react';
+// src/components/widgets/BirthdayWidget.jsx
 import { upcomingBirthdays } from '../../utils/mockData';
 
 const BirthdayWidget = () => {

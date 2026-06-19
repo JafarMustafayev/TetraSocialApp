@@ -1,7 +1,7 @@
-// src/components/websocket/websocket-connection-bar.jsx
+// src/components/websocket/WebsocketConnectionBar.jsx
 import React from 'react';
 import { X, Check, Copy, Wifi, WifiOff, RefreshCw } from 'lucide-react';
-import { SOCKET_STATES } from '../../utils/websocket/websocket-constants';
+import { SOCKET_STATES } from '../../utils/websocket/websocketConstants';
 import { toast } from 'react-hot-toast';
 
 const WebSocketConnectionBar = ({

@@ -1,3 +1,4 @@
+// src/components/layout/Navbar/MobileProfileSheet.jsx
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../../../context/ThemeContext';
@@ -71,7 +72,7 @@ const MobileProfileSheet = ({ isOpen, onClose, user, onLogout, isLoggingOut, men
                                 </span>
                             </div>
                         </div>
-                        <Link to="/profile" className="text-[14px] font-medium text-main hover:underline" onClick={handleClose}>
+                        <Link to={user?.username ? `/${user.username}` : '/profile'} className="text-[14px] font-medium text-main hover:underline" onClick={handleClose}>
                             Profile &rarr;
                         </Link>
                     </div>

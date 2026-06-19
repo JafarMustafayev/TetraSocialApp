@@ -1,4 +1,4 @@
-// src/utils/api-tester/api-tester-utils.js
+// src/utils/api/apiTesterUtils.js
 
 export const highlightJson = (jsonStr) => {
     if (!jsonStr) return '';

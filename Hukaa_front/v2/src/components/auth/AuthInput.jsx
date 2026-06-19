@@ -1,8 +1,9 @@
+// src/components/auth/AuthInput.jsx
 import React, { useState } from 'react';
 
 const AuthInput = ({ label, type = "text", error, ...props }) => {
     const [showPassword, setShowPassword] = useState(false);
-    
+
     const isPassword = type === 'password';
     const inputType = isPassword && showPassword ? 'text' : type;
 
@@ -23,7 +24,7 @@ const AuthInput = ({ label, type = "text", error, ...props }) => {
                         placeholder-gray-400 dark:placeholder-gray-600`}
                     {...props}
                 />
-                
+
                 {isPassword && (
                     <button
                         type="button"

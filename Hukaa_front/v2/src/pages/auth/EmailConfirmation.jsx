@@ -1,3 +1,4 @@
+// src/pages/auth/EmailConfirmation.jsx
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { confirmEmail, resendConfirmationEmail } from '../../api/auth.api';

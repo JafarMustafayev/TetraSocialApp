@@ -1,4 +1,4 @@
-// src/components/apiTester/api-tester-params-tab.jsx
+// src/components/apiTester/ApiTesterParamsTab.jsx
 import React from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 

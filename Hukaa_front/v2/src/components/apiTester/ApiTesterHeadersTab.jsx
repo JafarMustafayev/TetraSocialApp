@@ -1,4 +1,4 @@
-// src/components/apiTester/api-tester-headers-tab.jsx
+// src/components/apiTester/ApiTesterHeadersTab.jsx
 import React from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 

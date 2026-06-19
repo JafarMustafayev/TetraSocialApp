@@ -1,5 +1,6 @@
+// src/components/feed/CreatePost.jsx
 import React, { useState, useRef, useEffect } from 'react';
-import { USER_AVATAR, API_BASE_URL } from '../../api/api-config';
+import { USER_AVATAR, API_BASE_URL } from '../../api/apiConfig';
 import MediaPreviews from './MediaPreviews';
 import { Paperclip } from 'lucide-react';
 

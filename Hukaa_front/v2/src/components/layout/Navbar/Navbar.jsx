@@ -1,6 +1,7 @@
+// src/components/layout/Navbar/Navbar.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LOGO } from '../../../api/api-config';
+import { LOGO } from '../../../api/apiConfig';
 import MobileProfileSheet from './MobileProfileSheet';
 import { useTheme } from '../../../context/ThemeContext';
 import { useAuth } from '../../../context/AuthContext';
@@ -73,6 +74,7 @@ const Navbar = () => {
 
 
 
+    const profilePath = user?.username ? `/${user.username}` : '/profile';
     const menuItems = [
         { path: '/feed', label: 'Home', icon: House, visibility: ['desktop', 'mobile'] },
         { path: '/search', label: 'Search', icon: Search, visibility: ['desktop', 'mobile'] },
@@ -80,10 +82,10 @@ const Navbar = () => {
         { path: '/messages', label: 'Messages', icon: MessageSquare, count: 0, visibility: ['desktop', 'mobile'] },
 
         { path: '/bookmarks', label: 'Bookmarks', icon: Bookmark, visibility: ['desktop', 'profileSheet'] },
-        { path: '/api-tester', label: 'API Tester', icon: Terminal, isDev: true, visibility: ['desktop', 'profileSheet'] },
-        { path: '/websocket-tester', label: 'WS Tester', icon: Radio, isDev: true, visibility: ['desktop', 'profileSheet'] },
+        { path: '/apitester', label: 'API Tester', icon: Terminal, isDev: true, visibility: ['desktop', 'profileSheet'] },
+        { path: '/websockettester', label: 'WS Tester', icon: Radio, isDev: true, visibility: ['desktop', 'profileSheet'] },
 
-        { path: '/profile', label: 'Profile', icon: User, visibility: ['desktop'] },
+        { path: profilePath, label: 'Profile', icon: User, visibility: ['desktop'] },
         { path: '/settings', label: 'Settings', icon: Settings, visibility: ['desktop', 'profileSheet'] }
     ];
 

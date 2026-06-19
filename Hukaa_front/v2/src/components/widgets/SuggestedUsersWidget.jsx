@@ -1,5 +1,5 @@
-import React from 'react';
-import { USER_AVATAR } from '../../api/api-config';
+// src/components/widgets/SuggestedUsersWidget.jsx
+import { USER_AVATAR } from '../../api/apiConfig';
 import { suggestedUsers } from '../../utils/mockData';
 
 const SuggestedUsersWidget = ({ count = 5 }) => {

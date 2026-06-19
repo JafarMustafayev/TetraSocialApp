@@ -1,8 +1,8 @@
-// src/hooks/use-websocket-tester.js
+// src/hooks/useWebsocketTester.js
 import { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-hot-toast';
-import { SOCKET_STATES, DEFAULT_WS_URL, DEFAULT_WS_MESSAGE } from '../utils/websocket/websocket-constants';
-import { downloadLogsAsText } from '../utils/websocket/websocket-utils';
+import { SOCKET_STATES, DEFAULT_WS_URL, DEFAULT_WS_MESSAGE } from '../utils/websocket/websocketConstants';
+import { downloadLogsAsText } from '../utils/websocket/websocketUtils';
 
 export const useWebSocketTester = () => {
     // ----------------------------------------------------

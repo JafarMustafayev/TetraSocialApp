@@ -1,5 +1,6 @@
+// src/components/feed/PostCard.jsx
 import React, { useState } from 'react';
-import { API_BASE_URL, USER_AVATAR } from '../../api/api-config';
+import { API_BASE_URL, USER_AVATAR } from '../../api/apiConfig';
 
 const PostCard = ({ post }) => {
     const [expanded, setExpanded] = useState(false);

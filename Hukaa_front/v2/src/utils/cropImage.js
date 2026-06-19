@@ -1,3 +1,4 @@
+// src/utils/cropImage.js
 export const createImage = (url) =>
     new Promise((resolve, reject) => {
         const image = new Image();

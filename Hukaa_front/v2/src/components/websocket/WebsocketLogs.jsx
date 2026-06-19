@@ -1,11 +1,11 @@
-// src/components/websocket/websocket-logs.jsx
+// src/components/websocket/WebsocketLogs.jsx
 import React, { useEffect, useRef } from 'react';
 import {
     Trash2, Download, ArrowDown, ArrowUp, Info,
     AlertCircle, Copy, Check, Eye, Navigation
 } from 'lucide-react';
-import { SOCKET_STATE_LABELS } from '../../utils/websocket/websocket-constants';
-import { tryFormatJson } from '../../utils/websocket/websocket-utils';
+import { SOCKET_STATE_LABELS } from '../../utils/websocket/websocketConstants';
+import { tryFormatJson } from '../../utils/websocket/websocketUtils';
 import { toast } from 'react-hot-toast';
 
 const WebSocketLogs = ({

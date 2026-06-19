@@ -1,3 +1,4 @@
+// src/components/feed/MediaPreviews.jsx
 const MediaPreviews = ({ files, onRemove, onAddClick, maxFiles = 10 }) => {
     if (!files || files.length === 0) return null;
 

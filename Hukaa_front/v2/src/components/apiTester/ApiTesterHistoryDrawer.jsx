@@ -1,8 +1,8 @@
-// src/components/api-tester-history-drawer.jsx
+// src/components/ApiTesterHistoryDrawer.jsx
 import React from 'react';
 import { History, X, Play, Pin, Trash2 } from 'lucide-react';
-import { METHOD_COLORS } from '../../utils/api-tester/api-tester-constants';
-import { getStatusStyle } from '../../utils/api-tester/api-tester-utils';
+import { METHOD_COLORS } from '../../utils/api/apiTesterConstants';
+import { getStatusStyle } from '../../utils/api/apiTesterUtils';
 
 const HistoryDrawer = ({
     historyOpen,

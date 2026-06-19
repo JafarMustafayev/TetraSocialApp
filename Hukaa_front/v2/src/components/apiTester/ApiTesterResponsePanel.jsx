@@ -1,7 +1,7 @@
-// src/components/apiTester/api-tester-response-panel.jsx
+// src/components/apiTester/ApiTesterResponsePanel.jsx
 import React from 'react';
 import { RefreshCcw, AlertCircle, Play, Clock, Database, Download, Copy, Check } from 'lucide-react';
-import { getStatusStyle, highlightJson } from '../../utils/api-tester/api-tester-utils';
+import { getStatusStyle, highlightJson } from '../../utils/api/apiTesterUtils';
 
 const ResponsePanel = ({
     loading,

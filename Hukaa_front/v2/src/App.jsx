@@ -1,3 +1,4 @@
+// src/App.jsx
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Login from './pages/auth/Login';
@@ -9,8 +10,10 @@ import TwoFactorVerification from './pages/auth/TwoFactorVerification';
 import Home from './pages/Home';
 import Settings from './pages/Settings';
 import Messages from './pages/Messages';
-import ApiTester from './pages/api-tester';
-import WebSocketTester from './pages/websocket-tester';
+import Profile from './pages/Profile';
+import Follow from './pages/follow';
+import ApiTester from './pages/ApiTester';
+import WebSocketTester from './pages/WebsocketTester';
 import MainLayout from './layouts/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
 import { ThemeProvider } from './context/ThemeContext';
@@ -57,8 +60,11 @@ function App() {
               <Route path="/feed" element={<Home />} />
               <Route path="/messages" element={<Messages />} />
               <Route path="/settings/*" element={<Settings />} />
-              <Route path="/api-tester/*" element={<ApiTester />} />
-              <Route path="/websocket-tester/*" element={<WebSocketTester />} />
+              <Route path="/ApiTester/*" element={<ApiTester />} />
+              <Route path="/WebSocketTester/*" element={<WebSocketTester />} />
+              <Route path="/:username/followers" element={<Follow tab="followers" />} />
+              <Route path="/:username/following" element={<Follow tab="following" />} />
+              <Route path="/:username" element={<Profile />} />
 
             </Route>
 

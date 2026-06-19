@@ -1,5 +1,6 @@
+// src/components/auth/AuthCard.jsx
 import React from 'react';
-import { LOGO } from '../../api/api-config';
+import { LOGO } from '../../api/apiConfig.js';
 import { Link } from 'react-router-dom';
 
 const AuthCard = ({ title, subtitle, children }) => {
@@ -20,7 +21,7 @@ const AuthCard = ({ title, subtitle, children }) => {
                     </p>
                 )}
             </div>
-            
+
             <div className="w-full">
                 {children}
             </div>

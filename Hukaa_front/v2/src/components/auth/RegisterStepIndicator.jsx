@@ -1,3 +1,4 @@
+// src/components/auth/RegisterStepIndicator.jsx
 import React from 'react';
 
 const RegisterStepIndicator = ({ currentStep, totalSteps = 5 }) => {
@@ -11,14 +12,13 @@ const RegisterStepIndicator = ({ currentStep, totalSteps = 5 }) => {
                     const stepNumber = index + 1;
                     const isActive = stepNumber === currentStep;
                     const isCompleted = stepNumber < currentStep;
-                    
+
                     return (
-                        <div 
+                        <div
                             key={stepNumber}
-                            className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
-                                isActive ? 'bg-main' : 
-                                isCompleted ? 'bg-main/50' : 'bg-gray-100 dark:bg-gray-800'
-                            }`}
+                            className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${isActive ? 'bg-main' :
+                                    isCompleted ? 'bg-main/50' : 'bg-gray-100 dark:bg-gray-800'
+                                }`}
                         />
                     );
                 })}

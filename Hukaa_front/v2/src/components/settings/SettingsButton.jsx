@@ -1,3 +1,4 @@
+// src/components/settings/SettingsButton.jsx
 import React from 'react';
 
 const SettingsButton = ({ children, onClick, variant = 'primary', className = '', type = 'button', disabled, ...props }) => {

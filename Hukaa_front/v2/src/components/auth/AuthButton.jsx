@@ -1,3 +1,4 @@
+// src/components/auth/AuthButton.jsx
 import React from 'react';
 
 const AuthButton = ({ children, isLoading, disabled, onClick, type = "button", className = "" }) => {

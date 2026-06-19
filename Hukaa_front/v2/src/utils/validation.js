@@ -1,4 +1,4 @@
-// src/utily/validation.js
+// src/utils/validation.js
 
 /**
  * Validates an email address using a standard regex pattern.

@@ -1,3 +1,4 @@
+// src/components/messages/MessageComposer.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { Paperclip, Send, X, FileText } from 'lucide-react';
 

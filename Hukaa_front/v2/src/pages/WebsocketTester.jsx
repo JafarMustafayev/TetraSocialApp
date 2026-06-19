@@ -1,10 +1,10 @@
-// src/pages/websocket-tester.jsx
+// src/pages/WebsocketTester.jsx
 import React from 'react';
 import { Radio, LayoutGrid, LayoutList } from 'lucide-react';
-import { useWebSocketTester } from '../hooks/use-websocket-tester';
-import WebSocketConnectionBar from '../components/websocket/websocket-connection-bar';
-import WebSocketMessageSender from '../components/websocket/websocket-message-sender';
-import WebSocketLogs from '../components/websocket/websocket-logs';
+import { useWebSocketTester } from '../hooks/useWebSocketTester';
+import WebSocketConnectionBar from '../components/websocket/WebsocketConnectionBar';
+import WebSocketMessageSender from '../components/websocket/WebsocketMessageSender';
+import WebSocketLogs from '../components/websocket/WebsocketLogs';
 
 const WebSocketTester = () => {
     const {
@@ -63,8 +63,8 @@ const WebSocketTester = () => {
                         <button
                             onClick={() => setLayoutMode('split')}
                             className={`p-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-1 cursor-pointer ${layoutMode === 'split'
-                                    ? 'bg-white text-gray-900 dark:bg-neutral-800 dark:text-white shadow-sm'
-                                    : 'text-gray-500 hover:text-gray-900 dark:hover:text-zinc-350'
+                                ? 'bg-white text-gray-900 dark:bg-neutral-800 dark:text-white shadow-sm'
+                                : 'text-gray-500 hover:text-gray-900 dark:hover:text-zinc-350'
                                 }`}
                             title="Split View (Ctrl+Shift+L)"
                         >
@@ -74,8 +74,8 @@ const WebSocketTester = () => {
                         <button
                             onClick={() => setLayoutMode('vertical')}
                             className={`p-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-1 cursor-pointer ${layoutMode === 'vertical'
-                                    ? 'bg-white text-gray-900 dark:bg-neutral-800 dark:text-white shadow-sm'
-                                    : 'text-gray-500 hover:text-gray-900 dark:hover:text-zinc-350'
+                                ? 'bg-white text-gray-900 dark:bg-neutral-800 dark:text-white shadow-sm'
+                                : 'text-gray-500 hover:text-gray-900 dark:hover:text-zinc-350'
                                 }`}
                             title="Vertical View (Ctrl+Shift+L)"
                         >
@@ -104,8 +104,8 @@ const WebSocketTester = () => {
                             minWidth: layoutMode === 'split' ? '35%' : 'auto'
                         }}
                         className={`flex flex-col overflow-hidden divide-y divide-gray-200/50 dark:divide-neutral-900 min-h-0 shrink-0 ${layoutMode === 'split'
-                                ? 'border-r border-gray-200/30 dark:border-neutral-900/30'
-                                : 'border-b border-gray-200/30 dark:border-neutral-900/30'
+                            ? 'border-r border-gray-200/30 dark:border-neutral-900/30'
+                            : 'border-b border-gray-200/30 dark:border-neutral-900/30'
                             }`}
                     >
                         {/* URL Entry Connection bar */}

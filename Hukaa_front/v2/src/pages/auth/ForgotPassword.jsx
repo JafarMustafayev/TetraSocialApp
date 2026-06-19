@@ -1,3 +1,4 @@
+// src/pages/auth/ForgotPassword.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { forgotPassword } from '../../api/auth.api';
@@ -27,7 +28,7 @@ const ForgotPassword = () => {
 
         try {
             const result = await forgotPassword({ email: email.trim() });
-            
+
             if (result.Success || result.success) {
                 toast.success(result.Message || result.message || "Password reset link sent to your email.");
                 setEmail('');
@@ -60,8 +61,8 @@ const ForgotPassword = () => {
                     </div>
 
                     <div className="mt-6 text-center">
-                        <Link 
-                            to="/auth/login" 
+                        <Link
+                            to="/auth/login"
                             className="text-[14px] text-gray-500 hover:text-main transition-colors font-medium flex items-center justify-center gap-1"
                         >
                             <i className="ri-arrow-left-line"></i> Back to log in

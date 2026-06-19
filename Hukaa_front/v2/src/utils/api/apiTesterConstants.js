@@ -1,4 +1,4 @@
-// src/utils/api-tester/api-tester-constants.js
+// src/utils/api/apitesterConstants.js
 
 export const METHOD_COLORS = {
     GET: { text: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', dot: 'bg-emerald-500' },

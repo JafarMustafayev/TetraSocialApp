@@ -1,4 +1,4 @@
-// src/components/apiTester/api-tester-body-tab.jsx
+// src/components/apiTester/ApiTesterBodyTab.jsx
 import React from 'react';
 import { Database, Plus, Trash2, Sparkles } from 'lucide-react';
 

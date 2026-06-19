@@ -1,5 +1,5 @@
-// src/utils/websocket/websocket-utils.js
-import { highlightJson } from '../api-tester/api-tester-utils';
+// src/utils/websocket/websocketUtils.js
+import { highlightJson } from '../api/apiTesterUtils';
 
 export const tryFormatJson = (message) => {
     if (!message) return { isJson: false, formatted: '', highlighted: '' };

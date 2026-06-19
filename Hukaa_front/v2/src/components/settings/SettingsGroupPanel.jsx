@@ -1,3 +1,4 @@
+// src/components/settings/SettingsGroupPanel.jsx
 import { Link } from 'react-router-dom';
 
 const SettingsGroupPanel = ({ category, onBack }) => {

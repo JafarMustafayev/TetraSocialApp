@@ -1,3 +1,4 @@
+// src/components/settings/SettingsInput.jsx
 import React, { useState } from 'react';
 
 const SettingsInput = ({ label, type = "text", helperText, status, helperClassName, ...props }) => {

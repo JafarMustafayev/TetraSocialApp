@@ -1,5 +1,7 @@
+// src/components/messages/ConversationList.jsx
 import { Search, MailPlus, ChevronDown } from 'lucide-react';
 import ConversationItem from './ConversationItem';
+import Tabs from '../ui/Tabs';
 
 const ConversationList = ({
   conversations,
@@ -21,6 +23,11 @@ const ConversationList = ({
     const matchesTab = activeTab === 'archived' ? c.isArchived : !c.isArchived;
     return matchesSearch && matchesTab;
   });
+
+  const messageTabs = [
+    { id: 'all', label: 'All chats' },
+    { id: 'archived', label: 'Archived' }
+  ];
 
   return (
     <div className="flex flex-col h-full bg-white dark:bg-black">
@@ -55,36 +62,11 @@ const ConversationList = ({
       </div>
 
       {/* Tabs */}
-      <div className="flex px-4 border-b border-gray-200 dark:border-gray-800 mt-2">
-        <button
-          onClick={() => setActiveTab('all')}
-          className={`flex-1 pb-3 text-sm font-semibold transition-colors relative ${activeTab === 'all'
-            ? 'text-gray-900 dark:text-gray-100'
-            : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
-            }`}
-        >
-          <div className="flex items-center justify-center space-x-2">
-            <span>All chats</span>
-          </div>
-          {activeTab === 'all' && (
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-main rounded-t-full"></div>
-          )}
-        </button>
-        <button
-          onClick={() => setActiveTab('archived')}
-          className={`flex-1 pb-3 text-sm font-semibold transition-colors relative ${activeTab === 'archived'
-            ? 'text-gray-900 dark:text-gray-100'
-            : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
-            }`}
-        >
-          <div className="flex items-center justify-center space-x-2">
-            <span>Archived</span>
-          </div>
-          {activeTab === 'archived' && (
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-main rounded-t-full"></div>
-          )}
-        </button>
+      <div className="px-4 mt-2">
+        <Tabs tabs={messageTabs} activeTab={activeTab} onChange={setActiveTab} className="bg-transparent! " />
       </div>
+
+
 
       {/* Conversation List */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">

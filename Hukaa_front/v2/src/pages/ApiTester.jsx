@@ -1,11 +1,11 @@
-// src/pages/api-tester.jsx
+// src/pages/ApiTester.jsx
 import React from 'react';
 import { History, LayoutGrid, LayoutList } from 'lucide-react';
-import { useApiTester } from '../hooks/use-api-tester';
-import HistoryDrawer from '../components/apiTester/api-tester-history-drawer';
-import UrlBar from '../components/apiTester/api-tester-url-bar';
-import RequestPanel from '../components/apiTester/api-tester-request-panel';
-import ResponsePanel from '../components/apiTester/api-tester-response-panel';
+import { useApiTester } from '../hooks/useApiTester';
+import HistoryDrawer from '../components/apiTester/ApiTesterHistoryDrawer';
+import UrlBar from '../components/apiTester/ApiTesterUrlBar';
+import RequestPanel from '../components/apiTester/ApiTesterRequestPanel';
+import ResponsePanel from '../components/apiTester/ApiTesterResponsePanel';
 
 const ApiTester = () => {
     const {

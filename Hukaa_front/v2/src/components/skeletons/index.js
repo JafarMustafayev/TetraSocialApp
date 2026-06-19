@@ -7,3 +7,5 @@ export { default as TwoFactorSkeleton } from './two-factor-skeleton';
 export { default as UsernamePasswordSkeleton } from './username-password-skeleton';
 export { default as ActiveSessionsSkeleton } from './active-sessions-skeleton';
 export { default as EditProfileSkeleton } from './edit-profile-skeleton';
+export { default as ProfileHeaderSkeleton } from './profile-header-skeleton';
+export { default as UserListItemSkeleton } from './user-list-item-skeleton';

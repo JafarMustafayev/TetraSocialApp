@@ -1,10 +1,10 @@
-// src/components/apiTester/api-tester-request-panel.jsx
+// src/components/apiTester/ApiTesterRequestPanel.jsx
 import React from 'react';
-import HeadersTab from './api-tester-headers-tab';
-import ParamsTab from './api-tester-params-tab';
-import BodyTab from './api-tester-body-tab';
-import AuthTab from './api-tester-auth-tab';
-import CookiesTab from './api-tester-cookies-tab';
+import HeadersTab from './ApiTesterHeadersTab';
+import ParamsTab from './ApiTesterParamsTab';
+import BodyTab from './ApiTesterBodyTab';
+import AuthTab from './ApiTesterAuthTab';
+import CookiesTab from './ApiTesterCookiesTab';
 
 const RequestPanel = ({
     method,

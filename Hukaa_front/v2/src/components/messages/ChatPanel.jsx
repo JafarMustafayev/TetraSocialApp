@@ -1,3 +1,4 @@
+// src/components/messages/ChatPanel.jsx
 import React, { useRef, useEffect, useState } from 'react';
 import { ArrowLeft, Search, MoreHorizontal, ChevronDown } from 'lucide-react';
 import MessageComposer from './MessageComposer';

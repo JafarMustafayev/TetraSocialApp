@@ -1,3 +1,4 @@
+// src/components/messages/ImageModal.jsx
 import React, { useState, useEffect } from 'react';
 import { X, ZoomIn, ZoomOut, ChevronLeft, ChevronRight } from 'lucide-react';
 

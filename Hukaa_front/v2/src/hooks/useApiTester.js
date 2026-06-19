@@ -1,4 +1,4 @@
-// src/hooks/use-api-tester.js
+// src/hooks/useApiTester.js
 import { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-hot-toast';
 

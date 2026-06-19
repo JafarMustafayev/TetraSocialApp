@@ -1,4 +1,4 @@
-// src/utils/websocket/websocket-constants.js
+// src/utils/websocket/websocketConstants.js
 
 export const SOCKET_STATES = {
     DISCONNECTED: 'DISCONNECTED',

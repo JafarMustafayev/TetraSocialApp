@@ -1,5 +1,5 @@
 // src/api/client.js
-import { API_BASE_URL } from './api-config';
+import { API_BASE_URL } from './apiConfig';
 import { toast } from 'react-hot-toast';
 
 // ─────────────────────────────────────────────

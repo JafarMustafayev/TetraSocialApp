@@ -1,4 +1,4 @@
-// src/components/apiTester/api-tester-auth-tab.jsx
+// src/components/apiTester/ApiTesterAuthTab.jsx
 import React from 'react';
 import { Lock, Eye, EyeOff } from 'lucide-react';
 

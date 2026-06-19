@@ -1,3 +1,4 @@
+// src/components/settings/SettingsContent.jsx
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { settingsData } from '../../data/settingsData';
@@ -48,7 +49,7 @@ const SettingsContent = () => {
         if (DirectComponent) {
             return <DirectComponent category={category} onBack={() => navigate('/settings')} />;
         }
-        
+
         // Placeholder for direct components not yet implemented
         return (
             <div className="w-full h-full flex flex-col bg-white dark:bg-[#09090b]">
