@@ -4,7 +4,6 @@ import {
   Monitor,
   SlidersHorizontal,
   UserPen,
-  Wrench,
   BellRing,
   EyeOff,
   Ban
@@ -49,12 +48,6 @@ export const settingsData = [
         description: "Your name, bio, website, and images.",
         icon: UserPen,
       },
-      {
-        id: "tools",
-        title: "The tools you use.",
-        description: "Show the tools on your profile.",
-        icon: Wrench,
-      }
     ]
   },
   {

@@ -12,6 +12,7 @@ import AppearanceSettings from './direct/AppearanceSettings';
 import UsernamePasswordForm from './forms/UsernamePasswordForm';
 import ActiveSessionsForm from './forms/ActiveSessionsForm';
 import TwoFactorForm from './forms/TwoFactorForm';
+import EditProfile from './forms/EditProfileForm';
 
 // Component Map for direct categories
 const DirectComponentMap = {
@@ -23,6 +24,7 @@ const ItemComponentMap = {
     'username-password': UsernamePasswordForm,
     'active-sessions': ActiveSessionsForm,
     'two-factor': TwoFactorForm,
+    'edit-profile': EditProfile,
 };
 
 const SettingsContent = () => {
@@ -46,7 +48,7 @@ const SettingsContent = () => {
         if (DirectComponent) {
             return <DirectComponent category={category} onBack={() => navigate('/settings')} />;
         }
-
+        
         // Placeholder for direct components not yet implemented
         return (
             <div className="w-full h-full flex flex-col bg-white dark:bg-[#09090b]">
