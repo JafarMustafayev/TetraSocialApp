@@ -53,7 +53,7 @@ const CreatePost = ({ onPostCreated }) => {
             ByUserName: user.FirstName ? `${user.FirstName} ${user.LastName}` : 'New User',
             Content: content,
             UserProfileImageUrl: user.ProfilePhoto || null,
-            Media: mediaFiles.map(m => m.previewUrl)
+            Media: mediaFiles.map(m => ({ url: m.previewUrl, type: m.type }))
         };
 
         onPostCreated(newPost);

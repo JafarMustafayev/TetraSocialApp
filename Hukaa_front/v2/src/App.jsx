@@ -14,6 +14,7 @@ import Profile from './pages/Profile';
 import Follow from './pages/follow';
 import ApiTester from './pages/ApiTester';
 import WebSocketTester from './pages/WebsocketTester';
+import PostDetail from './pages/PostDetail';
 import MainLayout from './layouts/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
 import { ThemeProvider } from './context/ThemeContext';
@@ -65,7 +66,7 @@ function App() {
               <Route path="/:username/followers" element={<Follow tab="followers" />} />
               <Route path="/:username/following" element={<Follow tab="following" />} />
               <Route path="/:username" element={<Profile />} />
-
+              <Route path="/post/:id" element={<PostDetail />} />
             </Route>
 
             {/* Guest Routes (Redirect to /home if logged in) */}

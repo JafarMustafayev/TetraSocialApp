@@ -1,70 +1,53 @@
 // src/utils/dateFormatter.js
-export const formatMessageTime = (isoString) => {
-  const date = new Date(isoString);
-  return date.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  });
+
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(utc);
+dayjs.extend(relativeTime);
+
+export const formatMessageTime = (date) => {
+  return dayjs(date).format("HH:mm");
 };
 
-export const getMessageDateGroup = (isoString) => {
-  const date = new Date(isoString);
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
+export const getMessageDateGroup = (date) => {
+  const target = dayjs(date);
 
-  const isSameDay = (d1, d2) => 
-    d1.getFullYear() === d2.getFullYear() &&
-    d1.getMonth() === d2.getMonth() &&
-    d1.getDate() === d2.getDate();
-
-  if (isSameDay(date, today)) {
-    return 'Today';
-  } else if (isSameDay(date, yesterday)) {
-    return 'Yesterday';
+  if (target.isSame(dayjs(), "day")) {
+    return "Today";
   }
 
-  return date.toLocaleDateString('en-US', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  });
+  if (target.isSame(dayjs().subtract(1, "day"), "day")) {
+    return "Yesterday";
+  }
+
+  return target.format("D MMMM YYYY");
 };
 
-export const groupMessagesByDate = (messages) => {
-  const groups = [];
-  let currentGroup = null;
+export const groupMessagesByDate = (messages) =>
+  messages.reduce((groups, msg) => {
+    const dateGroup = getMessageDateGroup(msg.createdAt);
+    const lastGroup = groups[groups.length - 1];
 
-  messages.forEach(msg => {
-    const groupName = getMessageDateGroup(msg.createdAt);
-    
-    if (!currentGroup || currentGroup.date !== groupName) {
-      if (currentGroup) {
-        groups.push(currentGroup);
-      }
-      currentGroup = {
-        date: groupName,
-        messages: []
-      };
+    if (!lastGroup || lastGroup.date !== dateGroup) {
+      groups.push({
+        date: dateGroup,
+        messages: [msg],
+      });
+    } else {
+      lastGroup.messages.push(msg);
     }
-    
-    currentGroup.messages.push(msg);
-  });
 
-  if (currentGroup) {
-    groups.push(currentGroup);
-  }
+    return groups;
+  }, []);
 
-  return groups;
+export const formatUtcToLocal = (date) => {
+  if (!date) return "";
+  return dayjs.utc(date).local().format("DD.MM.YYYY HH:mm");
 };
 
-export const formatUtcToLocal = (dateString) => {
-  if (!dateString) return '';
-  let formattedString = dateString.trim().replace(' ', 'T');
-  if (!/Z|[+-]\d{2}:?\d{2}$/i.test(formattedString)) {
-    formattedString += 'Z';
-  }
-  const date = new Date(formattedString);
-  return isNaN(date.getTime()) ? dateString : date.toLocaleString();
+export const getTimeAgo = (date) => {
+  if (!date) return "";
+  return dayjs(date).fromNow();
 };

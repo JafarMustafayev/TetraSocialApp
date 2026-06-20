@@ -3,7 +3,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { ArrowLeft, Search, MoreHorizontal, ChevronDown } from 'lucide-react';
 import MessageComposer from './MessageComposer';
 import MessageBubble from './MessageBubble';
-import ImageModal from './ImageModal';
+import ImageModal from '../ui/ImageModal';
 import { groupMessagesByDate } from '../../utils/dateFormatter';
 
 const ChatPanel = ({ conversation, messages, onBack, onSendMessage }) => {

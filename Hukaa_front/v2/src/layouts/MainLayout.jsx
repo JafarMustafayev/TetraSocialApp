@@ -27,9 +27,9 @@ const MainLayout = () => {
                 {/* Content Area */}
                 <main className="flex-1 min-w-0 flex pb-[60px] md:pb-0 justify-center">
                     {showSidebar ? (
-                        <div className="flex justify-center w-full">
+                        <div className="flex justify-center w-full min-w-0">
                             {/* Main content wrapper */}
-                            <div className=" w-full">
+                            <div className="max-w-[700px] w-full min-w-0">
                                 <Outlet />
                             </div>
 

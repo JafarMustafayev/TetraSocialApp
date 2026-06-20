@@ -4,13 +4,11 @@ import CreatePost from '../components/feed/CreatePost';
 import PostCard from '../components/feed/PostCard';
 import { PostSkeleton } from '../components/skeletons/index.js';
 import Tabs from '../components/ui/Tabs.jsx';
+import { getAllPosts } from '../api/post.api.js';
 
 const Home = () => {
     // Mock posts for view-only mode
-    const [posts, setPosts] = useState([
-        { Id: 1, ByUserName: 'Jafar Mustafayev', Content: 'Welcome to Hukaa V2! Everything is built with Tailwind CSS.', UserProfileImageUrl: null },
-        { Id: 2, ByUserName: 'Admin', Content: 'This is a mock post to test the feed layout.', UserProfileImageUrl: null },
-    ]);
+    const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(false); // Disable infinite scroll for now as per user request (view only)
     const [activeTab, setActiveTab] = useState('new');
@@ -20,6 +18,14 @@ const Home = () => {
         { id: 'following', label: 'Following' },
         { id: 'foryou', label: 'For you' }
     ];
+
+    useEffect(() => {
+        setLoading(true);
+        getAllPosts().then((res) => {
+            setPosts(res.Data);
+            setLoading(false);
+        });
+    }, []);
 
     return (
         <div className="flex justify-center w-full ">
