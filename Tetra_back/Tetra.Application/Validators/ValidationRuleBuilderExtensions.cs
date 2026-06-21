@@ -1,7 +1,4 @@
-﻿using Tetra.Application.Abstractions.Common;
-using Tetra.Application.Options.Validation.Common;
-
-namespace Tetra.Application.Validators;
+﻿namespace Tetra.Application.Validators;
 
 public static class ValidationRuleBuilderExtensions
 {

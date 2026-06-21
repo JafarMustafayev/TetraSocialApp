@@ -1,6 +1,4 @@
-﻿using Tetra.Application.Options.Validation.Auth;
-
-namespace Tetra.Application.Options.Validation;
+﻿namespace Tetra.Application.Options.Validation;
 
 public sealed class ValidationOptions
 {

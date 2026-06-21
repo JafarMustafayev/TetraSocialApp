@@ -1,6 +1,4 @@
-﻿using Tetra.Application.DTOs.Auth.Session;
-
-namespace Tetra.Application.Mappings;
+﻿namespace Tetra.Application.Mappings;
 
 public class SessionMappingProfile : Profile
 {

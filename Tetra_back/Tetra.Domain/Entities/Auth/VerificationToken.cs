@@ -1,8 +1,4 @@
-﻿using Tetra.Domain.Entities.Common;
-using Tetra.Domain.Entities.Identities;
-using Tetra.Domain.Enums;
-
-namespace Tetra.Domain.Entities.Auth;
+﻿namespace Tetra.Domain.Entities.Auth;
 
 public class VerificationToken : BaseEntity
 {

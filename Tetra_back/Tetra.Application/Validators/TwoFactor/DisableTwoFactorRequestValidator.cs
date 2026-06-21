@@ -1,8 +1,4 @@
-﻿using Tetra.Application.Abstractions.Common;
-using Tetra.Application.DTOs.Auth.TwoFactor;
-using Tetra.Application.Options.Validation;
-
-namespace Tetra.Application.Validators.TwoFactor;
+﻿namespace Tetra.Application.Validators.TwoFactor;
 
 public class DisableTwoFactorRequestValidator : AbstractValidator<DisableTwoFactorRequestDto>
 {

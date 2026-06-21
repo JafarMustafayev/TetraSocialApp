@@ -1,7 +1,4 @@
-﻿using Tetra.Application.DTOs.Auth.Password;
-using Tetra.Application.DTOs.Wrappers;
-
-namespace Tetra.Application.Abstractions.Services.Account;
+﻿namespace Tetra.Application.Abstractions.Services.Account;
 
 public interface IPasswordManagementService
 {

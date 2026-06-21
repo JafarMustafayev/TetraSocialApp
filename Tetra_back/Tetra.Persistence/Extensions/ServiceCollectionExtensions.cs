@@ -1,11 +1,4 @@
-﻿using Tetra.Persistence.Context;
-using Tetra.Persistence.Repositories.AuthSessionRepos;
-using Tetra.Persistence.Repositories.RefreshTokenRepos;
-using Tetra.Persistence.Repositories.TwoFactor;
-using Tetra.Persistence.Repositories.UnitOfWork;
-using Tetra.Persistence.Repositories.VerificationTokenRepos;
-
-namespace Tetra.Persistence.Extensions;
+﻿namespace Tetra.Persistence.Extensions;
 
 public static class ServiceCollectionExtensions
 {

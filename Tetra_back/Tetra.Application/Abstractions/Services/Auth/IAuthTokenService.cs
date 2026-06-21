@@ -1,6 +1,4 @@
-﻿using Tetra.Application.DTOs.Auth.Token;
-
-namespace Tetra.Application.Abstractions.Services.Auth;
+﻿namespace Tetra.Application.Abstractions.Services.Auth;
 
 public interface IAuthTokenService
 {

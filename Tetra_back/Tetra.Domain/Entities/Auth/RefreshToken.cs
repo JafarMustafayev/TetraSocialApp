@@ -1,6 +1,4 @@
-﻿using Tetra.Domain.Entities.Common;
-
-namespace Tetra.Domain.Entities.Auth;
+﻿namespace Tetra.Domain.Entities.Auth;
 
 public class RefreshToken : BaseEntity
 {

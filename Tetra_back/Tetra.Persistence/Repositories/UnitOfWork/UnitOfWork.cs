@@ -1,6 +1,4 @@
-﻿using Tetra.Persistence.Context;
-
-namespace Tetra.Persistence.Repositories.UnitOfWork;
+﻿namespace Tetra.Persistence.Repositories.UnitOfWork;
 
 public class UnitOfWork(AppDbContext context) : IUnitOfWork
 {

@@ -1,6 +1,4 @@
-﻿using Tetra.Persistence.Configurations;
-
-namespace Tetra.Persistence.Context;
+﻿namespace Tetra.Persistence.Context;
 
 public class AppDbContext(DbContextOptions options) : IdentityDbContext<User, Role, string>(options)
 {

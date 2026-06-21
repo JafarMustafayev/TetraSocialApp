@@ -1,6 +1,4 @@
-﻿using Tetra.Persistence.Context;
-
-namespace Tetra.Persistence.Repositories.Base;
+﻿namespace Tetra.Persistence.Repositories.Base;
 
 public class ReadRepository<T>(AppDbContext context) : IReadRepository<T> where T : BaseEntity
 {

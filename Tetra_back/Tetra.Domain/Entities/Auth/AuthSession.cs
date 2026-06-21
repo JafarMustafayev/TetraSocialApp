@@ -1,7 +1,4 @@
-﻿using Tetra.Domain.Entities.Common;
-using Tetra.Domain.Entities.Identities;
-
-namespace Tetra.Domain.Entities.Auth;
+﻿namespace Tetra.Domain.Entities.Auth;
 
 public class AuthSession : BaseEntity
 {

@@ -1,6 +1,4 @@
-﻿using Tetra.Application.DTOs.Auth;
-
-namespace Tetra.Application.Mappings;
+﻿namespace Tetra.Application.Mappings;
 
 public class AuthMappingProfile : Profile
 {

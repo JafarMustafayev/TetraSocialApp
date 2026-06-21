@@ -1,8 +1,4 @@
-﻿using Tetra.Application.Abstractions.Common;
-using Tetra.Application.DTOs.Account;
-using Tetra.Application.Options.Validation;
-
-namespace Tetra.Application.Validators.Account;
+﻿namespace Tetra.Application.Validators.Account;
 
 public class ChangeEmailRequestValidator : AbstractValidator<ChangeEmailRequestDto>
 {

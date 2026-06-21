@@ -1,7 +1,4 @@
-﻿using Tetra.Application.DTOs.Auth.TwoFactor;
-using Tetra.Application.DTOs.Wrappers;
-
-namespace Tetra.Application.Abstractions.Services.Auth;
+﻿namespace Tetra.Application.Abstractions.Services.Auth;
 
 public interface ITwoFactorService
 {

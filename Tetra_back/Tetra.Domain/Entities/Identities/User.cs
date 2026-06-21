@@ -1,7 +1,4 @@
-﻿using Tetra.Domain.Entities.Auth;
-using Tetra.Domain.Enums;
-
-namespace Tetra.Domain.Entities.Identities;
+﻿namespace Tetra.Domain.Entities.Identities;
 
 public class User : IdentityUser<string>
 {

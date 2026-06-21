@@ -1,7 +1,4 @@
-﻿using Tetra.Application.Abstractions.Common;
-using Tetra.Application.DTOs.Auth.Token;
-
-namespace Tetra.Application.Validators.Auth;
+﻿namespace Tetra.Application.Validators.Auth;
 
 public class RotateTokenRequestValidator : AbstractValidator<RotateTokenRequestDto>
 {

@@ -1,8 +1,4 @@
-﻿using Tetra.Application.Abstractions.Common;
-using Tetra.Application.DTOs.Auth;
-using Tetra.Application.Options.Validation;
-
-namespace Tetra.Application.Validators.Auth;
+﻿namespace Tetra.Application.Validators.Auth;
 
 public sealed class RegisterRequestValidator : AbstractValidator<RegisterRequestDto>
 {

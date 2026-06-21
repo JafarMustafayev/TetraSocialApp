@@ -1,6 +1,4 @@
-﻿using Tetra.Application.Options.Validation.Common;
-
-namespace Tetra.Application.Options.Validation.Auth;
+﻿namespace Tetra.Application.Options.Validation.Auth;
 
 public class TwoFactorValidationOptions
 {

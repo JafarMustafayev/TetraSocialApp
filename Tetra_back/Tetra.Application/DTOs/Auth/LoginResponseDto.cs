@@ -1,7 +1,4 @@
-﻿using Tetra.Application.DTOs.Auth.Token;
-using Tetra.Application.DTOs.Auth.TwoFactor;
-
-namespace Tetra.Application.DTOs.Auth;
+﻿namespace Tetra.Application.DTOs.Auth;
 
 public class LoginResponseDto
 {
