@@ -1,0 +1,32 @@
+﻿global using Microsoft.EntityFrameworkCore;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
+global using Tetra.Persistence.Context;
+global using Tetra.Domain.Entities.Identities;
+global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+global using Tetra.Application.Abstractions.Common;
+global using Tetra.Application.Options.Database;
+global using Microsoft.AspNetCore.Identity;
+global using Microsoft.EntityFrameworkCore.Metadata.Builders;
+global using Tetra.Persistence.Configurations;
+global using Tetra.Domain.Consts;
+global using System.Linq.Expressions;
+global using Tetra.Application.Abstractions.Repositories.Base;
+global using Tetra.Domain.Entities.Common;
+global using Tetra.Application.Abstractions.Repositories.UnitOfWork;
+global using Tetra.Domain.Entities.Auth;
+global using Tetra.Application.Abstractions.Repositories.RefreshTokenRepos;
+global using Tetra.Persistence.Repositories.Base;
+global using Tetra.Persistence.Repositories.RefreshTokenRepos;
+global using Tetra.Persistence.Repositories.UnitOfWork;
+global using Tetra.Application.Abstractions.Repositories.AuthSessionRepos;
+global using Tetra.Persistence.Repositories.AuthSessionRepos;
+global using Tetra.Application.Abstractions.Repositories.VerificationTokenRepos;
+global using Tetra.Persistence.Repositories.VerificationTokenRepos;
+global using Tetra.Domain.Enums;
+global using Tetra.Application.Abstractions.Repositories.TwoFactor;
+global using Tetra.Persistence.Repositories.TwoFactor;
+
+// ---------------
+global using IdentityOptions = Tetra.Application.Options.Identity.IdentityOptions;
+global using TokenOptions = Tetra.Application.Options.Token.TokenOptions;
