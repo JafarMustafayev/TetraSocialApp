@@ -77,13 +77,13 @@ const Navbar = () => {
     const profilePath = user?.username ? `/${user.username}` : '/profile';
     const menuItems = [
         { path: '/feed', label: 'Home', icon: House, visibility: ['desktop', 'mobile'] },
+        { path: '/messages', label: 'Messages', icon: MessageSquare, count: 0, visibility: ['desktop', 'mobile'] },
         { path: '/search', label: 'Search', icon: Search, visibility: ['desktop', 'mobile'] },
         { path: '/notifications', label: 'Notifications', icon: Bell, count: 0, visibility: ['desktop', 'mobile'] },
-        { path: '/messages', label: 'Messages', icon: MessageSquare, count: 0, visibility: ['desktop', 'mobile'] },
 
         { path: '/bookmarks', label: 'Bookmarks', icon: Bookmark, visibility: ['desktop', 'profileSheet'] },
-        { path: '/apitester', label: 'API Tester', icon: Terminal, isDev: true, visibility: ['desktop', 'profileSheet'] },
-        { path: '/websockettester', label: 'WS Tester', icon: Radio, isDev: true, visibility: ['desktop', 'profileSheet'] },
+        { path: '/apitester', label: 'API Tester', icon: Terminal, isDev: true, visibility: ['profileSheet'] },
+        { path: '/websockettester', label: 'WS Tester', icon: Radio, isDev: true, visibility: ['profileSheet'] },
 
         { path: profilePath, label: 'Profile', icon: User, visibility: ['desktop'] },
         { path: '/settings', label: 'Settings', icon: Settings, visibility: ['desktop', 'profileSheet'] }
@@ -160,6 +160,20 @@ const Navbar = () => {
                     {/* The Dropdown Menu */}
                     {isDesktopDropdownOpen && (
                         <div className="absolute bottom-full left-0 mb-2 w-[240px] bg-white dark:bg-[#18181b] border border-gray-200 dark:border-neutral-800 rounded-2xl shadow-lg overflow-hidden z-50 py-2">
+                            <Link
+                                to="/apitester"
+                                className="w-[95%] mx-auto rounded-2xl flex items-center gap-3 px-4 py-3 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors text-left"
+                            >
+                                <Terminal size={24} className={`text-gray-500 dark:text-gray-400`} />
+                                <span className="text-[15px] font-medium text-gray-900 dark:text-gray-100">API Tester</span>
+                            </Link>
+                            <Link
+                                to="/websockettester"
+                                className="w-[95%] mx-auto rounded-2xl flex items-center gap-3 px-4 py-3 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors text-left"
+                            >
+                                <Radio size={24} className={`text-gray-500 dark:text-gray-400`} />
+                                <span className="text-[15px] font-medium text-gray-900 dark:text-gray-100">Websocket Tester</span>
+                            </Link>
                             <button
                                 onClick={() => { toggleTheme(); setIsDesktopDropdownOpen(false); }}
                                 className="w-[95%] mx-auto rounded-2xl flex items-center gap-3 px-4 py-3 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors text-left"

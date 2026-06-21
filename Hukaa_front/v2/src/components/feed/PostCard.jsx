@@ -1,7 +1,7 @@
 // src/components/feed/PostCard.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { API_BASE_URL, USER_AVATAR } from '../../api/apiConfig';
+import { API_BASE_URL } from '../../api/apiConfig';
 import { getTimeAgo, formatUtcToLocal } from '../../utils/dateFormatter';
 import PostContent from './PostContent';
 import RepostCard from './RepostCard';
@@ -39,11 +39,17 @@ const PostCard = ({ post, isDetail = false }) => {
         >
             {/* Avatar */}
             <div className="shrink-0">
-                <img
-                    src={post.UserProfileImageUrl ? `${API_BASE_URL}/${post.UserProfileImageUrl}` : USER_AVATAR}
-                    className="w-10 h-10 rounded-full object-cover bg-gray-200 dark:bg-gray-800"
-                    alt={post.ByUserName}
-                />
+                {post.UserProfileImageUrl ? (
+                    <img
+                        src={`${API_BASE_URL}/${post.UserProfileImageUrl}`}
+                        className="w-10 h-10 rounded-full object-cover bg-gray-200 dark:bg-gray-800"
+                        alt={post.ByUserName}
+                    />
+                ):(
+                <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center font-bold text-main shrink-0">
+                    {post.ByUserName?.substring(0, 2).toUpperCase() || 'U'}
+                </div>
+                )}
             </div>
 
             {/* Right side content */}

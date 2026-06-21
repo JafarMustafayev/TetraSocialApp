@@ -15,6 +15,9 @@ import Follow from './pages/follow';
 import ApiTester from './pages/ApiTester';
 import WebSocketTester from './pages/WebsocketTester';
 import PostDetail from './pages/PostDetail';
+import Search from './pages/Search';
+import Notifications from './pages/Notifications';
+import Bookmarks from './pages/Bookmarks';
 import MainLayout from './layouts/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
 import { ThemeProvider } from './context/ThemeContext';
@@ -59,6 +62,9 @@ function App() {
             {/* Protected Routes */}
             <Route element={<MainLayout />}>
               <Route path="/feed" element={<Home />} />
+              <Route path="/search" element={<Search />} />
+              <Route path="/notifications" element={<Notifications />} />
+              <Route path="/bookmarks" element={<Bookmarks />} />
               <Route path="/messages" element={<Messages />} />
               <Route path="/settings/*" element={<Settings />} />
               <Route path="/ApiTester/*" element={<ApiTester />} />

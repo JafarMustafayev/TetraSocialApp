@@ -5,8 +5,6 @@ import SettingsInput from '../SettingsInput.jsx';
 import SettingsButton from '../SettingsButton.jsx';
 import { EditProfileSkeleton } from '../../skeletons/index.js';
 import { useAuth } from '../../../context/AuthContext';
-import coverPlaceholder from '../../../assets/images/cover_image.png';
-import avatarPlaceholder from '../../../assets/images/user_avatar.png';
 
 // Crop Helper: Create image from URL
 const createImage = (url) =>
@@ -56,8 +54,8 @@ const EditProfileForm = ({ onBack }) => {
     });
 
     // Image States
-    const [coverImage, setCoverImage] = useState(coverPlaceholder);
-    const [avatarImage, setAvatarImage] = useState(avatarPlaceholder);
+    const [coverImage, setCoverImage] = useState();
+    const [avatarImage, setAvatarImage] = useState();
 
     // Cropping States
     const [imageToCrop, setImageToCrop] = useState(null);

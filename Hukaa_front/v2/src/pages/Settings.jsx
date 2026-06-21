@@ -13,7 +13,7 @@ const Settings = () => {
     const isRoot = location.pathname === '/settings' || location.pathname === '/settings/';
 
     useEffect(() => {
-        document.title = "Settings - Hukaa";
+        document.title = "Settings";
         if (isRoot) {
             navigate('/settings/account');
         }

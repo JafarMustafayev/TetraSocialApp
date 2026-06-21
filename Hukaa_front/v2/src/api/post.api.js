@@ -3,7 +3,7 @@
 // Simulated delay helper
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-import { mockUserPosts,mockPosts } from '../utils/mockData';
+import { mockUserPosts, mockPosts, mockArchivedPosts } from '../utils/mockData';
 
 /**
  * Retrieves the posts written by a specific user.
@@ -13,7 +13,7 @@ import { mockUserPosts,mockPosts } from '../utils/mockData';
 export const getUserPosts = async (username) => {
     await delay(700); // Simulate network latency
     const normalizedUsername = username?.toLowerCase().replace(/[@\s]/g, '') || 'jafarmustafayev';
-    const posts = mockPosts[normalizedUsername] || mockPosts['default'];
+    const posts = mockUserPosts[normalizedUsername] || mockUserPosts['default'];
     return {
         Success: true,
         StatusCode: 200,
@@ -77,5 +77,20 @@ export const getPostById = async (id) => {
         Message: 'Post not found',
         Data: null,
         Errors: ['Post not found']
+    };
+};
+
+/**
+ * Retrieves the archived posts for the current user.
+ * @returns {Promise<object>} Resolved standard response with archived posts.
+ */
+export const getUserArchivedPosts = async () => {
+    await delay(600); // Simulate network latency
+    return {
+        Success: true,
+        StatusCode: 200,
+        Message: 'Success',
+        Data: mockArchivedPosts,
+        Errors: []
     };
 };

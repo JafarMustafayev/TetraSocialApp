@@ -1,6 +1,6 @@
 // src/pages/Profile.jsx
 import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -8,9 +8,10 @@ import {
     followUser,
     unfollowUser
 } from '../api/account.api';
-import { getUserPosts } from '../api/post.api';
+import { getUserPosts, getUserArchivedPosts } from '../api/post.api';
 import PostCard from '../components/feed/PostCard';
 import { PostSkeleton, ProfileHeaderSkeleton } from '../components/skeletons/index.js';
+import Tabs from '../components/ui/Tabs.jsx';
 
 const Profile = () => {
     const { username } = useParams();
@@ -30,11 +31,24 @@ const Profile = () => {
     const [loading, setLoading] = useState(true);
     const [postsLoading, setPostsLoading] = useState(true);
 
+    // Profile Tabs State (personal profile only)
+    const [searchParams, setSearchParams] = useSearchParams();
+    const activeTab = searchParams.get('tab') || 'posts';
+    const showArchive = isCurrentUser && activeTab === 'archive';
+    const [archivePosts, setArchivePosts] = useState([]);
+    const [archiveLoading, setArchiveLoading] = useState(false);
+    const [hasLoadedArchive, setHasLoadedArchive] = useState(false);
+
+    const handleTabChange = (tabId) => {
+        setSearchParams({ tab: tabId });
+    };
+
     // Redirect /profile to dynamic username
     useEffect(() => {
         if (username && username.toLowerCase() === 'profile' && currentUser?.username) {
             navigate(`/${currentUser.username}`, { replace: true });
         }
+        document.title = "@" + targetUsername;
     }, [username, currentUser, navigate]);
 
     // Load Profile and Posts on username change
@@ -44,6 +58,11 @@ const Profile = () => {
             setLoading(true);
             setPostsLoading(true);
             setError(null);
+
+            // Reset tab and archive state when changing profiles
+            setSearchParams({}, { replace: true });
+            setArchivePosts([]);
+            setHasLoadedArchive(false);
 
             try {
                 // Fetch profile data
@@ -72,6 +91,31 @@ const Profile = () => {
 
         fetchProfileAndPosts();
     }, [targetUsername]);
+
+    // Load archived posts when switching to archive tab (lazy-loading with caching)
+    useEffect(() => {
+        if (!isCurrentUser || activeTab !== 'archive' || hasLoadedArchive) return;
+
+        const fetchArchive = async () => {
+            setArchiveLoading(true);
+            try {
+                const res = await getUserArchivedPosts();
+                if (res.Success) {
+                    setArchivePosts(res.Data);
+                } else {
+                    toast.error(res.Message || 'Failed to load archived posts.');
+                }
+            } catch (err) {
+                console.error(err);
+                toast.error('An error occurred while loading archived posts.');
+            } finally {
+                setArchiveLoading(false);
+                setHasLoadedArchive(true);
+            }
+        };
+
+        fetchArchive();
+    }, [activeTab, isCurrentUser, hasLoadedArchive]);
 
     // Follow/Unfollow Handler for Profile
     const handleToggleFollow = async () => {
@@ -274,18 +318,44 @@ const Profile = () => {
                             </div>
                         </div>
 
+                        {/* Profile Tabs (Only visible for the current user's own profile) */}
+                        {isCurrentUser && (
+                            <Tabs
+                                tabs={[
+                                    { id: 'posts', label: 'Posts' },
+                                    { id: 'archive', label: 'Archive' }
+                                ]}
+                                activeTab={activeTab}
+                                onChange={handleTabChange}
+                            />
+                        )}
+
                         {/* Posts List View */}
                         <div className="w-full">
-                            {postsLoading ? (
-                                <PostSkeleton count={3} />
-                            ) : posts.length > 0 ? (
-                                posts.map(post => (
-                                    <PostCard key={post.Id} post={post} />
-                                ))
+                            {!showArchive ? (
+                                postsLoading ? (
+                                    <PostSkeleton count={3} />
+                                ) : posts.length > 0 ? (
+                                    posts.map(post => (
+                                        <PostCard key={post.Id} post={post} />
+                                    ))
+                                ) : (
+                                    <div className="py-20 text-center text-gray-500 dark:text-gray-400 font-bold">
+                                        No posts to show
+                                    </div>
+                                )
                             ) : (
-                                <div className="py-20 text-center text-gray-500 dark:text-gray-400 font-bold">
-                                    No posts to show
-                                </div>
+                                archiveLoading ? (
+                                    <PostSkeleton count={3} />
+                                ) : archivePosts.length > 0 ? (
+                                    archivePosts.map(post => (
+                                        <PostCard key={post.Id} post={post} />
+                                    ))
+                                ) : (
+                                    <div className="py-20 text-center text-gray-500 dark:text-gray-400 font-bold">
+                                        No archived posts to show
+                                    </div>
+                                )
                             )}
                         </div>
                     </>

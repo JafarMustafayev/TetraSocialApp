@@ -1,5 +1,5 @@
 // src/pages/Messages.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ConversationList from '../components/messages/ConversationList';
 import ChatPanel from '../components/messages/ChatPanel';
 
@@ -93,6 +93,10 @@ const Messages = () => {
 
   const selectedConversation = conversations.find(c => c.id === selectedConversationId);
   const messages = selectedConversationId ? (messagesData[selectedConversationId] || []) : [];
+
+  useEffect(() => {
+    document.title = "Messages";
+  }, []);
 
   const handleSendMessage = (text, attachments = null) => {
     if (!selectedConversationId) return;
