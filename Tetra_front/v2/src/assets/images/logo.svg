@@ -1,0 +1,26 @@
+<svg width="1200" height="260" viewBox="0 0 1200 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="260" fill="#050505"/>
+  <g fill="white">
+    <!-- custom T -->
+    <rect x="40" y="70" width="180" height="34"/>
+    <rect x="102" y="104" width="56" height="106"/>
+    <rect x="40" y="112" width="180" height="18" opacity="0.9"/>
+    <!-- E -->
+    <rect x="280" y="70" width="165" height="34"/>
+    <rect x="280" y="70" width="42" height="140"/>
+    <rect x="280" y="123" width="145" height="32"/>
+    <rect x="280" y="176" width="165" height="34"/>
+    <!-- T -->
+    <rect x="505" y="70" width="180" height="34"/>
+    <rect x="567" y="70" width="56" height="140"/>
+    <!-- R -->
+    <rect x="745" y="70" width="44" height="140"/>
+    <rect x="745" y="70" width="132" height="34"/>
+    <rect x="745" y="123" width="132" height="32"/>
+    <rect x="845" y="88" width="44" height="55"/>
+    <path d="M804 148H858L914 210H855L804 148Z"/>
+    <!-- A -->
+    <path d="M1012 70H1075L1160 210H1103L1088 181H999L984 210H927L1012 70Z"/>
+    <path d="M1044 100L1019 146H1068L1044 100Z" fill="#050505"/>
+  </g>
+</svg>

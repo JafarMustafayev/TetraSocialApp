@@ -1,0 +1,115 @@
+@import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
+
+@import "remixicon/fonts/remixicon.css";
+
+:root {
+  /* Dynamic primary color hue that can be changed from Settings */
+  --accent-hue: 200;
+  --accent-l: 46%;
+
+  /* Toast variables */
+  --toast-bg: #ffffff;
+  --toast-color: #0f1419;
+  --toast-border: #e4e4e7;
+}
+
+.dark {
+  --accent-l: 55%;
+
+  /* Toast variables */
+  --toast-bg: #18181b;
+  --toast-color: #f4f4f5;
+  --toast-border: #27272a;
+}
+
+@theme {
+  /* Colors from v1 updated with new CSS var based on HSL */
+  --color-main: hsl(var(--accent-hue) 89% var(--accent-l));
+  --color-main-hover: hsl(var(--accent-hue) 89% var(--accent-l) / 80%);
+  --color-optional: hsl(var(--accent-hue) 89% var(--accent-l) / 70%);
+  --color-black: #0f1419;
+  --color-paragraph: #536471;
+
+  /* Fonts */
+  --font-main: "Open Sans", sans-serif;
+  --font-heading: "Montserrat", sans-serif;
+}
+
+/* Base Styles */
+@layer base {
+  body {
+    @apply font-main m-0 p-0 bg-white text-black transition-colors duration-300;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading font-semibold text-black;
+  }
+
+  a {
+    @apply no-underline transition-all duration-300 text-black hover:text-main;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full hover:bg-gray-400 transition-colors;
+  }
+}
+
+/* Dark Mode Overrides */
+html.dark body {
+  @apply bg-[#09090b];
+}
+
+html.dark h1,
+html.dark h2,
+html.dark h3,
+html.dark h4,
+html.dark h5,
+html.dark h6 {
+  @apply text-white;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  @apply bg-gray-700 hover:bg-gray-600;
+}
+
+/* Utils */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.dark .custom-scrollbar {
+  scrollbar-color: #334155 transparent;
+}
+
+/* Custom Minimal Toast Styling */
+.custom-toast {
+  background: var(--toast-bg) !important;
+  color: var(--toast-color) !important;
+  border: 1px solid var(--toast-border) !important;
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.05), 0 1px 3px 0 rgba(0, 0, 0, 0.03) !important;
+  border-radius: 8px !important;
+  font-family: var(--font-main) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  padding: 10px 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
