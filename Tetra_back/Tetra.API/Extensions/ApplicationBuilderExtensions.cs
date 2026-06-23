@@ -42,9 +42,9 @@ public static class ApplicationBuilderExtensions
                         {
                             var dbContext = context.RequestServices.GetRequiredService<AppDbContext>();
 
-                            var preferredLanguage = await dbContext.Users
-                                .Where(x => x.Id == userIdClaim)
-                                .Select(x => x.PreferredLanguage)
+                            var preferredLanguage = await dbContext.UserPreferences
+                                .Where(x => x.UserId == userIdClaim)
+                                .Select(x => x.Language)
                                 .FirstOrDefaultAsync();
 
                             if(preferredLanguage == "az" || preferredLanguage == "en")

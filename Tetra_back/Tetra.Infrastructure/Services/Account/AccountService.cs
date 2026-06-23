@@ -30,7 +30,7 @@ public class AccountService(
             AvatarUrl = "",
             EmailVerified = user.EmailConfirmed,
             IsAdmin = roles.Contains(UserRoles.Admin),
-            Name = user.FirstName + " " + user.LastName
+            Name = "user.FirstName" + " " + "user.LastName"
         };
 
         return new ResponseDto

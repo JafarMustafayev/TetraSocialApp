@@ -37,5 +37,10 @@ public class AuthSessionConfiguration : IEntityTypeConfiguration<AuthSession>
         builder.Property(x => x.RevokedByIp)
             .HasMaxLength(20)
             .IsRequired(false);
+
+        builder.HasOne(x => x.User)
+            .WithMany(x => x.AuthSessions)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

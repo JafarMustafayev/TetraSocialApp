@@ -2,7 +2,6 @@
 
 public class TwoFactorRecoveryCodeConfiguration : IEntityTypeConfiguration<TwoFactorRecoveryCode>
 {
-
     public void Configure(EntityTypeBuilder<TwoFactorRecoveryCode> builder)
     {
         builder.ToTable("TwoFactorRecoveryCodes");

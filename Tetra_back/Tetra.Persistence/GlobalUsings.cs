@@ -26,6 +26,7 @@ global using Tetra.Persistence.Repositories.VerificationTokenRepos;
 global using Tetra.Domain.Enums;
 global using Tetra.Application.Abstractions.Repositories.TwoFactor;
 global using Tetra.Persistence.Repositories.TwoFactor;
+global using Tetra.Domain.Entities.Users;
 
 // ---------------
 global using IdentityOptions = Tetra.Application.Options.Identity.IdentityOptions;

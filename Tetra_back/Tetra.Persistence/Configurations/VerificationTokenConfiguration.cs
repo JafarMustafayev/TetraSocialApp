@@ -60,6 +60,11 @@ public class VerificationTokenConfiguration : IEntityTypeConfiguration<Verificat
             .HasForeignKey(x => x.ReplacedByTokenId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(x => x.User)
+            .WithMany(x => x.VerificationTokens)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         //Index
         builder.HasIndex(x => x.TokenHash)
             .IsUnique()

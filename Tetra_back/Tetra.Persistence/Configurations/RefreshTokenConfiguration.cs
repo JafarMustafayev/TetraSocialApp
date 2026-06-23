@@ -60,6 +60,6 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
             .HasName("IdIndex");
 
         builder.HasIndex(x => x.AuthSessionId)
-            .HasName("UserIdIndex");
+            .HasName("AuthSessionIdIndex");
     }
 }
