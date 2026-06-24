@@ -24,6 +24,10 @@ public static class ServiceCollectionExtensions
             services.AddScoped<IAuthSessionWriteRepository, AuthSessionWriteRepository>();
             services.AddScoped<IVerificationTokenWriteRepository, VerificationTokenWriteRepository>();
             services.AddScoped<ITwoFactorRecoveryCodeWriteRepository, TwoFactorRecoveryCodeWriteRepository>();
+            services.AddScoped<IUserProfileWriteRepository, UserProfileWriteRepository>();
+            services.AddScoped<IUserPreferencesWriteRepository, UserPreferencesWriteRepository>();
+            services.AddScoped<IUserNotificationSettingsWriteRepository, UserNotificationSettingsWriteRepository>();
+            services.AddScoped<IUserPrivacySettingsWriteRepository, UserPrivacySettingsWriteRepository>();
         }
 
         private void AddReadRepositoriesCollection()
@@ -32,6 +36,10 @@ public static class ServiceCollectionExtensions
             services.AddScoped<IAuthSessionReadRepository, AuthSessionReadRepository>();
             services.AddScoped<IVerificationTokenReadRepository, VerificationTokenReadRepository>();
             services.AddScoped<ITwoFactorRecoveryCodeReadRepository, TwoFactorRecoveryCodeReadRepository>();
+            services.AddScoped<IUserProfileReadRepository, UserProfileReadRepository>();
+            services.AddScoped<IUserPreferencesReadRepository, UserPreferencesReadRepository>();
+            services.AddScoped<IUserNotificationSettingsReadRepository, UserNotificationSettingsReadRepository>();
+            services.AddScoped<IUserPrivacySettingsReadRepository, UserPrivacySettingsReadRepository>();
         }
 
         private void AddSqlServer()

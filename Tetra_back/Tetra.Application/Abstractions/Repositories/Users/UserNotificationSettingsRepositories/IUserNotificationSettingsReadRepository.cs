@@ -1,0 +1,5 @@
+﻿namespace Tetra.Application.Abstractions.Repositories.Users.UserNotificationSettingsRepositories;
+
+public interface IUserNotificationSettingsReadRepository : IReadRepository<UserNotificationSettings>
+{
+}

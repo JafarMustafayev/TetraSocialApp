@@ -27,6 +27,14 @@ global using Tetra.Application.Abstractions.Repositories.Auth.TwoFactorRepositor
 global using Tetra.Persistence.Repositories.Auth.TwoFactorRepositories;
 global using Tetra.Domain.Enums;
 global using Tetra.Domain.Entities.Users;
+global using Tetra.Application.Abstractions.Repositories.Users.UserProfileRepositories;
+global using Tetra.Persistence.Repositories.Users.UserProfileRepositories;
+global using Tetra.Application.Abstractions.Repositories.Users.UserNotificationSettingsRepositories;
+global using Tetra.Persistence.Repositories.Users.UserNotificationSettingsRepositories;
+global using Tetra.Application.Abstractions.Repositories.Users.UserPreferencesRepositories;
+global using Tetra.Persistence.Repositories.Users.UserPreferencesRepositories;
+global using Tetra.Application.Abstractions.Repositories.Users.UserPrivacySettingsRepositories;
+global using Tetra.Persistence.Repositories.Users.UserPrivacySettingsRepositories;
 
 // ---------------
 global using IdentityOptions = Tetra.Application.Options.Identity.IdentityOptions;
