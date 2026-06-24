@@ -17,8 +17,8 @@ public class UserPreferencesConfiguration : IEntityTypeConfiguration<UserPrefere
             .HasDefaultValue(Theme.System);
 
         builder.HasOne(x => x.User)
-            .WithMany(x => x.Preferences)
-            .HasForeignKey(x => x.UserId)
+            .WithOne(x => x.Preferences)
+            .HasForeignKey<UserPreferences>(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

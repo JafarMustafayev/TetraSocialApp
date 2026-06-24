@@ -38,8 +38,8 @@ public class UserProfileConfiguration : IEntityTypeConfiguration<UserProfile>
             .HasMaxLength(500);
 
         builder.HasOne(x => x.User)
-            .WithMany(x => x.Profiles)
-            .HasForeignKey(x => x.UserId)
+            .WithOne(x => x.Profile)
+            .HasForeignKey<UserProfile>(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

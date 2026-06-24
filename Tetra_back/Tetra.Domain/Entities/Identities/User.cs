@@ -17,8 +17,8 @@ public class User : IdentityUser<string>
     public HashSet<AuthSession> AuthSessions { get; set; } = new();
     public HashSet<VerificationToken> VerificationTokens { get; set; } = new();
 
-    public HashSet<UserProfile> Profiles { get; set; } = new();
-    public HashSet<UserPreferences> Preferences { get; set; } = new();
     public HashSet<UserNotificationSettings> NotificationSettings { get; set; } = new();
-    public HashSet<UserPrivacySettings> PrivacySettings { get; set; } = new();
+    public UserProfile Profile { get; set; } = new();
+    public UserPreferences Preferences { get; set; } = new();
+    public UserPrivacySettings PrivacySettings { get; set; } = new();
 }

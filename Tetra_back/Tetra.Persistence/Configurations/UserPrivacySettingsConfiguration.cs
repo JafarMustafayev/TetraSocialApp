@@ -25,8 +25,8 @@ public class UserPrivacySettingsConfiguration : IEntityTypeConfiguration<UserPri
             .IsRequired();
 
         builder.HasOne(x => x.User)
-            .WithMany(x => x.PrivacySettings)
-            .HasForeignKey(x => x.UserId)
+            .WithOne(x => x.PrivacySettings)
+            .HasForeignKey<UserPrivacySettings>(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
