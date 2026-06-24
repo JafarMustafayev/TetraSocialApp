@@ -48,10 +48,8 @@ public class AccountVerificationService(
             throw new ValidationException(localizer.Get("Error.VerificationToken.Validate.InvalidTarget"));
         }
 
-        user.EmailConfirmed = true;
-
-        var result = await userManager.UpdateAsync(user);
-
+        var result = await userManager.ConfirmEmailAsync(user,
+            await userManager.GenerateEmailConfirmationTokenAsync(user));
         if(!result.Succeeded)
         {
             throw new BadRequestException(localizer.Get("Auth.Email.Confirmation.Failure"));

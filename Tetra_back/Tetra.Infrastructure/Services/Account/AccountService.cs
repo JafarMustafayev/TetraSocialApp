@@ -41,7 +41,7 @@ public class AccountService(
             Data = userData
         };
     }
-    public async Task<ResponseDto> CheckEmailAvailabilityAsync(string email)
+    public async Task<ResponseDto<object>> CheckEmailAvailabilityAsync(string email)
     {
         CheckNullOrEmpty(email, "Email");
         CheckValidEmail(email);
@@ -50,7 +50,7 @@ public class AccountService(
         return ReturnAvailabilityResponse(avail);
     }
 
-    public async Task<ResponseDto> CheckUsernameAvailabilityAsync(string username)
+    public async Task<ResponseDto<object>> CheckUsernameAvailabilityAsync(string username)
     {
         CheckNullOrEmpty(username, "Username");
         var avail = await userManager.FindByNameAsync(username) == null;
@@ -69,15 +69,7 @@ public class AccountService(
 
         var userId = claimsReader.GetUserId();
         var user = await userManager.FindByIdAsync(userId);
-        if(user == null)
-        {
-            throw new NotFoundException(localizer.Get("Error.Common.NotFoundWithParameter", "User",
-                new Dictionary<string, object>
-                {
-                    ["Parameter"] = userId
-                }
-            ));
-        }
+        ThrowIfUserNotFound(userId, user);
 
         var checkResult = await userManager.CheckPasswordAsync(user, request.Password);
         if(!checkResult)
@@ -111,15 +103,7 @@ public class AccountService(
         var userId = claimsReader.GetUserId();
 
         var user = await userManager.FindByIdAsync(userId);
-        if(user == null)
-        {
-            throw new NotFoundException(localizer.Get("Error.Common.NotFoundWithParameter", "User",
-                new Dictionary<string, object>
-                {
-                    ["Parameter"] = userId
-                }
-            ));
-        }
+        ThrowIfUserNotFound(userId, user);
 
         var result = await userManager.SetUserNameAsync(user, request.Username);
 
@@ -135,18 +119,12 @@ public class AccountService(
         });
     }
 
-    private ResponseDto ReturnAvailabilityResponse(bool avail)
+    private ResponseDto<object> ReturnAvailabilityResponse(bool avail)
     {
-        return new ResponseDto
+        return ResponseDto<object>.OkResponse("Checked successfully", new
         {
-            Success = true,
-            StatusCode = StatusCodes.Status200OK,
-            Message = "Checked successfully",
-            Data = new
-            {
-                isAvailable = avail
-            }
-        };
+            isAvailable = avail
+        });
     }
 
     private void CheckNullOrEmpty(string value, string? paramName = null)
@@ -162,6 +140,19 @@ public class AccountService(
         if(!Regex.IsMatch(email, @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"))
         {
             throw new ConflictException(localizer.Get("Validation.Common.Validation.InvalidEmail"));
+        }
+    }
+
+    private void ThrowIfUserNotFound(string userId, User? user = null)
+    {
+        if(user == null)
+        {
+            throw new NotFoundException(localizer.Get("Error.Common.NotFoundWithParameter", "User",
+                new Dictionary<string, object>
+                {
+                    ["Parameter"] = userId
+                }
+            ));
         }
     }
 }
