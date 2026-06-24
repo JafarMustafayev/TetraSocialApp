@@ -2,7 +2,7 @@
 
 public interface IAccountService
 {
-    Task<ResponseDto> GetCurrentUserAsync();
+    Task<ResponseDto<CurrentUserDto>> GetCurrentUserAsync();
     Task<ResponseDto<object>> CheckEmailAvailabilityAsync(string email);
     Task<ResponseDto<object>> CheckUsernameAvailabilityAsync(string username);
     Task<ResponseDto<object>> ChangeEmailAsync(ChangeEmailRequestDto request);

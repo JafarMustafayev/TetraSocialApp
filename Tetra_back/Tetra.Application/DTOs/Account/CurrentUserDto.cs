@@ -10,4 +10,5 @@ public class CurrentUserDto
     public bool IsAdmin { get; set; }
     public bool EmailVerified { get; set; }
     public int AccentHue { get; set; }
+    public string Theme { get; set; } = null!;
 }

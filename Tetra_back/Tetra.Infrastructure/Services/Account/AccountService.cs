@@ -3,43 +3,26 @@
 public class AccountService(
     UserManager<User> userManager,
     IJwtClaimsReader claimsReader,
+    IMapper mapper,
     ILocalizationService localizer) : IAccountService
 {
-    public async Task<ResponseDto> GetCurrentUserAsync()
+    public async Task<ResponseDto<CurrentUserDto>> GetCurrentUserAsync()
     {
         var userId = claimsReader.GetUserId();
-        var user = await userManager.FindByIdAsync(userId);
-        if(user == null)
-        {
-            throw new NotFoundException(localizer.Get("Error.Common.NotFoundWithParameter", "User",
-                new Dictionary<string, object>
-                {
-                    ["Parameter"] = userId
-                }
-            ));
-        }
+        var user = await userManager.Users
+            .Include(x => x.Preferences)
+            .Include(x => x.Profile)
+            .FirstOrDefaultAsync(x => x.Id == userId);
+
+        ThrowIfUserNotFound(userId, user);
 
         var roles = await userManager.GetRolesAsync(user);
 
-        var userData = new CurrentUserDto
-        {
-            Id = userId,
-            Email = user.Email,
-            Username = user.UserName,
-            AccentHue = 200,
-            AvatarUrl = "",
-            EmailVerified = user.EmailConfirmed,
-            IsAdmin = roles.Contains(UserRoles.Admin),
-            Name = "user.FirstName" + " " + "user.LastName"
-        };
+        var userData = mapper.Map<CurrentUserDto>(user);
+        userData.IsAdmin = roles.Contains(UserRoles.Admin);
 
-        return new ResponseDto
-        {
-            StatusCode = StatusCodes.Status200OK,
-            Success = true,
-            Message = "User retrieved successfully",
-            Data = userData
-        };
+        return ResponseDto<CurrentUserDto>.OkResponse(
+            localizer.Get("Auth.User.Get.Success"), userData);
     }
     public async Task<ResponseDto<object>> CheckEmailAvailabilityAsync(string email)
     {
