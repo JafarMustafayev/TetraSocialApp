@@ -19,4 +19,8 @@
     <ItemGroup>
         <AdditionalFiles Include="Resources\Localization\SharedResource.resx"/>
     </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Abstractions\Repositories\Auth\"/>
+    </ItemGroup>
 </Project>

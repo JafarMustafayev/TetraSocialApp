@@ -1,4 +1,4 @@
-﻿namespace Tetra.Persistence.Repositories.VerificationTokenRepos;
+﻿namespace Tetra.Persistence.Repositories.Auth.VerificationTokenRepositories;
 
 public class VerificationTokenReadRepository(AppDbContext context)
     : ReadRepository<VerificationToken>(context), IVerificationTokenReadRepository

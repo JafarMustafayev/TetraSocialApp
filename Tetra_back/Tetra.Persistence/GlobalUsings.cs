@@ -15,17 +15,17 @@ global using Tetra.Application.Abstractions.Repositories.Base;
 global using Tetra.Domain.Entities.Common;
 global using Tetra.Application.Abstractions.Repositories.UnitOfWork;
 global using Tetra.Domain.Entities.Auth;
-global using Tetra.Application.Abstractions.Repositories.RefreshTokenRepos;
+global using Tetra.Application.Abstractions.Repositories.Auth.RefreshTokenRepositories;
+global using Tetra.Persistence.Repositories.Auth.RefreshTokenRepositories;
 global using Tetra.Persistence.Repositories.Base;
-global using Tetra.Persistence.Repositories.RefreshTokenRepos;
 global using Tetra.Persistence.Repositories.UnitOfWork;
-global using Tetra.Application.Abstractions.Repositories.AuthSessionRepos;
-global using Tetra.Persistence.Repositories.AuthSessionRepos;
-global using Tetra.Application.Abstractions.Repositories.VerificationTokenRepos;
-global using Tetra.Persistence.Repositories.VerificationTokenRepos;
+global using Tetra.Application.Abstractions.Repositories.Auth.AuthSessionRepositories;
+global using Tetra.Persistence.Repositories.Auth.AuthSessionRepositories;
+global using Tetra.Application.Abstractions.Repositories.Auth.VerificationTokenRepositories;
+global using Tetra.Persistence.Repositories.Auth.VerificationTokenRepositories;
+global using Tetra.Application.Abstractions.Repositories.Auth.TwoFactorRepositories;
+global using Tetra.Persistence.Repositories.Auth.TwoFactorRepositories;
 global using Tetra.Domain.Enums;
-global using Tetra.Application.Abstractions.Repositories.TwoFactor;
-global using Tetra.Persistence.Repositories.TwoFactor;
 global using Tetra.Domain.Entities.Users;
 
 // ---------------

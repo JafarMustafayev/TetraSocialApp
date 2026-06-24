@@ -1,4 +1,4 @@
-﻿namespace Tetra.Application.Abstractions.Repositories.VerificationTokenRepos;
+﻿namespace Tetra.Application.Abstractions.Repositories.Auth.VerificationTokenRepositories;
 
 public interface IVerificationTokenReadRepository : IReadRepository<VerificationToken>
 {
