@@ -25,3 +25,4 @@ global using System.Text.RegularExpressions;
 global using Tetra.Application.DTOs.Auth.Session;
 global using Tetra.Application.DTOs.Account;
 global using Tetra.Application.DTOs.Auth.TwoFactor;
+global using Tetra.Domain.Entities.Users;

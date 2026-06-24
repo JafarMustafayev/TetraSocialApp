@@ -33,7 +33,7 @@ public sealed class RegisterRequestValidator : AbstractValidator<RegisterRequest
 
         RuleFor(x => x.DateOfBirth)
             .Cascade(CascadeMode.Stop)
-            .ApplyDateTimeValidation(
+            .ApplyDateOnlyValidation(
                 rules.DateOfBirth,
                 localizer,
                 "DateOfBirth");
