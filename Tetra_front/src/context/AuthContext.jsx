@@ -3,6 +3,7 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 import { getMe } from '../api/account.api';
 import { logout as logoutApi } from '../api/auth.api';
 import { toast } from 'react-hot-toast';
+import { useTheme } from './ThemeContext';
 
 const AuthContext = createContext();
 
@@ -10,6 +11,7 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [isLoadingUser, setIsLoadingUser] = useState(true);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
+    const { setTheme } = useTheme();
 
     const fetchUser = async () => {
         setIsLoadingUser(true);
@@ -32,6 +34,9 @@ export const AuthProvider = ({ children }) => {
                     document.documentElement.style.setProperty('--color-main', `hsl(${hue} 89% var(--accent-l))`);
                     document.documentElement.style.setProperty('--color-main-hover', `hsl(${hue} 89% var(--accent-l) / 80%)`);
                     document.documentElement.style.setProperty('--color-optional', `hsl(${hue} 89% var(--accent-l) / 70%)`);
+                }
+                if (userData && userData.theme) {
+                    setTheme(userData.theme);
                 }
             } else {
                 setUser(null);

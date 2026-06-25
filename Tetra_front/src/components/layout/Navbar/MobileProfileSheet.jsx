@@ -14,7 +14,7 @@ import {
 
 const MobileProfileSheet = ({ isOpen, onClose, user, onLogout, isLoggingOut, menuItems }) => {
     const [isClosing, setIsClosing] = useState(false);
-    const { theme, toggleTheme } = useTheme();
+    const { theme, toggleTheme, isDark } = useTheme();
 
     useEffect(() => {
         if (isOpen) {
@@ -101,7 +101,7 @@ const MobileProfileSheet = ({ isOpen, onClose, user, onLogout, isLoggingOut, men
                                 onClick={toggleTheme}
                                 className="flex items-center w-full gap-4 px-4 py-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-900 transition-colors"
                             >
-                                {theme === 'dark' ? (
+                                {isDark ? (
                                     <>
                                         <Sun size={24} className={`text-gray-500 dark:text-gray-400`} />
                                         <span className="text-[16px] font-medium text-gray-900 dark:text-gray-100">Light theme</span>

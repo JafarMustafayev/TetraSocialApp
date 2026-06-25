@@ -45,10 +45,11 @@ const getCroppedImg = async (imageSrc, pixelCrop) => {
 };
 
 const EditProfileForm = ({ onBack }) => {
-    const { user } = useAuth();
+    const { user, fetchUser } = useAuth();
     const [isLoading, setIsLoading] = useState(true);
     const [form, setForm] = useState({
-        name: "Jafar Mustafayev",
+        firstName: "Jafar",
+        lastName: "Mustafayev",
         bio: "",
         website: ""
     });
@@ -116,6 +117,7 @@ const EditProfileForm = ({ onBack }) => {
     const handleSave = (e) => {
         e.preventDefault();
         // Backend integration placeholder
+        fetchUser?.();
     };
 
     if (isLoading) {
@@ -164,7 +166,7 @@ const EditProfileForm = ({ onBack }) => {
                         <label className="block text-[15px] font-bold text-gray-900 dark:text-white">
                             Cover photo
                         </label>
-                        <div className="relative w-full h-40 bg-gray-100 dark:bg-zinc-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-neutral-800 aspect-[3/1]">
+                        <div className="relative w-full h-40 bg-gray-100 dark:bg-zinc-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-neutral-800 aspect-3/1">
                             {coverImage ? (
                                 <img
                                     src={coverImage}
@@ -236,11 +238,18 @@ const EditProfileForm = ({ onBack }) => {
                     </div>
 
                     {/* Name input */}
-                    <SettingsInput
-                        label="Name"
-                        value={form.name}
-                        onChange={(e) => handleInputChange('name', e.target.value)}
-                    />
+                    <div className="flex flex-col md:flex-row w-full gap-10">
+                        <SettingsInput
+                            label="First Name"
+                            value={form.firstName}
+                            onChange={(e) => handleInputChange('firstName', e.target.value)}
+                        />
+                        <SettingsInput
+                            label="Last Name"
+                            value={form.lastName}
+                            onChange={(e) => handleInputChange('lastName', e.target.value)}
+                        />
+                    </div>
 
                     {/* Bio textarea */}
                     <div className="mb-5">

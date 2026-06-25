@@ -32,8 +32,8 @@ const Navbar = () => {
     const dropdownRef = useRef(null);
 
     // Theme
-    const { theme, toggleTheme } = useTheme();
-    const logo = getLogo(theme)
+    const { theme, toggleTheme, isDark } = useTheme();
+    const logo = getLogo(isDark ? 'dark' : 'light')
     console.log(logo)
 
     // Close dropdown on outside click or Escape
@@ -180,7 +180,7 @@ const Navbar = () => {
                                 onClick={() => { toggleTheme(); setIsDesktopDropdownOpen(false); }}
                                 className="w-[95%] mx-auto rounded-2xl flex items-center gap-3 px-4 py-3 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors text-left"
                             >
-                                {theme === 'dark' ? (
+                                {isDark ? (
                                     <>
                                         <Sun size={24} className={`text-gray-500 dark:text-gray-400`} />
                                         <span className="text-[15px] font-medium text-gray-900 dark:text-gray-100">Light theme</span>
@@ -221,9 +221,19 @@ const Navbar = () => {
                         ) : (
                             <>
                                 <div className="flex items-center gap-2 min-w-0">
-                                    <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center font-bold text-main shrink-0">
-                                        {user?.username?.[0].toUpperCase() || 'U'}
-                                    </div>
+                                    {
+                                        user?.avatarUrl ? (
+                                            <img
+                                                src={user.avatarUrl}
+                                                alt="Profile"
+                                                className="w-10 h-10 rounded-full object-cover shrink-0"
+                                            />
+                                        ) : (
+                                            <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center font-bold text-main shrink-0">
+                                                {user?.username?.[0].toUpperCase() || 'U'}
+                                            </div>
+                                        )
+                                    }
                                     <div className="flex flex-col min-w-0">
                                         <span className="text-[14px] font-bold text-gray-900 dark:text-white truncate">
                                             {user?.name || "Fullname"}

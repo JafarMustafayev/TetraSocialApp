@@ -11,7 +11,7 @@ import { UsernamePasswordSkeleton } from '../../skeletons/index.js';
 
 const UsernamePasswordForm = () => {
     const navigate = useNavigate();
-    const { user, isLoadingUser, updateCurrentUser } = useAuth();
+    const { user, isLoadingUser, updateCurrentUser, fetchUser } = useAuth();
 
     // Username section states
     const [username, setUsername] = useState('');
@@ -49,7 +49,11 @@ const UsernamePasswordForm = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
-        if (user && !hasInitialized) {
+        fetchUser();
+    }, []);
+
+    useEffect(() => {
+        if (user && !isLoadingUser && !hasInitialized) {
             const currentVal = user.username || user.Username || '';
             const currentEmail = user.email || user.Email || '';
             setUsername(currentVal);
@@ -58,7 +62,7 @@ const UsernamePasswordForm = () => {
             setInitialEmail(currentEmail);
             setHasInitialized(true);
         }
-    }, [user, hasInitialized]);
+    }, [user, isLoadingUser, hasInitialized]);
 
     // Email format helper
     const validateEmailFormat = (val) => {
@@ -229,6 +233,7 @@ const UsernamePasswordForm = () => {
                 toast.success(message || "Username has been successfully changed.");
                 const newUsername = data?.username || data?.Username || username;
                 updateCurrentUser({ username: newUsername });
+                fetchUser();
                 setInitialUsername(newUsername);
                 setIsUsernameAvailable(null);
                 setUsernameMessage("");
@@ -266,6 +271,7 @@ const UsernamePasswordForm = () => {
                 toast.success(message || "Email has been successfully changed.");
                 const newEmail = data?.email || data?.Email || email.trim();
                 updateCurrentUser({ email: newEmail });
+                fetchUser();
                 setInitialEmail(newEmail);
                 setIsEmailAvailable(null);
                 setEmailMessage("");
@@ -339,6 +345,7 @@ const UsernamePasswordForm = () => {
             if (success) {
                 const successMsg = (message || "Password has been successfully changed.").trim();
                 toast.success(successMsg);
+                fetchUser();
 
                 setCurrentPassword('');
                 setNewPassword('');

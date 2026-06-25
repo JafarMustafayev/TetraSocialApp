@@ -3,14 +3,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../../context/ThemeContext';
 
-const MockFeedCard = ({ hue, title, theme }) => {
+const MockFeedCard = ({ hue, title, isDark }) => {
     return (
         <div
             className="flex-1 rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-[#09090b] overflow-hidden"
             style={{
-                '--color-main': `hsl(${hue} 89% ${theme === 'dark' ? '55%' : '46%'})`,
-                '--color-main-hover': `hsl(${hue} 89% ${theme === 'dark' ? '55%' : '46%'} / 90%)`,
-                '--color-optional': `hsl(${hue} 89% ${theme === 'dark' ? '55%' : '46%'} / 80%)`
+                '--color-main': `hsl(${hue} 89% ${isDark ? '55%' : '46%'})`,
+                '--color-main-hover': `hsl(${hue} 89% ${isDark ? '55%' : '46%'} / 90%)`,
+                '--color-optional': `hsl(${hue} 89% ${isDark ? '55%' : '46%'} / 80%)`
             }}
         >
             <div className="flex justify-between items-center px-4 py-2 border-b border-gray-100 dark:border-neutral-800 text-[10px] text-gray-500 font-bold uppercase tracking-wider bg-gray-50 dark:bg-[#16181c]">
@@ -51,7 +51,7 @@ const MockFeedCard = ({ hue, title, theme }) => {
 
 const AppearanceSettings = ({ category, onBack }) => {
     const navigate = useNavigate();
-    const { theme, toggleTheme } = useTheme();
+    const { theme, setTheme, isDark } = useTheme();
 
     // Load current hue from localStorage or use default 200
     const initialHue = parseInt(localStorage.getItem('accentHue')) || 200;
@@ -93,27 +93,38 @@ const AppearanceSettings = ({ category, onBack }) => {
                 {/* Theme Selection */}
                 <div className="bg-gray-50 dark:bg-[#16181c] border border-gray-200 dark:border-neutral-800 rounded-2xl p-5">
                     <h3 className="font-bold text-[18px] text-gray-900 dark:text-white mb-4">Background theme</h3>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-3 gap-4">
                         <button
-                            onClick={() => theme !== 'light' && toggleTheme()}
-                            className={`p-4 rounded-xl border-2 flex items-center gap-3 transition-colors ${theme === 'light' ? 'border-main bg-white dark:bg-black' : 'border-gray-200 dark:border-[#1f1f1f] hover:border-gray-300'
+                            onClick={() => setTheme('light')}
+                            className={`p-4 rounded-xl border-2 flex items-center gap-3 transition-colors ${theme?.toLowerCase() === 'light' ? 'border-main bg-white dark:bg-black' : 'border-gray-200 dark:border-[#1f1f1f] hover:border-gray-300'
                                 }`}
                         >
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${theme === 'light' ? 'border-main' : 'border-gray-400'}`}>
-                                {theme === 'light' && <div className="w-2.5 h-2.5 bg-main rounded-full" />}
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${theme?.toLowerCase() === 'light' ? 'border-main' : 'border-gray-400'}`}>
+                                {theme?.toLowerCase() === 'light' && <div className="w-2.5 h-2.5 bg-main rounded-full" />}
                             </div>
                             <span className="font-medium text-gray-900 dark:text-white">Light</span>
                         </button>
 
                         <button
-                            onClick={() => theme !== 'dark' && toggleTheme()}
-                            className={`p-4 rounded-xl border-2 flex items-center gap-3 transition-colors bg-[#09090b] ${theme === 'dark' ? 'border-main' : 'border-gray-200 dark:border-[#1f1f1f] hover:border-gray-700'
+                            onClick={() => setTheme('dark')}
+                            className={`p-4 rounded-xl border-2 flex items-center gap-3 transition-colors bg-[#09090b] ${theme?.toLowerCase() === 'dark' ? 'border-main' : 'border-gray-200 dark:border-[#1f1f1f] hover:border-gray-700'
                                 }`}
                         >
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${theme === 'dark' ? 'border-main' : 'border-gray-500'}`}>
-                                {theme === 'dark' && <div className="w-2.5 h-2.5 bg-main rounded-full" />}
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${theme?.toLowerCase() === 'dark' ? 'border-main' : 'border-gray-500'}`}>
+                                {theme?.toLowerCase() === 'dark' && <div className="w-2.5 h-2.5 bg-main rounded-full" />}
                             </div>
                             <span className="font-medium text-white">Dark</span>
+                        </button>
+
+                        <button
+                            onClick={() => setTheme('System')}
+                            className={`p-4 rounded-xl border-2 flex items-center gap-3 transition-colors bg-gray-100 dark:bg-[#1f1f1f] ${theme?.toLowerCase() === 'system' ? 'border-main' : 'border-gray-200 dark:border-[#1f1f1f] hover:border-gray-300 dark:hover:border-gray-700'
+                                }`}
+                        >
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${theme?.toLowerCase() === 'system' ? 'border-main' : 'border-gray-500'}`}>
+                                {theme?.toLowerCase() === 'system' && <div className="w-2.5 h-2.5 bg-main rounded-full" />}
+                            </div>
+                            <span className="font-medium text-gray-900 dark:text-white">System</span>
                         </button>
                     </div>
 
@@ -128,7 +139,7 @@ const AppearanceSettings = ({ category, onBack }) => {
                         {/* Selected Color Circle */}
                         <div
                             className="w-16 h-16 rounded-full shrink-0 border-4 border-white dark:border-neutral-900 shadow-sm transition-colors duration-200"
-                            style={{ backgroundColor: `hsl(${previewHue}, 89%, ${theme === 'dark' ? '55%' : '46%'})` }}
+                            style={{ backgroundColor: `hsl(${previewHue}, 89%, ${isDark ? '55%' : '46%'})` }}
                         ></div>
 
                         {/* Slider Controls */}
@@ -187,8 +198,8 @@ const AppearanceSettings = ({ category, onBack }) => {
 
                     {/* Previews */}
                     <div className="flex flex-col md:flex-row gap-4 mb-6">
-                        <MockFeedCard hue={accentHue} title="Current" theme={theme} />
-                        <MockFeedCard hue={previewHue} title={`Preview (${previewHue}°)`} theme={theme} />
+                        <MockFeedCard hue={accentHue} title="Current" isDark={isDark} />
+                        <MockFeedCard hue={previewHue} title={`Preview (${previewHue}°)`} isDark={isDark} />
                     </div>
 
                     {/* Footer / Info / Save */}

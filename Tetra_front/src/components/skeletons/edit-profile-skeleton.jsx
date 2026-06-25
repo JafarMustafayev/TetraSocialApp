@@ -45,9 +45,16 @@ const EditProfileSkeleton = ({ onBack }) => {
                 </div>
 
                 {/* Name input */}
-                <div className="space-y-2">
-                    <Skeleton className="h-4 w-12" />
-                    <Skeleton className="h-[48px] w-full rounded-xl" />
+                <div className="flex flex-col md:flex-row w-full gap-10">
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-12" />
+                        <Skeleton className="h-[48px]! w-full! md:w-[250px]! rounded-xl" />
+                    </div>
+
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-12" />
+                        <Skeleton className="h-[48px]! w-full! md:w-[250px]! rounded-xl" />
+                    </div>
                 </div>
 
                 {/* Bio textarea */}

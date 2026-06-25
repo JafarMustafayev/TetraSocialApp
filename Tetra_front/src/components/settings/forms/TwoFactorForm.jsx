@@ -7,9 +7,11 @@ import SettingsInput from '../SettingsInput';
 import { TwoFactorSkeleton } from '../../skeletons/index.js';
 import { getTwoFactorStatus, setupTwoFactor, enableTwoFactor, regenerateTwoFactorRecoveryCodes, disableTwoFactor } from '../../../api/auth.api';
 import { QRCodeSVG } from 'qrcode.react';
+import { useAuth } from '../../../context/AuthContext';
 
 const TwoFactorForm = ({ onBack }) => {
     const navigate = useNavigate();
+    const { fetchUser } = useAuth();
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [twoFactorStatus, setTwoFactorStatus] = useState({
@@ -356,6 +358,7 @@ const TwoFactorForm = ({ onBack }) => {
                 toast.success(message || "Two-factor authentication has been disabled successfully.");
                 resetDisableState();
                 fetchStatus();
+                fetchUser?.();
             } else {
                 if (statusCode === 401) {
                     setDisableCodeError('The verification code is invalid.');
@@ -460,11 +463,13 @@ const TwoFactorForm = ({ onBack }) => {
     const handleDone = () => {
         resetSetupState();
         fetchStatus();
+        fetchUser?.();
     };
 
     const handleRegenerateDone = () => {
         resetRegenerateState();
         fetchStatus();
+        fetchUser?.();
     };
 
     const formatProvider = (prov) => {

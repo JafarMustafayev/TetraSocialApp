@@ -6,6 +6,7 @@ import SettingsButton from '../SettingsButton';
 import { formatUtcToLocal } from '../../../utils/dateFormatter';
 import { getSessions, revokeSession, revokeOtherSessions } from '../../../api/auth.api';
 import { ActiveSessionsSkeleton } from '../../skeletons/index.js';
+import { useAuth } from '../../../context/AuthContext';
 
 const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, isLoading }) => {
     if (!isOpen) return null;
@@ -42,6 +43,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, isLoadi
 
 const ActiveSessionsForm = () => {
     const navigate = useNavigate();
+    const { fetchUser } = useAuth();
     const [sessions, setSessions] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
@@ -85,6 +87,7 @@ const ActiveSessionsForm = () => {
             if (res.Success || res.success) {
                 toast.success(res.Message || res.message || "Session has been successfully revoked.");
                 setSessions(prev => prev.filter(s => s.id !== revokingSessionId));
+                fetchUser?.();
             } else {
                 toast.error(res.Message || res.message || "Failed to revoke session.");
             }
@@ -103,6 +106,7 @@ const ActiveSessionsForm = () => {
             if (res.Success || res.success) {
                 toast.success(res.Message || res.message || "All other sessions revoked.");
                 setSessions(prev => prev.filter(s => s.isCurrent));
+                fetchUser?.();
             } else {
                 toast.error(res.Message || res.message || "Failed to revoke other sessions.");
             }
