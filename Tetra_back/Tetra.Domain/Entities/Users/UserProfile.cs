@@ -11,7 +11,6 @@ public class UserProfile : BaseEntity, IUpdatable
     public DateOnly Birthday { get; set; }
 
     public Gender? Gender { get; set; }
-    public RelationshipStatus? RelationshipStatus { get; set; }
 
     public string? ProfileImageUrl { get; set; }
     public string? CoverImageUrl { get; set; }

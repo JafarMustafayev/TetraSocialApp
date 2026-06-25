@@ -18,9 +18,6 @@ public class UserProfileConfiguration : IEntityTypeConfiguration<UserProfile>
         builder.Property(x => x.Gender)
             .IsRequired(false);
 
-        builder.Property(x => x.RelationshipStatus)
-            .IsRequired(false);
-
         builder.Property(x => x.ProfileImageUrl)
             .IsRequired(false)
             .HasMaxLength(200);
